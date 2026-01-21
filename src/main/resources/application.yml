@@ -16,3 +16,12 @@ spring:
 
 server:
   port: 8080
+
+app:
+  jwt:
+    secret: ${JWT_SECRET:gullygram-super-secret-key-change-in-production-minimum-256-bits}
+    expiration-ms: 86400000  # 24 hours
+    refresh-expiration-ms: 604800000  # 7 days
+  otp:
+    expiration-minutes: 5
+    length: 6
