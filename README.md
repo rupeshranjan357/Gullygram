@@ -2,14 +2,24 @@
 
 GullyGram is a location-based social media platform that focuses on local connections, events, and marketplace within a user-defined radius.
 
-## 🚀 Week 1 Implementation Status
+## 🚀 Implementation Status
 
-Week 1 features have been completed:
+**Week 1** ✅ COMPLETE
 - ✅ User Authentication (Email/Password & OTP-based)
 - ✅ User Profile Management
 - ✅ Interest Selection & Management
 - ✅ Location Updates
 - ✅ JWT-based Security
+
+**Week 2** ✅ COMPLETE
+- ✅ Posts & Feed with radius filtering
+- ✅ Likes & Comments
+- ✅ Geo-distance calculation (Haversine)
+- ✅ Feed ranking algorithm
+- ✅ Interest-based content discovery
+
+📖 **Documentation**: See [WEEK2_TESTING_GUIDE.md](WEEK2_TESTING_GUIDE.md) for detailed testing instructions and [WEEK2_IMPLEMENTATION.md](WEEK2_IMPLEMENTATION.md) for technical details.
+
 
 ## 📋 Prerequisites
 
@@ -178,7 +188,89 @@ Content-Type: application/json
 }
 ```
 
+### Post Endpoints (Week 2)
+
+#### 1. Create Post
+```http
+POST /api/posts
+Authorization: Bearer <token>
+Content-Type: application/json
+
+{
+  "text": "Great workout session today!",
+  "type": "GENERAL",
+  "latitude": 12.9716,
+  "longitude": 77.5946,
+  "visibilityRadiusKm": 10,
+  "interestIds": [1, 2]
+}
+```
+
+**Post Types**: `GENERAL`, `LOCAL_NEWS`, `MARKETING`, `EVENT_PROMO`, `MARKETPLACE`
+
+#### 2. Get Post
+```http
+GET /api/posts/{id}
+Authorization: Bearer <token>
+```
+
+#### 3. Like/Unlike Post
+```http
+POST /api/posts/{id}/like
+Authorization: Bearer <token>
+```
+
+#### 4. Add Comment
+```http
+POST /api/posts/{id}/comment
+Authorization: Bearer <token>
+Content-Type: application/json
+
+{
+  "text": "Great post!"
+}
+```
+
+#### 5. Get Comments
+```http
+GET /api/posts/{id}/comments?page=0&size=20
+Authorization: Bearer <token>
+```
+
+### Feed Endpoint (Week 2)
+
+#### Get Local Feed
+```http
+GET /api/feed?lat=12.9716&lon=77.5946&radiusKm=10&interestBoost=true&page=0&size=10
+Authorization: Bearer <token>
+```
+
+**Query Parameters**:
+- `lat` (required): User's latitude
+- `lon` (required): User's longitude
+- `radiusKm` (optional): Search radius in km (default: 10, max: 50)
+- `interestBoost` (optional): Enable interest-based ranking (default: true)
+- `page` (optional): Page number (default: 0)
+- `size` (optional): Page size (default: 10)
+
+**Response**:
+```json
+{
+  "success": true,
+  "data": {
+    "posts": [...],
+    "currentPage": 0,
+    "totalPages": 5,
+    "totalElements": 42,
+    "pageSize": 10,
+    "hasNext": true,
+    "hasPrevious": false
+  }
+}
+```
+
 ### Interest Endpoints
+
 
 #### 1. Get All Interests
 ```http
@@ -335,16 +427,16 @@ app:
 - `SPRING_DATASOURCE_USERNAME` - Database username
 - `SPRING_DATASOURCE_PASSWORD` - Database password
 
-## 📝 Next Steps (Week 2+)
+## 📝 Next Steps (Week 3+)
 
-- [ ] Posts & Feed with radius filtering
-- [ ] Likes & Comments
-- [ ] Relationship/Trust system
+- [ ] Relationship/Trust system (requests, accept/reject)
+- [ ] Identity reveal (real name visible to friends only)
 - [ ] Events management
 - [ ] Marketplace listings
 - [ ] Media upload (S3/MinIO)
 - [ ] Redis caching
-- [ ] PostGIS geo queries
+- [ ] WebSocket for real-time updates
+
 
 ## 🐛 Common Issues
 
