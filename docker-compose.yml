@@ -1,0 +1,15 @@
+services:
+  postgres:
+    image: postgis/postgis:15-3.3
+    container_name: gully_postgres
+    environment:
+      POSTGRES_DB: gullygram
+      POSTGRES_USER: gully_user
+      POSTGRES_PASSWORD: gully_pass
+    ports:
+      - "5432:5432"
+    volumes:
+      - meta_pgdata:/var/lib/postgresql/data
+
+volumes:
+  meta_pgdata:
