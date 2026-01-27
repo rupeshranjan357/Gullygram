@@ -75,7 +75,6 @@ public class AuthService {
 
         // Create profile
         UserProfile profile = UserProfile.builder()
-            .userId(user.getId())
             .user(user)
             .alias(request.getAlias())
             .realName(request.getRealName())
@@ -83,6 +82,7 @@ public class AuthService {
             .build();
 
         userProfileRepository.save(profile);
+
 
         // Generate JWT
         String token = jwtUtil.generateToken(user.getId());
@@ -198,7 +198,6 @@ public class AuthService {
 
             // Create profile
             UserProfile profile = UserProfile.builder()
-                .userId(user.getId())
                 .user(user)
                 .alias(request.getAlias())
                 .realName(request.getRealName())
@@ -206,6 +205,7 @@ public class AuthService {
                 .build();
 
             userProfileRepository.save(profile);
+
         }
 
         // Get profile
