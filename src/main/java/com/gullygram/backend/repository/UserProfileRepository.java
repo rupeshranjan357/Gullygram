@@ -12,5 +12,8 @@ public interface UserProfileRepository extends JpaRepository<UserProfile, UUID> 
     
     Optional<UserProfile> findByAlias(String alias);
     
+    Optional<UserProfile> findByUserId(UUID userId);
+    
     boolean existsByAlias(String alias);
+
 }

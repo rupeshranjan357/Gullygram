@@ -73,7 +73,7 @@ public class AuthService {
 
         user = userRepository.save(user);
 
-        // Create profile
+        // Create profile (matching week_1goal working implementation)
         UserProfile profile = UserProfile.builder()
             .user(user)
             .alias(request.getAlias())
@@ -196,7 +196,7 @@ public class AuthService {
 
             user = userRepository.save(user);
 
-            // Create profile
+            // Create profile (matching week_1goal working implementation)
             UserProfile profile = UserProfile.builder()
                 .user(user)
                 .alias(request.getAlias())

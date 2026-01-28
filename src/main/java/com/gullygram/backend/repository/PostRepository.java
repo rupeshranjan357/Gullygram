@@ -1,0 +1,43 @@
+package com.gullygram.backend.repository;
+
+import com.gullygram.backend.entity.Post;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
+import org.springframework.stereotype.Repository;
+
+import java.util.Optional;
+import java.util.UUID;
+
+@Repository
+public interface PostRepository extends JpaRepository<Post, UUID> {
+
+    /**
+     * Find posts within bounding box (used for geo-filtering)
+     */
+    @Query("SELECT p FROM Post p WHERE p.deletedAt IS NULL " +
+           "AND p.lat BETWEEN :minLat AND :maxLat " +
+           "AND p.lon BETWEEN :minLon AND :maxLon " +
+           "ORDER BY p.createdAt DESC")
+    Page<Post> findPostsInBoundingBox(
+        @Param("minLat") double minLat,
+        @Param("maxLat") double maxLat,
+        @Param("minLon") double minLon,
+        @Param("maxLon") double maxLon,
+        Pageable pageable
+    );
+
+    /**
+     * Find post by ID (not deleted)
+     */
+    @Query("SELECT p FROM Post p WHERE p.id = :id AND p.deletedAt IS NULL")
+    Optional<Post> findByIdAndNotDeleted(@Param("id") UUID id);
+
+    /**
+     * Find posts by author
+     */
+    @Query("SELECT p FROM Post p WHERE p.author.id = :authorId AND p.deletedAt IS NULL ORDER BY p.createdAt DESC")
+    Page<Post> findByAuthorId(@Param("authorId") UUID authorId, Pageable pageable);
+}
