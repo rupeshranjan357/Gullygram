@@ -20,6 +20,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
 import java.time.LocalDateTime;
+import java.util.HashSet;
 import java.util.Random;
 
 @Service
@@ -74,13 +75,13 @@ public class AuthService {
         user = userRepository.save(user);
 
         // Create profile
-        UserProfile profile = UserProfile.builder()
-            .userId(user.getId())
-            .user(user)
-            .alias(request.getAlias())
-            .realName(request.getRealName())
-            .defaultRadiusKm(10)
-            .build();
+        UserProfile profile = new UserProfile();
+        profile.setUser(user);
+        profile.setUserId(user.getId());
+        profile.setAlias(request.getAlias());
+        profile.setRealName(request.getRealName());
+        profile.setDefaultRadiusKm(10);
+        profile.setInterests(new HashSet<>());
 
         userProfileRepository.save(profile);
 
@@ -197,13 +198,13 @@ public class AuthService {
             user = userRepository.save(user);
 
             // Create profile
-            UserProfile profile = UserProfile.builder()
-                .userId(user.getId())
-                .user(user)
-                .alias(request.getAlias())
-                .realName(request.getRealName())
-                .defaultRadiusKm(10)
-                .build();
+            UserProfile profile = new UserProfile();
+            profile.setUser(user);
+            profile.setUserId(user.getId());
+            profile.setAlias(request.getAlias());
+            profile.setRealName(request.getRealName());
+            profile.setDefaultRadiusKm(10);
+            profile.setInterests(new HashSet<>());
 
             userProfileRepository.save(profile);
         }
