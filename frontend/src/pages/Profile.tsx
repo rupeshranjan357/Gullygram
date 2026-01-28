@@ -1,13 +1,16 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
-import { Settings, Lock, Edit2, Camera, Calendar, Bookmark } from 'lucide-react';
+import { Settings, Lock, Edit2, Camera, Calendar, Bookmark, ArrowLeft } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
 import { InterestPill } from '@/components/ui/InterestPill';
+import { BottomNav } from '@/components/BottomNav';
 import { profileService } from '@/services/profileService';
 import { interestService } from '@/services/interestService';
 import { useAuthStore } from '@/store/authStore';
 
 export const Profile: React.FC = () => {
+    const navigate = useNavigate();
     const { isAuthenticated, alias } = useAuthStore();
     const [activeTab, setActiveTab] = useState<'posts' | 'events' | 'saved'>('posts');
 
@@ -30,9 +33,17 @@ export const Profile: React.FC = () => {
 
     return (
         <div className="min-h-screen bg-gray-50 pb-20">
-            {/* Settings Icon */}
-            <div className="absolute top-4 right-4">
-                <button className="p-2 text-gray-900 hover:bg-gray-100 rounded-full">
+            {/* Navigation Icons */}
+            <div className="absolute top-4 left-4 z-10">
+                <button 
+                    onClick={() => navigate('/feed')}
+                    className="p-2 text-white hover:bg-white/20 rounded-full transition-colors"
+                >
+                    <ArrowLeft size={24} />
+                </button>
+            </div>
+            <div className="absolute top-4 right-4 z-10">
+                <button className="p-2 text-white hover:bg-white/20 rounded-full transition-colors">
                     <Settings size={24} />
                 </button>
             </div>
@@ -188,6 +199,9 @@ export const Profile: React.FC = () => {
                     </div>
                 </div>
             </div>
+
+            {/* Bottom Navigation */}
+            <BottomNav />
         </div>
     );
 };

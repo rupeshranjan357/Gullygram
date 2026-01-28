@@ -7,6 +7,9 @@ import { Login } from '@/pages/Login';
 import { InterestSelection } from '@/pages/InterestSelection';
 import { RadiusSelection } from '@/pages/RadiusSelection';
 import { Profile } from '@/pages/Profile';
+import { Feed } from '@/pages/Feed';
+import { CreatePost } from '@/pages/CreatePost';
+import { PostDetail } from '@/pages/PostDetail';
 import { ProtectedRoute } from '@/components/ProtectedRoute';
 import { useAuthStore } from '@/store/authStore';
 
@@ -36,7 +39,7 @@ const AppRoutes: React.FC = () => {
             {/* Public Routes */}
             <Route
                 path="/"
-                element={isAuthenticated ? <Navigate to="/profile" replace /> : <Landing />}
+                element={isAuthenticated ? <Navigate to="/feed" replace /> : <Landing />}
             />
             <Route
                 path="/signup"
@@ -76,6 +79,30 @@ const AppRoutes: React.FC = () => {
             />
 
             {/* Protected App Routes */}
+            <Route
+                path="/feed"
+                element={
+                    <ProtectedRoute>
+                        <Feed />
+                    </ProtectedRoute>
+                }
+            />
+            <Route
+                path="/create-post"
+                element={
+                    <ProtectedRoute>
+                        <CreatePost />
+                    </ProtectedRoute>
+                }
+            />
+            <Route
+                path="/post/:id"
+                element={
+                    <ProtectedRoute>
+                        <PostDetail />
+                    </ProtectedRoute>
+                }
+            />
             <Route
                 path="/profile"
                 element={
