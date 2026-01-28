@@ -29,19 +29,33 @@ export interface Profile {
 export interface Interest {
     id: number;
     name: string;
-    icon: string;
-    colorClass?: string;
+    description?: string;
 }
 
 export interface AuthResponse {
-    token: string;
-    user: User;
-    profile: Profile;
+    accessToken: string;
+    tokenType: string;
+    userId: string;
+    alias: string;
+    profileComplete: boolean;
 }
 
 export interface ProfileResponse {
-    user: User;
-    profile: Profile;
+    userId: string;
+    email?: string;
+    phone?: string;
+    alias: string;
+    realName?: string;
+    bio?: string;
+    avatarUrlAlias?: string;
+    avatarUrlReal?: string;
+    dob?: string;
+    homeLat?: number;
+    homeLon?: number;
+    defaultRadiusKm: number;
+    lastSeenLat?: number;
+    lastSeenLon?: number;
+    lastSeenAt?: string;
     interests: Interest[];
 }
 
@@ -73,10 +87,10 @@ export interface UpdateProfileRequest {
     alias?: string;
     realName?: string;
     bio?: string;
-    avatarUrl?: string;
-    realAvatarUrl?: string;
-    dateOfBirth?: string;
-    defaultRadius?: number;
+    avatarUrlAlias?: string;
+    avatarUrlReal?: string;
+    dob?: string;
+    defaultRadiusKm?: number;
 }
 
 export interface UpdateLocationRequest {
@@ -91,8 +105,8 @@ export interface UpdateInterestsRequest {
 // API Response Types
 export interface ApiResponse<T = any> {
     success: boolean;
-    message?: string;
-    data?: T;
+    message: string;
+    data: T;
 }
 
 export interface ApiError {
@@ -103,14 +117,15 @@ export interface ApiError {
 
 // UI State Types
 export interface AuthState {
-    user: User | null;
-    profile: Profile | null;
+    userId: string | null;
+    alias: string | null;
     token: string | null;
     isAuthenticated: boolean;
     isNewUser?: boolean;
+    profileComplete: boolean;
     login: (response: AuthResponse, isSignup?: boolean) => void;
     logout: () => void;
-    updateProfile: (profile: Profile) => void;
+    setProfileComplete: (complete: boolean) => void;
 }
 
 export interface OnboardingState {

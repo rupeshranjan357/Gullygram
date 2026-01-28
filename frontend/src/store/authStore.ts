@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
-import { AuthState, AuthResponse, Profile } from '@/types';
+import { AuthState, AuthResponse } from '@/types';
 
 interface AuthStoreWithHydration extends AuthState {
     _hasHydrated: boolean;
@@ -10,10 +10,11 @@ interface AuthStoreWithHydration extends AuthState {
 export const useAuthStore = create<AuthStoreWithHydration>()(
     persist(
         (set) => ({
-            user: null,
-            profile: null,
+            userId: null,
+            alias: null,
             token: null,
             isAuthenticated: false,
+            profileComplete: false,
             _hasHydrated: false,
             isNewUser: false,
 
@@ -23,25 +24,28 @@ export const useAuthStore = create<AuthStoreWithHydration>()(
 
             login: (response: AuthResponse, isSignup: boolean = false) => {
                 set({
-                    user: response.user,
-                    profile: response.profile,
-                    token: response.token,
+                    userId: response.userId,
+                    alias: response.alias,
+                    token: response.accessToken,
                     isAuthenticated: true,
+                    profileComplete: response.profileComplete,
                     isNewUser: isSignup,
                 });
             },
 
             logout: () => {
                 set({
-                    user: null,
-                    profile: null,
+                    userId: null,
+                    alias: null,
                     token: null,
                     isAuthenticated: false,
+                    profileComplete: false,
+                    isNewUser: false,
                 });
             },
 
-            updateProfile: (profile: Profile) => {
-                set({ profile });
+            setProfileComplete: (complete: boolean) => {
+                set({ profileComplete: complete });
             },
         }),
         {

@@ -13,7 +13,7 @@ import { useAuthStore } from '@/store/authStore';
 export const RadiusSelection: React.FC = () => {
     const navigate = useNavigate();
     const { selectedInterests, selectedRadius, reset } = useOnboardingStore();
-    const { updateProfile } = useAuthStore();
+    const { setProfileComplete } = useAuthStore();
     const [localRadius, setLocalRadius] = useState(selectedRadius);
 
     const updateInterestsMutation = useMutation({
@@ -22,8 +22,8 @@ export const RadiusSelection: React.FC = () => {
 
     const updateProfileMutation = useMutation({
         mutationFn: profileService.updateProfile,
-        onSuccess: (data) => {
-            updateProfile(data.profile);
+        onSuccess: () => {
+            setProfileComplete(true);
             reset();
             navigate('/profile');
         },
@@ -42,7 +42,7 @@ export const RadiusSelection: React.FC = () => {
 
             // Update radius
             await updateProfileMutation.mutateAsync({
-                defaultRadius: localRadius,
+                defaultRadiusKm: localRadius,
             });
         } catch (error) {
             console.error('Onboarding error:', error);

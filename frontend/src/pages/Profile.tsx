@@ -8,13 +8,13 @@ import { interestService } from '@/services/interestService';
 import { useAuthStore } from '@/store/authStore';
 
 export const Profile: React.FC = () => {
-    const { profile } = useAuthStore();
+    const { isAuthenticated, alias } = useAuthStore();
     const [activeTab, setActiveTab] = useState<'posts' | 'events' | 'saved'>('posts');
 
     const { data: profileData } = useQuery({
         queryKey: ['profile'],
         queryFn: profileService.getProfile,
-        enabled: !!profile,
+        enabled: isAuthenticated,
     });
 
     const { data: interests } = useQuery({
@@ -22,7 +22,7 @@ export const Profile: React.FC = () => {
         queryFn: interestService.getMyInterests,
     });
 
-    const [radius, setRadius] = useState(profileData?.profile?.defaultRadius || 10);
+    const [radius, setRadius] = useState(profileData?.defaultRadiusKm || 10);
 
     const handleRadiusChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setRadius(parseInt(e.target.value));
@@ -55,7 +55,7 @@ export const Profile: React.FC = () => {
                             <div className="w-32 h-32 rounded-full gradient-primary p-1">
                                 <div className="w-full h-full rounded-full bg-white flex items-center justify-center">
                                     <div className="w-28 h-28 rounded-full bg-gradient-to-br from-purple-200 to-blue-200 flex items-center justify-center text-4xl font-bold text-primary-purple">
-                                        {profile?.alias?.[1]?.toUpperCase() || 'U'}
+                                        {profileData?.alias?.[0]?.toUpperCase() || alias?.[0]?.toUpperCase() || 'U'}
                                     </div>
                                 </div>
                             </div>
@@ -68,17 +68,17 @@ export const Profile: React.FC = () => {
                     {/* Username and Real Name */}
                     <div className="text-center mb-2">
                         <h2 className="text-2xl font-bold text-gray-900">
-                            @{profile?.alias || 'username'}
+                            @{profileData?.alias || alias || 'username'}
                         </h2>
                         <div className="flex items-center justify-center gap-1 text-gray-600 mt-1">
-                            <span className="text-sm">{profile?.realName || 'Real Name'}</span>
+                            <span className="text-sm">{profileData?.realName || 'Real Name'}</span>
                             <Lock size={14} />
                         </div>
                     </div>
 
                     {/* Bio */}
                     <p className="text-center text-gray-600 text-sm mb-4">
-                        {profile?.bio || 'Bio: Love exploring local events.'}
+                        {profileData?.bio || 'Bio: Love exploring local events.'}
                     </p>
 
                     {/* Stats */}
