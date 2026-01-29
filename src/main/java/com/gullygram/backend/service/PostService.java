@@ -1,7 +1,5 @@
 package com.gullygram.backend.service;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.gullygram.backend.dto.request.CreatePostRequest;
 import com.gullygram.backend.dto.response.AuthorView;
 import com.gullygram.backend.dto.response.InterestResponse;
@@ -36,7 +34,6 @@ public class PostService {
     private final InterestRepository interestRepository;
     private final PostLikeRepository postLikeRepository;
     private final CommentRepository commentRepository;
-    private final ObjectMapper objectMapper;
 
     @Transactional
     public PostResponse createPost(UUID userId, CreatePostRequest request) {
@@ -62,13 +59,9 @@ public class PostService {
             .visibilityRadiusKm(request.getVisibilityRadiusKm() != null ? request.getVisibilityRadiusKm() : 10)
             .build();
 
-        // Convert media URLs to JSON
+        // Set media URLs directly (converter will handle JSON conversion)
         if (request.getMediaUrls() != null && !request.getMediaUrls().isEmpty()) {
-            try {
-                post.setMediaUrlsJson(objectMapper.writeValueAsString(request.getMediaUrls()));
-            } catch (JsonProcessingException e) {
-                throw new BadRequestException("Invalid media URLs format");
-            }
+            post.setMediaUrls(request.getMediaUrls());
         }
 
         // Add interests
@@ -113,16 +106,8 @@ public class PostService {
     }
 
     public PostResponse convertToResponse(Post post, UUID currentUserId) {
-        // Parse media URLs
-        List<String> mediaUrls = null;
-        if (post.getMediaUrlsJson() != null) {
-            try {
-                mediaUrls = objectMapper.readValue(post.getMediaUrlsJson(), 
-                    objectMapper.getTypeFactory().constructCollectionType(List.class, String.class));
-            } catch (JsonProcessingException e) {
-                log.error("Error parsing media URLs for post {}", post.getId(), e);
-            }
-        }
+        // Get media URLs directly (converter handles JSON conversion)
+        List<String> mediaUrls = post.getMediaUrls();
 
         // Get engagement metrics
         long likeCount = postLikeRepository.countByPostId(post.getId());

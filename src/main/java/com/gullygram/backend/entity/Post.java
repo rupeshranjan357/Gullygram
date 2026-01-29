@@ -6,7 +6,9 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.annotations.UpdateTimestamp;
+import org.hibernate.type.SqlTypes;
 
 import java.time.LocalDateTime;
 import java.util.HashSet;
@@ -39,7 +41,8 @@ public class Post {
     private String text;
 
     @Column(name = "media_urls", columnDefinition = "jsonb")
-    private String mediaUrlsJson; // Stored as JSON string, will be converted to/from List<String>
+    @JdbcTypeCode(SqlTypes.JSON)
+    private List<String> mediaUrls;
 
     @Column(nullable = false)
     private Double lat;
