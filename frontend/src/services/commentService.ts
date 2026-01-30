@@ -5,20 +5,12 @@ export interface Comment {
     id: string;
     text: string;
     postId: string;
-    authorId: string;
-    authorAlias: string;
-    authorAvatarUrl?: string;
+    author: {
+        userId: string;
+        alias: string;
+        avatarUrl?: string;
+    };
     createdAt: string;
-}
-
-export interface CommentsResponse {
-    content: Comment[];
-    page: number;
-    size: number;
-    totalElements: number;
-    totalPages: number;
-    hasNext: boolean;
-    hasPrevious: boolean;
 }
 
 export interface AddCommentRequest {
@@ -26,8 +18,8 @@ export interface AddCommentRequest {
 }
 
 export const commentService = {
-    async getComments(postId: string, page: number = 0, size: number = 20): Promise<CommentsResponse> {
-        const response = await api.get<ApiResponse<CommentsResponse>>(`/posts/${postId}/comments`, {
+    async getComments(postId: string, page: number = 0, size: number = 20): Promise<Comment[]> {
+        const response = await api.get<ApiResponse<Comment[]>>(`/posts/${postId}/comments`, {
             params: { page, size }
         });
         return response.data.data;

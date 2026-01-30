@@ -126,11 +126,10 @@ export const Feed: React.FC = () => {
                         {/* Interest Boost Toggle */}
                         <button
                             onClick={() => setInterestBoost(!interestBoost)}
-                            className={`flex items-center gap-2 rounded-full px-3 py-2 transition-colors ${
-                                interestBoost
-                                    ? 'bg-primary-purple text-white'
-                                    : 'bg-gray-100 text-gray-700'
-                            }`}
+                            className={`flex items-center gap-2 rounded-full px-3 py-2 transition-colors ${interestBoost
+                                ? 'bg-primary-purple text-white'
+                                : 'bg-gray-100 text-gray-700'
+                                }`}
                         >
                             <Zap className="w-4 h-4" />
                             <span className="text-sm font-semibold">Interest Boost</span>
@@ -166,7 +165,7 @@ export const Feed: React.FC = () => {
                             Try Again
                         </Button>
                     </div>
-                ) : feedData?.content.length === 0 ? (
+                ) : feedData?.posts.length === 0 ? (
                     <div className="bg-white rounded-xl shadow-md p-8 text-center">
                         <MapPin className="w-16 h-16 text-gray-300 mx-auto mb-4" />
                         <h3 className="text-xl font-bold text-gray-900 mb-2">No posts nearby</h3>
@@ -179,7 +178,7 @@ export const Feed: React.FC = () => {
                     </div>
                 ) : (
                     <div className="space-y-4">
-                        {feedData?.content.map((post) => (
+                        {feedData?.posts.map((post) => (
                             <PostCard key={post.id} post={post} />
                         ))}
 

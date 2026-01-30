@@ -93,13 +93,13 @@ export const PostDetail: React.FC = () => {
                             <div className="flex items-center gap-3">
                                 {/* Avatar */}
                                 <div className="w-12 h-12 rounded-full bg-gradient-to-br from-purple-400 to-blue-400 flex items-center justify-center text-white font-bold text-lg">
-                                    {post.authorAlias[0]?.toUpperCase()}
+                                    {post.author.alias[0]?.toUpperCase()}
                                 </div>
-                                
+
                                 {/* Author Info */}
                                 <div>
                                     <p className="font-bold text-lg text-gray-900">
-                                        @{post.authorAlias}
+                                        @{post.author.alias}
                                     </p>
                                     <div className="flex items-center gap-2 text-sm text-gray-500">
                                         <Clock className="w-4 h-4" />
@@ -147,11 +147,11 @@ export const PostDetail: React.FC = () => {
                     <div className="px-6 py-4 bg-gray-50 flex items-center gap-6">
                         <LikeButton
                             postId={post.id}
-                            initialLiked={post.liked}
+                            initialLiked={post.likedByCurrentUser}
                             initialLikeCount={post.likeCount}
                             size="lg"
                         />
-                        
+
                         <div className="flex items-center gap-2 text-gray-600">
                             <span className="font-semibold text-lg">{post.commentCount}</span>
                             <span className="text-sm">comments</span>

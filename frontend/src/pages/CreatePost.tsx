@@ -52,13 +52,24 @@ export const CreatePost: React.FC = () => {
     const createPostMutation = useMutation({
         mutationFn: postService.createPost,
         onSuccess: () => {
+            console.log('Post created successfully');
             navigate('/feed');
         },
+        onError: (error: any) => {
+            console.error('Failed to create post:', error);
+            // Fallback alert if UI doesn't show it clearly
+            alert(`Failed to create post: ${error.message || 'Unknown error'}`);
+        }
     });
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
-        if (!text.trim() || !location) return;
+        console.log('Submitting post...', { text, type, location, radius, selectedInterests });
+
+        if (!text.trim() || !location) {
+            console.warn('Validation failed: text or location missing');
+            return;
+        }
 
         createPostMutation.mutate({
             text: text.trim(),
@@ -144,11 +155,10 @@ export const CreatePost: React.FC = () => {
                                     key={postType.value}
                                     type="button"
                                     onClick={() => setType(postType.value)}
-                                    className={`p-3 rounded-lg border-2 transition-all ${
-                                        type === postType.value
+                                    className={`p-3 rounded-lg border-2 transition-all ${type === postType.value
                                             ? 'border-primary-purple bg-purple-50'
                                             : 'border-gray-200 hover:border-gray-300'
-                                    }`}
+                                        }`}
                                 >
                                     <div className="text-2xl mb-1">{postType.icon}</div>
                                     <div className="text-xs font-semibold text-gray-700">
@@ -193,11 +203,10 @@ export const CreatePost: React.FC = () => {
                                         key={interest.id}
                                         type="button"
                                         onClick={() => toggleInterest(interest.id)}
-                                        className={`px-3 py-2 rounded-full text-sm font-semibold transition-all ${
-                                            selectedInterests.includes(interest.id)
+                                        className={`px-3 py-2 rounded-full text-sm font-semibold transition-all ${selectedInterests.includes(interest.id)
                                                 ? 'bg-primary-purple text-white'
                                                 : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                                        }`}
+                                            }`}
                                     >
                                         #{interest.name}
                                     </button>

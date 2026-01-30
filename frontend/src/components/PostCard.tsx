@@ -51,12 +51,12 @@ export const PostCard: React.FC<PostCardProps> = ({ post }) => {
                     <div className="flex items-center gap-3">
                         {/* Avatar */}
                         <div className="w-10 h-10 rounded-full bg-gradient-to-br from-purple-400 to-blue-400 flex items-center justify-center text-white font-bold">
-                            {post.authorAlias[0]?.toUpperCase()}
+                            {post.author.alias[0]?.toUpperCase()}
                         </div>
-                        
+
                         {/* Author Info */}
                         <div>
-                            <p className="font-semibold text-gray-900">@{post.authorAlias}</p>
+                            <p className="font-semibold text-gray-900">@{post.author.alias}</p>
                             <div className="flex items-center gap-2 text-xs text-gray-500">
                                 <Clock className="w-3 h-3" />
                                 <span>{timeAgo}</span>
@@ -101,10 +101,10 @@ export const PostCard: React.FC<PostCardProps> = ({ post }) => {
             <div className="px-4 py-3 bg-gray-50 flex items-center gap-6">
                 <LikeButton
                     postId={post.id}
-                    initialLiked={post.liked}
+                    initialLiked={post.likedByCurrentUser}
                     initialLikeCount={post.likeCount}
                 />
-                
+
                 <button className="flex items-center gap-2 text-gray-600 hover:text-primary-purple transition-colors">
                     <MessageCircle className="w-5 h-5" />
                     <span className="font-semibold">{post.commentCount}</span>

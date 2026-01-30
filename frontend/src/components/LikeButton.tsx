@@ -57,16 +57,14 @@ export const LikeButton: React.FC<LikeButtonProps> = ({
         <button
             onClick={handleLike}
             disabled={likeMutation.isPending}
-            className={`flex items-center gap-2 transition-all ${
-                likeMutation.isPending ? 'opacity-50' : ''
-            }`}
+            className={`flex items-center gap-2 transition-all ${likeMutation.isPending ? 'opacity-50' : ''
+                }`}
         >
             <Heart
-                className={`${sizeClasses[size]} transition-all ${
-                    liked 
-                        ? 'fill-red-500 text-red-500 scale-110' 
+                className={`${sizeClasses[size]} transition-all ${liked
+                        ? 'fill-red-500 text-red-500 scale-110'
                         : 'text-gray-600 hover:text-red-500 hover:scale-110'
-                }`}
+                    }`}
             />
             <span className={`font-semibold ${liked ? 'text-red-500' : 'text-gray-600'}`}>
                 {likeCount}

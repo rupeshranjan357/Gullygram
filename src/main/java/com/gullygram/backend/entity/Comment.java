@@ -1,10 +1,7 @@
 package com.gullygram.backend.entity;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
@@ -13,7 +10,10 @@ import java.util.UUID;
 
 @Entity
 @Table(name = "comment")
-@Data
+@Getter
+@Setter
+@ToString(exclude = {"post", "author"})
+@EqualsAndHashCode(exclude = {"post", "author"})
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor

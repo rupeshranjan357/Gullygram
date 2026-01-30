@@ -1,10 +1,7 @@
 package com.gullygram.backend.entity;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.annotations.UpdateTimestamp;
@@ -18,7 +15,10 @@ import java.util.UUID;
 
 @Entity
 @Table(name = "post")
-@Data
+@Getter
+@Setter
+@ToString(exclude = {"author", "interests", "likes", "comments"})
+@EqualsAndHashCode(exclude = {"author", "interests", "likes", "comments"})
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor

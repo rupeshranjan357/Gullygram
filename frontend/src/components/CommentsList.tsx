@@ -51,7 +51,7 @@ export const CommentsList: React.FC<CommentsListProps> = ({ postId }) => {
         );
     }
 
-    const comments = commentsData?.content || [];
+    const comments = commentsData || [];
 
     return (
         <div className="space-y-6">
@@ -93,7 +93,7 @@ export const CommentsList: React.FC<CommentsListProps> = ({ postId }) => {
             <div className="space-y-4">
                 <h3 className="font-semibold text-gray-900 flex items-center gap-2">
                     <MessageCircle className="w-5 h-5" />
-                    Comments ({commentsData?.totalElements || 0})
+                    Comments ({comments.length || 0})
                 </h3>
 
                 {comments.length === 0 ? (
@@ -119,12 +119,12 @@ const CommentItem: React.FC<{ comment: Comment }> = ({ comment }) => {
     return (
         <div className="flex gap-3 animate-slide-up">
             <div className="w-8 h-8 rounded-full bg-gradient-to-br from-purple-400 to-blue-400 flex items-center justify-center text-white font-bold text-sm flex-shrink-0">
-                {comment.authorAlias[0]?.toUpperCase()}
+                {comment.author.alias[0]?.toUpperCase()}
             </div>
             <div className="flex-1 bg-gray-50 rounded-lg p-3">
                 <div className="flex items-center gap-2 mb-1">
                     <span className="font-semibold text-sm text-gray-900">
-                        @{comment.authorAlias}
+                        @{comment.author.alias}
                     </span>
                     <span className="text-xs text-gray-500">{timeAgo}</span>
                 </div>

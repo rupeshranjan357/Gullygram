@@ -5,25 +5,27 @@ export interface FeedPost {
     id: string;
     text: string;
     type: 'GENERAL' | 'LOCAL_NEWS' | 'MARKETING' | 'EVENT_PROMO' | 'MARKETPLACE';
-    authorId: string;
-    authorAlias: string;
-    authorAvatarUrl?: string;
+    author: {
+        userId: string;
+        alias: string;
+        avatarUrl?: string;
+    };
     latitude: number;
     longitude: number;
     visibilityRadiusKm: number;
     distance?: number;
     likeCount: number;
     commentCount: number;
-    liked: boolean;
+    likedByCurrentUser: boolean;
     interests: Array<{ id: number; name: string }>;
     createdAt: string;
     mediaUrls?: string[];
 }
 
 export interface FeedResponse {
-    content: FeedPost[];
-    page: number;
-    size: number;
+    posts: FeedPost[];
+    currentPage: number;
+    pageSize: number;
     totalElements: number;
     totalPages: number;
     hasNext: boolean;
