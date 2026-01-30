@@ -1,0 +1,155 @@
+package com.gullygram.backend.service;
+
+import com.gullygram.backend.dto.request.CreatePostRequest;
+import com.gullygram.backend.dto.response.AuthorView;
+import com.gullygram.backend.dto.response.InterestResponse;
+import com.gullygram.backend.dto.response.PostResponse;
+import com.gullygram.backend.entity.Interest;
+import com.gullygram.backend.entity.Post;
+import com.gullygram.backend.entity.User;
+import com.gullygram.backend.entity.UserProfile;
+import com.gullygram.backend.exception.BadRequestException;
+import com.gullygram.backend.exception.ResourceNotFoundException;
+import com.gullygram.backend.repository.InterestRepository;
+import com.gullygram.backend.repository.PostLikeRepository;
+import com.gullygram.backend.repository.CommentRepository;
+import com.gullygram.backend.repository.PostRepository;
+import com.gullygram.backend.repository.UserRepository;
+import com.gullygram.backend.util.GeoUtil;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.*;
+import java.util.stream.Collectors;
+
+@Service
+@RequiredArgsConstructor
+@Slf4j
+public class PostService {
+
+    private final PostRepository postRepository;
+    private final UserRepository userRepository;
+    private final InterestRepository interestRepository;
+    private final PostLikeRepository postLikeRepository;
+    private final CommentRepository commentRepository;
+
+    @Transactional
+    public PostResponse createPost(UUID userId, CreatePostRequest request) {
+        // Validate geo coordinates
+        if (!GeoUtil.isValidLatitude(request.getLatitude())) {
+            throw new BadRequestException("Invalid latitude");
+        }
+        if (!GeoUtil.isValidLongitude(request.getLongitude())) {
+            throw new BadRequestException("Invalid longitude");
+        }
+
+        User user = userRepository.findById(userId)
+            .orElseThrow(() -> new ResourceNotFoundException("User not found"));
+
+        // Build post
+        Post post = Post.builder()
+            .author(user)
+            .type(request.getType())
+            .text(request.getText())
+            .lat(request.getLatitude())
+            .lon(request.getLongitude())
+            .geohash(GeoUtil.generateGeohash(request.getLatitude(), request.getLongitude()))
+            .visibilityRadiusKm(request.getVisibilityRadiusKm() != null ? request.getVisibilityRadiusKm() : 10)
+            .build();
+
+        // Set media URLs directly (converter will handle JSON conversion)
+        if (request.getMediaUrls() != null && !request.getMediaUrls().isEmpty()) {
+            post.setMediaUrls(request.getMediaUrls());
+        }
+
+        // Add interests
+        if (request.getInterestIds() != null && !request.getInterestIds().isEmpty()) {
+            Set<Interest> interests = new HashSet<>();
+            for (Integer interestId : request.getInterestIds()) {
+                Interest interest = interestRepository.findById(interestId)
+                    .orElseThrow(() -> new ResourceNotFoundException("Interest not found: " + interestId));
+                interests.add(interest);
+            }
+            post.setInterests(interests);
+        }
+
+
+        Post savedPost = postRepository.save(post);
+        log.info("Created post {} by user {} at location ({}, {})", 
+                savedPost.getId(), userId, request.getLatitude(), request.getLongitude());
+
+        return convertToResponse(savedPost, userId);
+    }
+
+    @Transactional(readOnly = true)
+    public PostResponse getPostById(UUID postId, UUID currentUserId) {
+        Post post = postRepository.findByIdAndNotDeleted(postId)
+            .orElseThrow(() -> new ResourceNotFoundException("Post not found"));
+        
+        return convertToResponse(post, currentUserId);
+    }
+
+    @Transactional
+    public void deletePost(UUID postId, UUID userId) {
+        Post post = postRepository.findByIdAndNotDeleted(postId)
+            .orElseThrow(() -> new ResourceNotFoundException("Post not found"));
+
+        if (!post.getAuthor().getId().equals(userId)) {
+            throw new BadRequestException("You can only delete your own posts");
+        }
+
+        post.softDelete();
+        postRepository.save(post);
+        log.info("Soft deleted post {} by user {}", postId, userId);
+    }
+
+    public PostResponse convertToResponse(Post post, UUID currentUserId) {
+        // Get media URLs directly (converter handles JSON conversion)
+        List<String> mediaUrls = post.getMediaUrls();
+
+        // Get engagement metrics
+        long likeCount = postLikeRepository.countByPostId(post.getId());
+        long commentCount = commentRepository.countByPostIdAndNotDeleted(post.getId());
+        boolean likedByCurrentUser = postLikeRepository.findByPostIdAndUserId(post.getId(), currentUserId).isPresent();
+
+        // Build author view
+        AuthorView authorView = buildAuthorView(post.getAuthor());
+
+        // Convert interests
+        Set<InterestResponse> interestResponses = post.getInterests().stream()
+            .map(interest -> InterestResponse.builder()
+                .id(interest.getId())
+                .name(interest.getName())
+                .description(interest.getDescription())
+                .build())
+            .collect(Collectors.toSet());
+
+        return PostResponse.builder()
+            .id(post.getId())
+            .author(authorView)
+            .type(post.getType())
+            .text(post.getText())
+            .mediaUrls(mediaUrls)
+            .latitude(post.getLat())
+            .longitude(post.getLon())
+            .visibilityRadiusKm(post.getVisibilityRadiusKm())
+            .interests(interestResponses)
+            .likeCount(likeCount)
+            .commentCount(commentCount)
+            .likedByCurrentUser(likedByCurrentUser)
+            .createdAt(post.getCreatedAt())
+            .updatedAt(post.getUpdatedAt())
+            .build();
+    }
+
+    private AuthorView buildAuthorView(User author) {
+        UserProfile profile = author.getProfile();
+        return AuthorView.builder()
+            .userId(author.getId())
+            .alias(profile != null ? profile.getAlias() : "unknown")
+            .avatarUrl(profile != null ? profile.getAvatarUrlAlias() : null)
+            .build();
+    }
+}

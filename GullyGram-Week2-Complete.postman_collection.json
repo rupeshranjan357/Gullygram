@@ -1,0 +1,941 @@
+{
+  "info": {
+    "name": "GullyGram - Week 1 & 2 Complete",
+    "description": "Complete API collection for GullyGram - Auth, Profile, Interests, Posts, Feed, Likes & Comments",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://localhost:8080",
+      "type": "string"
+    },
+    {
+      "key": "alice_token",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "bob_token",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "post_1_id",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "post_2_id",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "post_3_id",
+      "value": "",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "Week 1 - Authentication",
+      "item": [
+        {
+          "name": "Signup - Alice",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 201 || pm.response.code === 200) {",
+                  "    var jsonData = pm.response.json();",
+                  "    if (jsonData.data && jsonData.data.accessToken) {",
+                  "        pm.collectionVariables.set('alice_token', jsonData.data.accessToken);",
+                  "        console.log('Alice token saved:', jsonData.data.accessToken.substring(0, 20) + '...');",
+                  "    }",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"alice_test@example.com\",\n  \"password\": \"password123\",\n  \"alias\": \"alice_blr_test\",\n  \"realName\": \"Alice Smith\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/auth/signup",
+              "host": ["{{base_url}}"],
+              "path": ["api", "auth", "signup"]
+            }
+          }
+        },
+        {
+          "name": "Signup - Bob",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 201 || pm.response.code === 200) {",
+                  "    var jsonData = pm.response.json();",
+                  "    if (jsonData.data && jsonData.data.accessToken) {",
+                  "        pm.collectionVariables.set('bob_token', jsonData.data.accessToken);",
+                  "        console.log('Bob token saved:', jsonData.data.accessToken.substring(0, 20) + '...');",
+                  "    }",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"bob_test@example.com\",\n  \"password\": \"password123\",\n  \"alias\": \"bob_north_test\",\n  \"realName\": \"Bob Johnson\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/auth/signup",
+              "host": ["{{base_url}}"],
+              "path": ["api", "auth", "signup"]
+            }
+          }
+        },
+        {
+          "name": "Login",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"alice_test@example.com\",\n  \"password\": \"password123\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/auth/login",
+              "host": ["{{base_url}}"],
+              "path": ["api", "auth", "login"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Week 1 - Profile & Location",
+      "item": [
+        {
+          "name": "Get My Profile",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{alice_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/me",
+              "host": ["{{base_url}}"],
+              "path": ["api", "me"]
+            }
+          }
+        },
+        {
+          "name": "Update Location - Alice (MG Road)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{alice_token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"latitude\": 12.9716,\n  \"longitude\": 77.5946\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/me/location",
+              "host": ["{{base_url}}"],
+              "path": ["api", "me", "location"]
+            }
+          }
+        },
+        {
+          "name": "Update Location - Bob (Hebbal ~7km)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{bob_token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"latitude\": 13.0358,\n  \"longitude\": 77.5970\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/me/location",
+              "host": ["{{base_url}}"],
+              "path": ["api", "me", "location"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Week 1 - Interests",
+      "item": [
+        {
+          "name": "Get All Interests",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/interests",
+              "host": ["{{base_url}}"],
+              "path": ["api", "interests"]
+            }
+          }
+        },
+        {
+          "name": "Update Interests - Alice (Bodybuilding, Books)",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{alice_token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"interestIds\": [1, 2]\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/me/interests",
+              "host": ["{{base_url}}"],
+              "path": ["api", "me", "interests"]
+            }
+          }
+        },
+        {
+          "name": "Update Interests - Bob (Technology, Gaming)",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{bob_token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"interestIds\": [6, 10]\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/me/interests",
+              "host": ["{{base_url}}"],
+              "path": ["api", "me", "interests"]
+            }
+          }
+        },
+        {
+          "name": "Get My Interests",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{alice_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/me/interests",
+              "host": ["{{base_url}}"],
+              "path": ["api", "me", "interests"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Week 2 - Posts",
+      "item": [
+        {
+          "name": "Create Post 1 - Alice at MG Road (Bodybuilding)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 201 || pm.response.code === 200) {",
+                  "    var jsonData = pm.response.json();",
+                  "    if (jsonData.data && jsonData.data.id) {",
+                  "        pm.collectionVariables.set('post_1_id', jsonData.data.id);",
+                  "        console.log('Post 1 ID saved:', jsonData.data.id);",
+                  "    }",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{alice_token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"text\": \"Great workout session at the gym today! 💪\",\n  \"type\": \"GENERAL\",\n  \"latitude\": 12.9716,\n  \"longitude\": 77.5946,\n  \"visibilityRadiusKm\": 10,\n  \"interestIds\": [1]\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/posts",
+              "host": ["{{base_url}}"],
+              "path": ["api", "posts"]
+            }
+          }
+        },
+        {
+          "name": "Create Post 2 - Bob at Hebbal (Technology)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 201 || pm.response.code === 200) {",
+                  "    var jsonData = pm.response.json();",
+                  "    if (jsonData.data && jsonData.data.id) {",
+                  "        pm.collectionVariables.set('post_2_id', jsonData.data.id);",
+                  "        console.log('Post 2 ID saved:', jsonData.data.id);",
+                  "    }",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{bob_token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"text\": \"New tech meetup happening at Hebbal this weekend!\",\n  \"type\": \"EVENT_PROMO\",\n  \"latitude\": 13.0358,\n  \"longitude\": 77.5970,\n  \"visibilityRadiusKm\": 20,\n  \"interestIds\": [6]\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/posts",
+              "host": ["{{base_url}}"],
+              "path": ["api", "posts"]
+            }
+          }
+        },
+        {
+          "name": "Create Post 3 - Alice at Koramangala (Books)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 201 || pm.response.code === 200) {",
+                  "    var jsonData = pm.response.json();",
+                  "    if (jsonData.data && jsonData.data.id) {",
+                  "        pm.collectionVariables.set('post_3_id', jsonData.data.id);",
+                  "        console.log('Post 3 ID saved:', jsonData.data.id);",
+                  "    }",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{alice_token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"text\": \"Book club meeting at Koramangala cafe. Anyone interested?\",\n  \"type\": \"GENERAL\",\n  \"latitude\": 12.9352,\n  \"longitude\": 77.6245,\n  \"visibilityRadiusKm\": 15,\n  \"interestIds\": [2]\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/posts",
+              "host": ["{{base_url}}"],
+              "path": ["api", "posts"]
+            }
+          }
+        },
+        {
+          "name": "Create Post 4 - Alice at Whitefield (Marketplace ~15km)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{alice_token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"text\": \"Selling furniture in Whitefield area\",\n  \"type\": \"MARKETPLACE\",\n  \"latitude\": 12.9698,\n  \"longitude\": 77.7500,\n  \"visibilityRadiusKm\": 20,\n  \"interestIds\": []\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/posts",
+              "host": ["{{base_url}}"],
+              "path": ["api", "posts"]
+            }
+          }
+        },
+        {
+          "name": "Get Single Post",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{alice_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/posts/{{post_1_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["api", "posts", "{{post_1_id}}"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Week 2 - Feed (Geo-Filtered)",
+      "item": [
+        {
+          "name": "Feed - Alice 10km Radius (Exclude Whitefield)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{alice_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/feed?lat=12.9716&lon=77.5946&radiusKm=10&page=0&size=10",
+              "host": ["{{base_url}}"],
+              "path": ["api", "feed"],
+              "query": [
+                {
+                  "key": "lat",
+                  "value": "12.9716",
+                  "description": "MG Road latitude"
+                },
+                {
+                  "key": "lon",
+                  "value": "77.5946",
+                  "description": "MG Road longitude"
+                },
+                {
+                  "key": "radiusKm",
+                  "value": "10"
+                },
+                {
+                  "key": "page",
+                  "value": "0"
+                },
+                {
+                  "key": "size",
+                  "value": "10"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Feed - Alice 20km Radius (Include All)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{alice_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/feed?lat=12.9716&lon=77.5946&radiusKm=20&page=0&size=10",
+              "host": ["{{base_url}}"],
+              "path": ["api", "feed"],
+              "query": [
+                {
+                  "key": "lat",
+                  "value": "12.9716"
+                },
+                {
+                  "key": "lon",
+                  "value": "77.5946"
+                },
+                {
+                  "key": "radiusKm",
+                  "value": "20"
+                },
+                {
+                  "key": "page",
+                  "value": "0"
+                },
+                {
+                  "key": "size",
+                  "value": "10"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Feed - With Interest Boost (Rank by Interests)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{alice_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/feed?lat=12.9716&lon=77.5946&radiusKm=20&interestBoost=true&page=0&size=10",
+              "host": ["{{base_url}}"],
+              "path": ["api", "feed"],
+              "query": [
+                {
+                  "key": "lat",
+                  "value": "12.9716"
+                },
+                {
+                  "key": "lon",
+                  "value": "77.5946"
+                },
+                {
+                  "key": "radiusKm",
+                  "value": "20"
+                },
+                {
+                  "key": "interestBoost",
+                  "value": "true",
+                  "description": "Boost posts matching user's interests"
+                },
+                {
+                  "key": "page",
+                  "value": "0"
+                },
+                {
+                  "key": "size",
+                  "value": "10"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Feed - Bob's View",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{bob_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/feed?lat=13.0358&lon=77.5970&radiusKm=10&page=0&size=10",
+              "host": ["{{base_url}}"],
+              "path": ["api", "feed"],
+              "query": [
+                {
+                  "key": "lat",
+                  "value": "13.0358",
+                  "description": "Hebbal latitude"
+                },
+                {
+                  "key": "lon",
+                  "value": "77.5970",
+                  "description": "Hebbal longitude"
+                },
+                {
+                  "key": "radiusKm",
+                  "value": "10"
+                },
+                {
+                  "key": "page",
+                  "value": "0"
+                },
+                {
+                  "key": "size",
+                  "value": "10"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Feed - Pagination Page 2",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{alice_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/feed?lat=12.9716&lon=77.5946&radiusKm=20&page=1&size=2",
+              "host": ["{{base_url}}"],
+              "path": ["api", "feed"],
+              "query": [
+                {
+                  "key": "lat",
+                  "value": "12.9716"
+                },
+                {
+                  "key": "lon",
+                  "value": "77.5946"
+                },
+                {
+                  "key": "radiusKm",
+                  "value": "20"
+                },
+                {
+                  "key": "page",
+                  "value": "1",
+                  "description": "Page 2 (0-indexed)"
+                },
+                {
+                  "key": "size",
+                  "value": "2",
+                  "description": "2 items per page"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Week 2 - Likes",
+      "item": [
+        {
+          "name": "Alice Likes Post 2 (Bob's Post)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{alice_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/posts/{{post_2_id}}/like",
+              "host": ["{{base_url}}"],
+              "path": ["api", "posts", "{{post_2_id}}", "like"]
+            }
+          }
+        },
+        {
+          "name": "Bob Likes Post 2 (His Own Post)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{bob_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/posts/{{post_2_id}}/like",
+              "host": ["{{base_url}}"],
+              "path": ["api", "posts", "{{post_2_id}}", "like"]
+            }
+          }
+        },
+        {
+          "name": "Alice Unlikes Post 2 (Toggle)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{alice_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/posts/{{post_2_id}}/like",
+              "host": ["{{base_url}}"],
+              "path": ["api", "posts", "{{post_2_id}}", "like"]
+            }
+          }
+        },
+        {
+          "name": "Bob Likes Post 1 (Alice's Post)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{bob_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/posts/{{post_1_id}}/like",
+              "host": ["{{base_url}}"],
+              "path": ["api", "posts", "{{post_1_id}}", "like"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Week 2 - Comments",
+      "item": [
+        {
+          "name": "Bob Comments on Post 1",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{bob_token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"text\": \"Great job! Keep it up! 💪\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/posts/{{post_1_id}}/comment",
+              "host": ["{{base_url}}"],
+              "path": ["api", "posts", "{{post_1_id}}", "comment"]
+            }
+          }
+        },
+        {
+          "name": "Alice Replies to Her Own Post",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{alice_token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"text\": \"Thanks! Consistency is key!\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/posts/{{post_1_id}}/comment",
+              "host": ["{{base_url}}"],
+              "path": ["api", "posts", "{{post_1_id}}", "comment"]
+            }
+          }
+        },
+        {
+          "name": "Get Comments for Post 1",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{alice_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/posts/{{post_1_id}}/comments?page=0&size=20",
+              "host": ["{{base_url}}"],
+              "path": ["api", "posts", "{{post_1_id}}", "comments"],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "0"
+                },
+                {
+                  "key": "size",
+                  "value": "20"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Alice Comments on Post 2",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{alice_token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"text\": \"I'm definitely interested in this meetup!\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/posts/{{post_2_id}}/comment",
+              "host": ["{{base_url}}"],
+              "path": ["api", "posts", "{{post_2_id}}", "comment"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Error Testing",
+      "item": [
+        {
+          "name": "Invalid Latitude (Should Fail)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{alice_token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"text\": \"Test post\",\n  \"type\": \"GENERAL\",\n  \"latitude\": 100.0,\n  \"longitude\": 77.5946,\n  \"visibilityRadiusKm\": 10\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/posts",
+              "host": ["{{base_url}}"],
+              "path": ["api", "posts"]
+            }
+          }
+        },
+        {
+          "name": "Radius Too Large (Should Fail)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{alice_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/feed?lat=12.9716&lon=77.5946&radiusKm=100",
+              "host": ["{{base_url}}"],
+              "path": ["api", "feed"],
+              "query": [
+                {
+                  "key": "lat",
+                  "value": "12.9716"
+                },
+                {
+                  "key": "lon",
+                  "value": "77.5946"
+                },
+                {
+                  "key": "radiusKm",
+                  "value": "100",
+                  "description": "Too large - should fail"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Unauthorized Post Creation (No Token)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"text\": \"Test\",\n  \"type\": \"GENERAL\",\n  \"latitude\": 12.9716,\n  \"longitude\": 77.5946,\n  \"visibilityRadiusKm\": 10\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/posts",
+              "host": ["{{base_url}}"],
+              "path": ["api", "posts"]
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,162 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  /* Primary Colors */
+  --primary-purple: #6B46C1;
+  --primary-blue: #3B82F6;
+  
+  /* Secondary Colors */
+  --orange: #F97316;
+  --teal: #14B8A6;
+  --pink: #EC4899;
+  --green: #10B981;
+  --yellow: #FBBF24;
+  --red: #EF4444;
+  
+  /* Neutral Colors */
+  --white: #FFFFFF;
+  --gray-50: #F9FAFB;
+  --gray-100: #F3F4F6;
+  --gray-600: #4B5563;
+  --gray-900: #111827;
+  --black: #000000;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  background-color: var(--gray-50);
+}
+
+/* Glassmorphism Effect */
+.glass {
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+}
+
+/* Gradient Background */
+.gradient-primary {
+  background: linear-gradient(135deg, #6B46C1 0%, #3B82F6 100%);
+}
+
+.gradient-purple-blue {
+  background: linear-gradient(180deg, #6B46C1 0%, #3B82F6 100%);
+}
+
+/* Map Pattern Background */
+.map-pattern {
+  background-image: 
+    linear-gradient(135deg, #6B46C1 0%, #3B82F6 100%),
+    url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.05'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+}
+
+/* Interest Colors */
+.interest-bodybuilding { background: linear-gradient(135deg, #F97316 0%, #FB923C 100%); }
+.interest-books { background: linear-gradient(135deg, #14B8A6 0%, #2DD4BF 100%); }
+.interest-dance { background: linear-gradient(135deg, #EC4899 0%, #F472B6 100%); }
+.interest-music { background: linear-gradient(135deg, #6B46C1 0%, #8B5CF6 100%); }
+.interest-sports { background: linear-gradient(135deg, #10B981 0%, #34D399 100%); }
+.interest-technology { background: linear-gradient(135deg, #3B82F6 0%, #60A5FA 100%); }
+.interest-food { background: linear-gradient(135deg, #EF4444 0%, #F87171 100%); }
+.interest-travel { background: linear-gradient(135deg, #14B8A6 0%, #22D3EE 100%); }
+.interest-photography { background: linear-gradient(135deg, #FBBF24 0%, #FCD34D 100%); }
+.interest-gaming { background: linear-gradient(135deg, #8B5CF6 0%, #A78BFA 100%); }
+.interest-art { background: linear-gradient(135deg, #F59E0B 0%, #FBBF24 100%); }
+.interest-movies { background: linear-gradient(135deg, #7C3AED 0%, #A78BFA 100%); }
+.interest-fitness { background: linear-gradient(135deg, #059669 0%, #10B981 100%); }
+.interest-cooking { background: linear-gradient(135deg, #DC2626 0%, #EF4444 100%); }
+.interest-fashion { background: linear-gradient(135deg, #DB2777 0%, #EC4899 100%); }
+
+/* Animations */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes scaleIn {
+  from {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes like {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.2); }
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+.animate-slide-up {
+  animation: slideUp 0.4s ease-out;
+}
+
+.animate-scale-in {
+  animation: scaleIn 0.3s ease-out;
+}
+
+/* Hover Effects */
+.hover-lift {
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.hover-lift:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.15);
+}
+
+/* Button Press Effect */
+.button-press:active {
+  transform: scale(0.95);
+}
+
+/* Shimmer Loading Effect */
+@keyframes shimmer {
+  0% {
+    background-position: -1000px 0;
+  }
+  100% {
+    background-position: 1000px 0;
+  }
+}
+
+.skeleton {
+  background: linear-gradient(
+    90deg,
+    #f0f0f0 0px,
+    #e0e0e0 40px,
+    #f0f0f0 80px
+  );
+  background-size: 1000px 100%;
+  animation: shimmer 2s infinite linear;
+}
