@@ -11,6 +11,8 @@ import { Settings } from '@/pages/Settings';
 import { Feed } from '@/pages/Feed';
 import { CreatePost } from '@/pages/CreatePost';
 import { PostDetail } from '@/pages/PostDetail';
+import { Discover } from '@/pages/Discover';
+import { UserProfile } from '@/pages/UserProfile';
 import { ProtectedRoute } from '@/components/ProtectedRoute';
 import { useAuthStore } from '@/store/authStore';
 
@@ -101,6 +103,22 @@ const AppRoutes: React.FC = () => {
                 element={
                     <ProtectedRoute>
                         <PostDetail />
+                    </ProtectedRoute>
+                }
+            />
+            <Route
+                path="/discover"
+                element={
+                    <ProtectedRoute>
+                        <Discover />
+                    </ProtectedRoute>
+                }
+            />
+            <Route
+                path="/user/:userId"
+                element={
+                    <ProtectedRoute>
+                        <UserProfile />
                     </ProtectedRoute>
                 }
             />

@@ -86,4 +86,13 @@ public class UserProfile {
     )
     @Builder.Default
     private Set<Interest> interests = new HashSet<>();
+
+    // Trust system fields (Week 3+)
+    @Column(name = "trust_score")
+    @Builder.Default
+    private Integer trustScore = 10;
+
+    @Column(name = "trust_level")
+    @Builder.Default
+    private Integer trustLevel = 1;
 }

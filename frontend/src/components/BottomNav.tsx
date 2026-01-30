@@ -1,6 +1,6 @@
 import React from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { Home, PlusCircle, User } from 'lucide-react';
+import { Home, PlusCircle, User, Users } from 'lucide-react';
 import clsx from 'clsx';
 
 export const BottomNav: React.FC = () => {
@@ -9,6 +9,7 @@ export const BottomNav: React.FC = () => {
 
     const navItems = [
         { path: '/feed', icon: Home, label: 'Feed' },
+        { path: '/discover', icon: Users, label: 'Discover' },
         { path: '/create-post', icon: PlusCircle, label: 'Create' },
         { path: '/profile', icon: User, label: 'Profile' },
     ];

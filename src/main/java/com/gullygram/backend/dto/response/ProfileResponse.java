@@ -32,4 +32,12 @@ public class ProfileResponse {
     private Double lastSeenLon;
     private LocalDateTime lastSeenAt;
     private List<InterestResponse> interests;
+    
+    // Trust system (Week 3+)
+    private Integer trustScore;
+    private Integer trustLevel;
+    
+    // Relationship counts
+    private Long friendsCount;
+    private Long pendingRequestsCount;
 }

@@ -34,6 +34,7 @@ public class PostService {
     private final InterestRepository interestRepository;
     private final PostLikeRepository postLikeRepository;
     private final CommentRepository commentRepository;
+    private final AuthorViewService authorViewService;
 
     @Transactional
     public PostResponse createPost(UUID userId, CreatePostRequest request) {
@@ -114,8 +115,8 @@ public class PostService {
         long commentCount = commentRepository.countByPostIdAndNotDeleted(post.getId());
         boolean likedByCurrentUser = postLikeRepository.findByPostIdAndUserId(post.getId(), currentUserId).isPresent();
 
-        // Build author view
-        AuthorView authorView = buildAuthorView(post.getAuthor());
+        // Build author view with identity reveal based on relationship
+        AuthorView authorView = authorViewService.buildAuthorView(currentUserId, post.getAuthor());
 
         // Convert interests
         Set<InterestResponse> interestResponses = post.getInterests().stream()
@@ -144,12 +145,4 @@ public class PostService {
             .build();
     }
 
-    private AuthorView buildAuthorView(User author) {
-        UserProfile profile = author.getProfile();
-        return AuthorView.builder()
-            .userId(author.getId())
-            .alias(profile != null ? profile.getAlias() : "unknown")
-            .avatarUrl(profile != null ? profile.getAvatarUrlAlias() : null)
-            .build();
-    }
 }

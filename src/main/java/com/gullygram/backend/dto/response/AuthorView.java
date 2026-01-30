@@ -7,6 +7,12 @@ import lombok.NoArgsConstructor;
 
 import java.util.UUID;
 
+/**
+ * Author view DTO that respects privacy based on relationship status.
+ * Real name and avatar are only visible when:
+ * - Viewing your own content
+ * - Viewing content from friends (ACCEPTED relationship)
+ */
 @Data
 @Builder
 @NoArgsConstructor
@@ -17,6 +23,13 @@ public class AuthorView {
     private String alias;
     private String avatarUrl;
     
-    // Real name will be added in Week 3 based on relationship status
-    // private String realName;
+    // Real identity - only visible to friends or self
+    private String realName;
+    private String realAvatarUrl;
+    
+    // Relationship indicator
+    private Boolean isFriend;
+    
+    // Trust level (1-5) for badge display
+    private Integer trustLevel;
 }

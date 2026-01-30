@@ -1,13 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { Settings, Lock, Edit2, Camera, Calendar, Bookmark, ArrowLeft, X, Save } from 'lucide-react';
+import { Settings, Lock, Edit2, Camera, Calendar, Bookmark, ArrowLeft, X, Save, Users } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
 import { InterestPill } from '@/components/ui/InterestPill';
 import { BottomNav } from '@/components/BottomNav';
 import { profileService } from '@/services/profileService';
 import { interestService } from '@/services/interestService';
+import { relationshipService } from '@/services/relationshipService';
 import { useAuthStore } from '@/store/authStore';
 
 export const Profile: React.FC = () => {
@@ -31,6 +32,11 @@ export const Profile: React.FC = () => {
     const { data: interests } = useQuery({
         queryKey: ['myInterests'],
         queryFn: interestService.getMyInterests,
+    });
+
+    const { data: relationshipCounts } = useQuery({
+        queryKey: ['relationship-counts'],
+        queryFn: relationshipService.getCounts,
     });
 
     // Initialize radius from profile data
@@ -201,14 +207,27 @@ export const Profile: React.FC = () => {
                             <div className="text-2xl font-bold text-gray-900">42</div>
                             <div className="text-xs text-primary-purple font-semibold">Posts</div>
                         </div>
-                        <div className="text-center">
-                            <div className="text-2xl font-bold text-gray-900">18</div>
-                            <div className="text-xs text-primary-purple font-semibold">Friends</div>
-                        </div>
-                        <div className="text-center">
-                            <div className="text-2xl font-bold text-gray-900">256</div>
-                            <div className="text-xs text-primary-purple font-semibold">Nearby</div>
-                        </div>
+                        <button
+                            onClick={() => navigate('/discover')}
+                            className="text-center hover:bg-gray-50 rounded-lg py-2 transition-colors"
+                        >
+                            <div className="text-2xl font-bold text-gray-900">
+                                {relationshipCounts?.friends || 0}
+                            </div>
+                            <div className="text-xs text-primary-purple font-semibold flex items-center justify-center gap-1">
+                                <Users size={12} />
+                                Friends
+                            </div>
+                        </button>
+                        <button
+                            onClick={() => navigate('/discover')}
+                            className="text-center hover:bg-gray-50 rounded-lg py-2 transition-colors"
+                        >
+                            <div className="text-2xl font-bold text-gray-900">
+                                {relationshipCounts?.pendingRequests || 0}
+                            </div>
+                            <div className="text-xs text-primary-purple font-semibold">Requests</div>
+                        </button>
                     </div>
                 </div>
 

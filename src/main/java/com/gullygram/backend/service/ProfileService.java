@@ -7,6 +7,7 @@ import com.gullygram.backend.entity.User;
 import com.gullygram.backend.entity.UserProfile;
 import com.gullygram.backend.exception.BadRequestException;
 import com.gullygram.backend.exception.ResourceNotFoundException;
+import com.gullygram.backend.repository.RelationshipRepository;
 import com.gullygram.backend.repository.UserProfileRepository;
 import com.gullygram.backend.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -22,6 +23,7 @@ public class ProfileService {
 
     private final UserRepository userRepository;
     private final UserProfileRepository userProfileRepository;
+    private final RelationshipRepository relationshipRepository;
 
     public ProfileResponse getProfile(UUID userId) {
         User user = userRepository.findById(userId)
@@ -103,6 +105,10 @@ public class ProfileService {
                     .description(interest.getDescription())
                     .build())
                 .collect(Collectors.toList()))
+            .trustScore(profile.getTrustScore())
+            .trustLevel(profile.getTrustLevel())
+            .friendsCount(relationshipRepository.countFriends(user.getId()))
+            .pendingRequestsCount(relationshipRepository.countPendingRequests(user.getId()))
             .build();
     }
 }

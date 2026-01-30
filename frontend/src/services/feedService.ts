@@ -9,6 +9,11 @@ export interface FeedPost {
         userId: string;
         alias: string;
         avatarUrl?: string;
+        // Identity reveal - only visible for friends
+        realName?: string;
+        realAvatarUrl?: string;
+        isFriend?: boolean;
+        trustLevel?: number;
     };
     latitude: number;
     longitude: number;

@@ -31,6 +31,7 @@ public class CommentService {
     private final CommentRepository commentRepository;
     private final PostRepository postRepository;
     private final UserRepository userRepository;
+    private final AuthorViewService authorViewService;
 
     @Transactional
     public CommentResponse createComment(UUID postId, UUID userId, CreateCommentRequest request) {
@@ -49,11 +50,11 @@ public class CommentService {
         Comment savedComment = commentRepository.save(comment);
         log.info("User {} commented on post {}", userId, postId);
 
-        return convertToResponse(savedComment);
+        return convertToResponse(savedComment, userId);
     }
 
     @Transactional(readOnly = true)
-    public List<CommentResponse> getCommentsByPost(UUID postId, int page, int size) {
+    public List<CommentResponse> getCommentsByPost(UUID postId, UUID viewerId, int page, int size) {
         // Verify post exists
         postRepository.findByIdAndNotDeleted(postId)
             .orElseThrow(() -> new ResourceNotFoundException("Post not found"));
@@ -62,19 +63,13 @@ public class CommentService {
         Page<Comment> comments = commentRepository.findByPostIdAndNotDeleted(postId, pageable);
 
         return comments.stream()
-            .map(this::convertToResponse)
+            .map(comment -> convertToResponse(comment, viewerId))
             .collect(Collectors.toList());
     }
 
-    private CommentResponse convertToResponse(Comment comment) {
-        User author = comment.getAuthor();
-        UserProfile profile = author.getProfile();
-
-        AuthorView authorView = AuthorView.builder()
-            .userId(author.getId())
-            .alias(profile != null ? profile.getAlias() : "unknown")
-            .avatarUrl(profile != null ? profile.getAvatarUrlAlias() : null)
-            .build();
+    private CommentResponse convertToResponse(Comment comment, UUID viewerId) {
+        // Use AuthorViewService for identity reveal based on relationship
+        AuthorView authorView = authorViewService.buildAuthorView(viewerId, comment.getAuthor());
 
         return CommentResponse.builder()
             .id(comment.getId())

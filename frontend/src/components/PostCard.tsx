@@ -1,6 +1,6 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { MessageCircle, MapPin, Clock } from 'lucide-react';
+import { MessageCircle, MapPin, Clock, Lock, UserCheck, Shield } from 'lucide-react';
 import { LikeButton } from './LikeButton';
 import { FeedPost } from '@/services/feedService';
 import { formatDistanceToNow } from 'date-fns';
@@ -25,11 +25,25 @@ const POST_TYPE_LABELS = {
     MARKETPLACE: 'Marketplace',
 };
 
+// Trust level badge colors
+const TRUST_BADGE_COLORS: Record<number, string> = {
+    1: 'bg-gray-100 text-gray-600',
+    2: 'bg-blue-100 text-blue-600',
+    3: 'bg-green-100 text-green-600',
+    4: 'bg-purple-100 text-purple-600',
+    5: 'bg-yellow-100 text-yellow-700',
+};
+
 export const PostCard: React.FC<PostCardProps> = ({ post }) => {
     const navigate = useNavigate();
 
     const handleCardClick = () => {
         navigate(`/post/${post.id}`);
+    };
+
+    const handleAuthorClick = (e: React.MouseEvent) => {
+        e.stopPropagation();
+        navigate(`/user/${post.author.userId}`);
     };
 
     const formatDistance = (distanceKm?: number) => {
@@ -40,6 +54,16 @@ export const PostCard: React.FC<PostCardProps> = ({ post }) => {
 
     const timeAgo = formatDistanceToNow(new Date(post.createdAt), { addSuffix: true });
 
+    // Determine what name to show
+    const displayName = post.author.isFriend && post.author.realName
+        ? post.author.realName
+        : `@${post.author.alias}`;
+
+    // Determine avatar
+    const avatarUrl = post.author.isFriend && post.author.realAvatarUrl
+        ? post.author.realAvatarUrl
+        : post.author.avatarUrl;
+
     return (
         <div
             onClick={handleCardClick}
@@ -48,15 +72,60 @@ export const PostCard: React.FC<PostCardProps> = ({ post }) => {
             {/* Header */}
             <div className="p-4 border-b border-gray-100">
                 <div className="flex items-start justify-between">
-                    <div className="flex items-center gap-3">
+                    <div
+                        className="flex items-center gap-3 cursor-pointer hover:opacity-80 transition-opacity"
+                        onClick={handleAuthorClick}
+                    >
                         {/* Avatar */}
-                        <div className="w-10 h-10 rounded-full bg-gradient-to-br from-purple-400 to-blue-400 flex items-center justify-center text-white font-bold">
-                            {post.author.alias[0]?.toUpperCase()}
-                        </div>
+                        {avatarUrl ? (
+                            <img
+                                src={avatarUrl}
+                                alt={displayName}
+                                className="w-10 h-10 rounded-full object-cover"
+                            />
+                        ) : (
+                            <div className="w-10 h-10 rounded-full bg-gradient-to-br from-purple-400 to-blue-400 flex items-center justify-center text-white font-bold">
+                                {post.author.alias[0]?.toUpperCase()}
+                            </div>
+                        )}
 
                         {/* Author Info */}
                         <div>
-                            <p className="font-semibold text-gray-900">@{post.author.alias}</p>
+                            <div className="flex items-center gap-2">
+                                <p className="font-semibold text-gray-900">{displayName}</p>
+
+                                {/* Friend indicator */}
+                                {post.author.isFriend && (
+                                    <span className="flex items-center gap-1 text-xs text-green-600">
+                                        <UserCheck className="w-3 h-3" />
+                                        <span>Friend</span>
+                                    </span>
+                                )}
+
+                                {/* If not a friend and not showing real name, show lock */}
+                                {!post.author.isFriend && !post.author.realName && (
+                                    <span title="Add as friend to see real name">
+                                        <Lock className="w-3 h-3 text-gray-400" />
+                                    </span>
+                                )}
+
+                                {/* Trust badge */}
+                                {post.author.trustLevel && post.author.trustLevel >= 3 && (
+                                    <span
+                                        className={`flex items-center gap-1 px-1.5 py-0.5 rounded-full text-xs ${TRUST_BADGE_COLORS[post.author.trustLevel] || TRUST_BADGE_COLORS[1]}`}
+                                        title={`Trust Level ${post.author.trustLevel}`}
+                                    >
+                                        <Shield className="w-3 h-3" />
+                                        {post.author.trustLevel}
+                                    </span>
+                                )}
+                            </div>
+
+                            {/* Show alias if showing real name */}
+                            {post.author.isFriend && post.author.realName && (
+                                <p className="text-xs text-gray-500">@{post.author.alias}</p>
+                            )}
+
                             <div className="flex items-center gap-2 text-xs text-gray-500">
                                 <Clock className="w-3 h-3" />
                                 <span>{timeAgo}</span>
@@ -81,6 +150,20 @@ export const PostCard: React.FC<PostCardProps> = ({ post }) => {
             {/* Content */}
             <div className="p-4">
                 <p className="text-gray-800 whitespace-pre-wrap break-words">{post.text}</p>
+
+                {/* Media */}
+                {post.mediaUrls && post.mediaUrls.length > 0 && (
+                    <div className="mt-3 grid gap-2">
+                        {post.mediaUrls.map((url, idx) => (
+                            <img
+                                key={idx}
+                                src={url}
+                                alt={`Post media ${idx + 1}`}
+                                className="rounded-lg max-h-80 w-full object-cover"
+                            />
+                        ))}
+                    </div>
+                )}
 
                 {/* Interest Tags */}
                 {post.interests && post.interests.length > 0 && (
