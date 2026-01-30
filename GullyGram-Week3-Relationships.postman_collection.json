@@ -1,0 +1,330 @@
+{
+    "info": {
+        "name": "GullyGram Week 3 - Relationships API",
+        "description": "Week 3 APIs for Trust & Relationships",
+        "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+    },
+    "variable": [
+        {
+            "key": "baseUrl",
+            "value": "http://localhost:8080"
+        },
+        {
+            "key": "token",
+            "value": "YOUR_JWT_TOKEN"
+        },
+        {
+            "key": "token2",
+            "value": "YOUR_SECOND_USER_JWT_TOKEN"
+        }
+    ],
+    "item": [
+        {
+            "name": "Relationships",
+            "item": [
+                {
+                    "name": "Send Friend Request",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}"
+                            },
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "url": "{{baseUrl}}/api/relationships/request",
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"receiverId\": \"TARGET_USER_UUID\",\n  \"message\": \"Hey, want to connect?\"\n}"
+                        }
+                    }
+                },
+                {
+                    "name": "Get Pending Requests (Received)",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}"
+                            }
+                        ],
+                        "url": "{{baseUrl}}/api/relationships/requests"
+                    }
+                },
+                {
+                    "name": "Get Sent Requests",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}"
+                            }
+                        ],
+                        "url": "{{baseUrl}}/api/relationships/sent"
+                    }
+                },
+                {
+                    "name": "Accept Friend Request",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}"
+                            }
+                        ],
+                        "url": "{{baseUrl}}/api/relationships/REQUEST_ID/accept"
+                    }
+                },
+                {
+                    "name": "Reject Friend Request",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}"
+                            }
+                        ],
+                        "url": "{{baseUrl}}/api/relationships/REQUEST_ID/reject"
+                    }
+                },
+                {
+                    "name": "Cancel Sent Request",
+                    "request": {
+                        "method": "DELETE",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}"
+                            }
+                        ],
+                        "url": "{{baseUrl}}/api/relationships/REQUEST_ID"
+                    }
+                },
+                {
+                    "name": "Get Friends List",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}"
+                            }
+                        ],
+                        "url": "{{baseUrl}}/api/relationships"
+                    }
+                },
+                {
+                    "name": "Get Relationship Counts",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}"
+                            }
+                        ],
+                        "url": "{{baseUrl}}/api/relationships/counts"
+                    }
+                },
+                {
+                    "name": "Check Relationship Status",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}"
+                            }
+                        ],
+                        "url": "{{baseUrl}}/api/relationships/status/TARGET_USER_UUID"
+                    }
+                },
+                {
+                    "name": "Remove Friend",
+                    "request": {
+                        "method": "DELETE",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}"
+                            }
+                        ],
+                        "url": "{{baseUrl}}/api/relationships/friend/FRIEND_UUID"
+                    }
+                }
+            ]
+        },
+        {
+            "name": "Block",
+            "item": [
+                {
+                    "name": "Block User",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}"
+                            }
+                        ],
+                        "url": "{{baseUrl}}/api/block/TARGET_USER_UUID"
+                    }
+                },
+                {
+                    "name": "Unblock User",
+                    "request": {
+                        "method": "DELETE",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}"
+                            }
+                        ],
+                        "url": "{{baseUrl}}/api/block/TARGET_USER_UUID"
+                    }
+                }
+            ]
+        },
+        {
+            "name": "People Discovery",
+            "item": [
+                {
+                    "name": "Get People Suggestions",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{baseUrl}}/api/people/suggestions?lat=12.9716&lon=77.5946&radiusKm=20&limit=20",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "api",
+                                "people",
+                                "suggestions"
+                            ],
+                            "query": [
+                                {
+                                    "key": "lat",
+                                    "value": "12.9716"
+                                },
+                                {
+                                    "key": "lon",
+                                    "value": "77.5946"
+                                },
+                                {
+                                    "key": "radiusKm",
+                                    "value": "20"
+                                },
+                                {
+                                    "key": "limit",
+                                    "value": "20"
+                                }
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Get User Profile",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{baseUrl}}/api/people/TARGET_USER_UUID?lat=12.9716&lon=77.5946",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "api",
+                                "people",
+                                "TARGET_USER_UUID"
+                            ],
+                            "query": [
+                                {
+                                    "key": "lat",
+                                    "value": "12.9716"
+                                },
+                                {
+                                    "key": "lon",
+                                    "value": "77.5946"
+                                }
+                            ]
+                        }
+                    }
+                }
+            ]
+        },
+        {
+            "name": "Identity Reveal Test",
+            "item": [
+                {
+                    "name": "Get My Profile (with counts)",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}"
+                            }
+                        ],
+                        "url": "{{baseUrl}}/api/me"
+                    }
+                },
+                {
+                    "name": "Get Feed (check realName visibility)",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{baseUrl}}/api/feed?lat=12.9716&lon=77.5946&radiusKm=10",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "api",
+                                "feed"
+                            ],
+                            "query": [
+                                {
+                                    "key": "lat",
+                                    "value": "12.9716"
+                                },
+                                {
+                                    "key": "lon",
+                                    "value": "77.5946"
+                                },
+                                {
+                                    "key": "radiusKm",
+                                    "value": "10"
+                                }
+                            ]
+                        }
+                    }
+                }
+            ]
+        }
+    ]
+}

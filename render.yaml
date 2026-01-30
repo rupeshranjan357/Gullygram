@@ -1,0 +1,34 @@
+# Render Blueprint - Infrastructure as Code
+# This file defines your entire infrastructure for Render
+
+services:
+  # Backend API Service (Staging)
+  - type: web
+    name: gullygram-api-staging
+    runtime: docker
+    dockerfilePath: ./Dockerfile
+    plan: free
+    envVars:
+      - key: DATABASE_URL
+        fromDatabase:
+          name: gullygram-db
+          property: connectionString
+      - key: DATABASE_USERNAME
+        fromDatabase:
+          name: gullygram-db
+          property: user
+      - key: DATABASE_PASSWORD
+        fromDatabase:
+          name: gullygram-db
+          property: password
+      - key: JWT_SECRET
+        generateValue: true
+      - key: FRONTEND_URL
+        value: https://gullygram-staging.vercel.app
+    healthCheckPath: /api/health
+
+databases:
+  - name: gullygram-db
+    plan: free
+    databaseName: gullygram
+    user: gullygram_user

@@ -48,6 +48,14 @@ bin/
 *.ipr
 out/
 
+# Vite
+.vite/
+frontend/.vite/
+dist/
+frontend/dist/
+node_modules/
+frontend/node_modules/
+
 # VS Code
 .vscode/
 *.code-workspace

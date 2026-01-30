@@ -1,0 +1,700 @@
+{
+    "info": {
+        "_postman_id": "week3-trust-relationships",
+        "name": "GullyGram Week 3 - Trust & Relationships",
+        "description": "API collection for Week 3 features: Relationships, Friend Requests, People Suggestions, and Block functionality",
+        "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+    },
+    "variable": [
+        {
+            "key": "base_url",
+            "value": "http://localhost:8080/api",
+            "type": "string"
+        },
+        {
+            "key": "auth_token",
+            "value": "",
+            "type": "string"
+        },
+        {
+            "key": "target_user_id",
+            "value": "",
+            "type": "string"
+        },
+        {
+            "key": "relationship_id",
+            "value": "",
+            "type": "string"
+        }
+    ],
+    "auth": {
+        "type": "bearer",
+        "bearer": [
+            {
+                "key": "token",
+                "value": "{{auth_token}}",
+                "type": "string"
+            }
+        ]
+    },
+    "item": [
+        {
+            "name": "01. Auth - Login",
+            "event": [
+                {
+                    "listen": "test",
+                    "script": {
+                        "exec": [
+                            "var jsonData = pm.response.json();",
+                            "if (jsonData.data && jsonData.data.token) {",
+                            "    pm.collectionVariables.set('auth_token', jsonData.data.token);",
+                            "    console.log('Auth token saved!');",
+                            "}",
+                            "",
+                            "pm.test('Login successful', function () {",
+                            "    pm.response.to.have.status(200);",
+                            "    pm.expect(jsonData.success).to.eql(true);",
+                            "});"
+                        ],
+                        "type": "text/javascript"
+                    }
+                }
+            ],
+            "request": {
+                "auth": {
+                    "type": "noauth"
+                },
+                "method": "POST",
+                "header": [
+                    {
+                        "key": "Content-Type",
+                        "value": "application/json"
+                    }
+                ],
+                "body": {
+                    "mode": "raw",
+                    "raw": "{\n    \"email\": \"test@example.com\",\n    \"password\": \"password123\"\n}"
+                },
+                "url": {
+                    "raw": "{{base_url}}/auth/login",
+                    "host": [
+                        "{{base_url}}"
+                    ],
+                    "path": [
+                        "auth",
+                        "login"
+                    ]
+                },
+                "description": "Login to get auth token. Replace email/password with valid credentials."
+            }
+        },
+        {
+            "name": "Friend Requests",
+            "item": [
+                {
+                    "name": "02. Send Friend Request",
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "exec": [
+                                    "var jsonData = pm.response.json();",
+                                    "if (jsonData.data && jsonData.data.id) {",
+                                    "    pm.collectionVariables.set('relationship_id', jsonData.data.id);",
+                                    "}",
+                                    "",
+                                    "pm.test('Friend request sent', function () {",
+                                    "    pm.response.to.have.status(201);",
+                                    "    pm.expect(jsonData.success).to.eql(true);",
+                                    "});"
+                                ],
+                                "type": "text/javascript"
+                            }
+                        }
+                    ],
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"receiverId\": \"{{target_user_id}}\",\n    \"message\": \"Hey! Let's connect!\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/relationships/request",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "relationships",
+                                "request"
+                            ]
+                        },
+                        "description": "Send a friend request to another user. Set target_user_id variable first."
+                    }
+                },
+                {
+                    "name": "03. Accept Friend Request",
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "exec": [
+                                    "pm.test('Friend request accepted', function () {",
+                                    "    pm.response.to.have.status(200);",
+                                    "    var jsonData = pm.response.json();",
+                                    "    pm.expect(jsonData.success).to.eql(true);",
+                                    "});"
+                                ],
+                                "type": "text/javascript"
+                            }
+                        }
+                    ],
+                    "request": {
+                        "method": "POST",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/relationships/{{relationship_id}}/accept",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "relationships",
+                                "{{relationship_id}}",
+                                "accept"
+                            ]
+                        },
+                        "description": "Accept a pending friend request by relationship ID."
+                    }
+                },
+                {
+                    "name": "04. Reject Friend Request",
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "exec": [
+                                    "pm.test('Friend request rejected', function () {",
+                                    "    pm.response.to.have.status(200);",
+                                    "    var jsonData = pm.response.json();",
+                                    "    pm.expect(jsonData.success).to.eql(true);",
+                                    "});"
+                                ],
+                                "type": "text/javascript"
+                            }
+                        }
+                    ],
+                    "request": {
+                        "method": "POST",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/relationships/{{relationship_id}}/reject",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "relationships",
+                                "{{relationship_id}}",
+                                "reject"
+                            ]
+                        },
+                        "description": "Reject a pending friend request by relationship ID."
+                    }
+                },
+                {
+                    "name": "05. Cancel Sent Request",
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "exec": [
+                                    "pm.test('Friend request cancelled', function () {",
+                                    "    pm.response.to.have.status(200);",
+                                    "});"
+                                ],
+                                "type": "text/javascript"
+                            }
+                        }
+                    ],
+                    "request": {
+                        "method": "DELETE",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/relationships/{{relationship_id}}",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "relationships",
+                                "{{relationship_id}}"
+                            ]
+                        },
+                        "description": "Cancel a friend request that you sent."
+                    }
+                },
+                {
+                    "name": "06. Remove Friend",
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "exec": [
+                                    "pm.test('Friend removed', function () {",
+                                    "    pm.response.to.have.status(200);",
+                                    "});"
+                                ],
+                                "type": "text/javascript"
+                            }
+                        }
+                    ],
+                    "request": {
+                        "method": "DELETE",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/relationships/friend/{{target_user_id}}",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "relationships",
+                                "friend",
+                                "{{target_user_id}}"
+                            ]
+                        },
+                        "description": "Unfriend a user by their user ID."
+                    }
+                }
+            ]
+        },
+        {
+            "name": "Relationship Queries",
+            "item": [
+                {
+                    "name": "07. Get Friends List",
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "exec": [
+                                    "pm.test('Friends list retrieved', function () {",
+                                    "    pm.response.to.have.status(200);",
+                                    "    var jsonData = pm.response.json();",
+                                    "    pm.expect(jsonData.success).to.eql(true);",
+                                    "    pm.expect(jsonData.data).to.be.an('array');",
+                                    "});"
+                                ],
+                                "type": "text/javascript"
+                            }
+                        }
+                    ],
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/relationships",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "relationships"
+                            ]
+                        },
+                        "description": "Get all friends for the current user."
+                    }
+                },
+                {
+                    "name": "08. Get Pending Requests (Received)",
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "exec": [
+                                    "pm.test('Pending requests retrieved', function () {",
+                                    "    pm.response.to.have.status(200);",
+                                    "    var jsonData = pm.response.json();",
+                                    "    pm.expect(jsonData.success).to.eql(true);",
+                                    "    pm.expect(jsonData.data).to.be.an('array');",
+                                    "});",
+                                    "",
+                                    "// Save first request ID if available",
+                                    "var jsonData = pm.response.json();",
+                                    "if (jsonData.data && jsonData.data.length > 0) {",
+                                    "    pm.collectionVariables.set('relationship_id', jsonData.data[0].id);",
+                                    "}"
+                                ],
+                                "type": "text/javascript"
+                            }
+                        }
+                    ],
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/relationships/requests",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "relationships",
+                                "requests"
+                            ]
+                        },
+                        "description": "Get all pending friend requests received."
+                    }
+                },
+                {
+                    "name": "09. Get Sent Requests",
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "exec": [
+                                    "pm.test('Sent requests retrieved', function () {",
+                                    "    pm.response.to.have.status(200);",
+                                    "    var jsonData = pm.response.json();",
+                                    "    pm.expect(jsonData.success).to.eql(true);",
+                                    "    pm.expect(jsonData.data).to.be.an('array');",
+                                    "});"
+                                ],
+                                "type": "text/javascript"
+                            }
+                        }
+                    ],
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/relationships/sent",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "relationships",
+                                "sent"
+                            ]
+                        },
+                        "description": "Get all friend requests sent by current user."
+                    }
+                },
+                {
+                    "name": "10. Get Relationship Counts",
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "exec": [
+                                    "pm.test('Counts retrieved', function () {",
+                                    "    pm.response.to.have.status(200);",
+                                    "    var jsonData = pm.response.json();",
+                                    "    pm.expect(jsonData.success).to.eql(true);",
+                                    "    pm.expect(jsonData.data).to.have.property('friends');",
+                                    "    pm.expect(jsonData.data).to.have.property('pendingRequests');",
+                                    "});"
+                                ],
+                                "type": "text/javascript"
+                            }
+                        }
+                    ],
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/relationships/counts",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "relationships",
+                                "counts"
+                            ]
+                        },
+                        "description": "Get counts of friends and pending requests."
+                    }
+                },
+                {
+                    "name": "11. Get Relationship Status",
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "exec": [
+                                    "pm.test('Status retrieved', function () {",
+                                    "    pm.response.to.have.status(200);",
+                                    "    var jsonData = pm.response.json();",
+                                    "    pm.expect(jsonData.success).to.eql(true);",
+                                    "    pm.expect(jsonData.data).to.have.property('status');",
+                                    "});"
+                                ],
+                                "type": "text/javascript"
+                            }
+                        }
+                    ],
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/relationships/status/{{target_user_id}}",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "relationships",
+                                "status",
+                                "{{target_user_id}}"
+                            ]
+                        },
+                        "description": "Get relationship status with a specific user (NONE, REQUESTED, ACCEPTED, BLOCKED)."
+                    }
+                }
+            ]
+        },
+        {
+            "name": "People Suggestions",
+            "item": [
+                {
+                    "name": "12. Get People Suggestions",
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "exec": [
+                                    "pm.test('Suggestions retrieved', function () {",
+                                    "    pm.response.to.have.status(200);",
+                                    "    var jsonData = pm.response.json();",
+                                    "    pm.expect(jsonData.success).to.eql(true);",
+                                    "    pm.expect(jsonData.data).to.be.an('array');",
+                                    "});",
+                                    "",
+                                    "// Save first suggestion user ID if available",
+                                    "var jsonData = pm.response.json();",
+                                    "if (jsonData.data && jsonData.data.length > 0) {",
+                                    "    pm.collectionVariables.set('target_user_id', jsonData.data[0].userId);",
+                                    "}"
+                                ],
+                                "type": "text/javascript"
+                            }
+                        }
+                    ],
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/people/suggestions?lat=12.9716&lon=77.5946&radiusKm=50&limit=20",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "people",
+                                "suggestions"
+                            ],
+                            "query": [
+                                {
+                                    "key": "lat",
+                                    "value": "12.9716",
+                                    "description": "Latitude (Bangalore)"
+                                },
+                                {
+                                    "key": "lon",
+                                    "value": "77.5946",
+                                    "description": "Longitude (Bangalore)"
+                                },
+                                {
+                                    "key": "radiusKm",
+                                    "value": "50",
+                                    "description": "Search radius in KM"
+                                },
+                                {
+                                    "key": "limit",
+                                    "value": "20",
+                                    "description": "Max number of suggestions"
+                                }
+                            ]
+                        },
+                        "description": "Get people suggestions based on shared interests and location."
+                    }
+                },
+                {
+                    "name": "13. Get User Profile",
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "exec": [
+                                    "pm.test('User profile retrieved', function () {",
+                                    "    pm.response.to.have.status(200);",
+                                    "    var jsonData = pm.response.json();",
+                                    "    pm.expect(jsonData.success).to.eql(true);",
+                                    "    pm.expect(jsonData.data).to.have.property('userId');",
+                                    "    pm.expect(jsonData.data).to.have.property('alias');",
+                                    "});"
+                                ],
+                                "type": "text/javascript"
+                            }
+                        }
+                    ],
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/people/{{target_user_id}}?lat=12.9716&lon=77.5946",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "people",
+                                "{{target_user_id}}"
+                            ],
+                            "query": [
+                                {
+                                    "key": "lat",
+                                    "value": "12.9716"
+                                },
+                                {
+                                    "key": "lon",
+                                    "value": "77.5946"
+                                }
+                            ]
+                        },
+                        "description": "Get another user's profile with identity reveal based on relationship."
+                    }
+                }
+            ]
+        },
+        {
+            "name": "Block",
+            "item": [
+                {
+                    "name": "14. Block User",
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "exec": [
+                                    "pm.test('User blocked', function () {",
+                                    "    pm.response.to.have.status(200);",
+                                    "    var jsonData = pm.response.json();",
+                                    "    pm.expect(jsonData.success).to.eql(true);",
+                                    "});"
+                                ],
+                                "type": "text/javascript"
+                            }
+                        }
+                    ],
+                    "request": {
+                        "method": "POST",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/block/{{target_user_id}}",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "block",
+                                "{{target_user_id}}"
+                            ]
+                        },
+                        "description": "Block a user by their ID."
+                    }
+                },
+                {
+                    "name": "15. Unblock User",
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "exec": [
+                                    "pm.test('User unblocked', function () {",
+                                    "    pm.response.to.have.status(200);",
+                                    "    var jsonData = pm.response.json();",
+                                    "    pm.expect(jsonData.success).to.eql(true);",
+                                    "});"
+                                ],
+                                "type": "text/javascript"
+                            }
+                        }
+                    ],
+                    "request": {
+                        "method": "DELETE",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/block/{{target_user_id}}",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "block",
+                                "{{target_user_id}}"
+                            ]
+                        },
+                        "description": "Unblock a previously blocked user."
+                    }
+                }
+            ]
+        },
+        {
+            "name": "Identity Reveal Test",
+            "item": [
+                {
+                    "name": "16. Get Feed (Identity Reveal)",
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "exec": [
+                                    "pm.test('Feed retrieved with identity reveal data', function () {",
+                                    "    pm.response.to.have.status(200);",
+                                    "    var jsonData = pm.response.json();",
+                                    "    pm.expect(jsonData.success).to.eql(true);",
+                                    "    pm.expect(jsonData.data).to.have.property('posts');",
+                                    "    ",
+                                    "    // Check if posts have author data",
+                                    "    if (jsonData.data.posts.length > 0) {",
+                                    "        var post = jsonData.data.posts[0];",
+                                    "        pm.expect(post).to.have.property('author');",
+                                    "        pm.expect(post.author).to.have.property('alias');",
+                                    "        // isFriend determines if realName is shown",
+                                    "        pm.expect(post.author).to.have.property('isFriend');",
+                                    "    }",
+                                    "});"
+                                ],
+                                "type": "text/javascript"
+                            }
+                        }
+                    ],
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/posts?lat=12.9716&lon=77.5946&radiusKm=50",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "posts"
+                            ],
+                            "query": [
+                                {
+                                    "key": "lat",
+                                    "value": "12.9716"
+                                },
+                                {
+                                    "key": "lon",
+                                    "value": "77.5946"
+                                },
+                                {
+                                    "key": "radiusKm",
+                                    "value": "50"
+                                }
+                            ]
+                        },
+                        "description": "Get feed with identity reveal - friends show real names, strangers show alias with lock."
+                    }
+                }
+            ]
+        }
+    ]
+}

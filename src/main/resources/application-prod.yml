@@ -1,0 +1,44 @@
+# Production configuration for Render/Cloud deployment
+spring:
+  datasource:
+    url: ${DATABASE_URL}
+    username: ${DATABASE_USERNAME:}
+    password: ${DATABASE_PASSWORD:}
+    driver-class-name: org.postgresql.Driver
+    hikari:
+      maximum-pool-size: 5
+      minimum-idle: 2
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    show-sql: false
+    properties:
+      hibernate:
+        format_sql: false
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+  flyway:
+    enabled: true
+    baseline-on-migrate: true
+
+server:
+  port: ${PORT:8080}
+
+# CORS configuration for frontend
+cors:
+  allowed-origins: ${FRONTEND_URL:https://gullygram.vercel.app}
+
+app:
+  jwt:
+    secret: ${JWT_SECRET}
+    expiration-ms: 86400000  # 24 hours
+    refresh-expiration-ms: 604800000  # 7 days
+  otp:
+    expiration-minutes: 5
+    length: 6
+
+# Logging
+logging:
+  level:
+    root: INFO
+    com.gullygram: INFO
+    org.hibernate.SQL: WARN
