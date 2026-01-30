@@ -140,7 +140,10 @@ export const Profile: React.FC = () => {
                 </button>
             </div>
             <div className="absolute top-4 right-4 z-10">
-                <button className="p-2 text-white hover:bg-white/20 rounded-full transition-colors">
+                <button
+                    onClick={() => navigate('/settings')}
+                    className="p-2 text-white hover:bg-white/20 rounded-full transition-colors"
+                >
                     <Settings size={24} />
                 </button>
             </div>

@@ -7,6 +7,7 @@ import { Login } from '@/pages/Login';
 import { InterestSelection } from '@/pages/InterestSelection';
 import { RadiusSelection } from '@/pages/RadiusSelection';
 import { Profile } from '@/pages/Profile';
+import { Settings } from '@/pages/Settings';
 import { Feed } from '@/pages/Feed';
 import { CreatePost } from '@/pages/CreatePost';
 import { PostDetail } from '@/pages/PostDetail';
@@ -108,6 +109,14 @@ const AppRoutes: React.FC = () => {
                 element={
                     <ProtectedRoute>
                         <Profile />
+                    </ProtectedRoute>
+                }
+            />
+            <Route
+                path="/settings"
+                element={
+                    <ProtectedRoute>
+                        <Settings />
                     </ProtectedRoute>
                 }
             />
