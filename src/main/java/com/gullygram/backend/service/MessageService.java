@@ -181,8 +181,11 @@ public class MessageService {
      */
     private Conversation getOrCreateConversation(User user1, User user2) {
         // Ensure user1.id < user2.id for uniqueness constraint
-        User smaller = user1.getId().compareTo(user2.getId()) < 0 ? user1 : user2;
-        User larger = user1.getId().compareTo(user2.getId()) < 0 ? user2 : user1;
+        // WE MUST USE toString() comparison to match Database lexical sorting!
+        // Java's UUID.compareTo() uses signed comparison (so 0x8... is negative),
+        // causing mismatch with Postgres which considers 0x8... > 0x0...
+        User smaller = user1.getId().toString().compareTo(user2.getId().toString()) < 0 ? user1 : user2;
+        User larger = user1.getId().toString().compareTo(user2.getId().toString()) < 0 ? user2 : user1;
 
         return conversationRepository.findByUsers(smaller.getId(), larger.getId())
                 .orElseGet(() -> {
