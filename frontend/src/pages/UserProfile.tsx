@@ -3,7 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import {
     ArrowLeft, UserPlus, UserMinus, UserCheck, Ban, Shield,
-    Lock, MapPin, Clock, MoreVertical, AlertTriangle
+    Lock, MapPin, Clock, MoreVertical, AlertTriangle, MessageCircle
 } from 'lucide-react';
 import { relationshipService, peopleService } from '@/services/relationshipService';
 import { Button } from '@/components/ui/Button';
@@ -229,14 +229,23 @@ export const UserProfile: React.FC = () => {
                         )}
 
                         {isFriend && (
-                            <button
-                                onClick={() => removeFriendMutation.mutate()}
-                                disabled={removeFriendMutation.isPending}
-                                className="flex items-center gap-2 mx-auto px-6 py-3 bg-white/20 rounded-full font-semibold hover:bg-white/30 transition-colors"
-                            >
-                                <UserMinus className="w-5 h-5" />
-                                <span>Remove Friend</span>
-                            </button>
+                            <div className="flex gap-3 justify-center">
+                                <button
+                                    onClick={() => navigate(`/messages?userId=${userId}`)}
+                                    className="flex items-center gap-2 px-6 py-3 bg-white text-primary-purple rounded-full font-semibold hover:bg-gray-100 transition-colors"
+                                >
+                                    <MessageCircle className="w-5 h-5" />
+                                    <span>Send Message</span>
+                                </button>
+                                <button
+                                    onClick={() => removeFriendMutation.mutate()}
+                                    disabled={removeFriendMutation.isPending}
+                                    className="flex items-center gap-2 px-6 py-3 bg-white/20 rounded-full font-semibold hover:bg-white/30 transition-colors"
+                                >
+                                    <UserMinus className="w-5 h-5" />
+                                    <span>Remove Friend</span>
+                                </button>
+                            </div>
                         )}
                     </div>
                 </div>

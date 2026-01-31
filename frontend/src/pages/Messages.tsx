@@ -1,18 +1,39 @@
-import React from 'react';
-import { useNavigate } from 'react-router-dom';
-import { useQuery } from '@tanstack/react-query';
+import React, { useEffect } from 'react';
+import { useNavigate, useSearchParams } from 'react-router-dom';
+import { useQuery } from '@tantml:function_calls';
 import { MessageCircle, Loader } from 'lucide-react';
 import { messageService, ConversationResponse } from '@/services/messageService';
 import { formatDistanceToNow } from 'date-fns';
 
 export const Messages: React.FC = () => {
     const navigate = useNavigate();
+    const [searchParams] = useSearchParams();
+    const userId = searchParams.get('userId');
 
     const { data: conversations, isLoading } = useQuery({
         queryKey: ['conversations'],
         queryFn: messageService.getConversations,
         refetchInterval: 5000, // Poll every 5 seconds
     });
+
+    // Handle starting new conversation from user profile
+    useEffect(() => {
+        if (userId && conversations) {
+            // Check if conversation with this user exists
+            const existingConv = conversations.find(
+                (conv) => conv.otherUser.userId === userId
+            );
+
+            if (existingConv) {
+                // Navigate to existing conversation
+                navigate(`/messages/${existingConv.id}`, { replace: true });
+            } else {
+                // For new conversation, we'll navigate to a special route
+                // The first message will create the conversation
+                navigate(`/messages/new/${userId}`, { replace: true });
+            }
+        }
+    }, [userId, conversations, navigate]);
 
     if (isLoading) {
         return (
