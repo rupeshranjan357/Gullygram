@@ -22,6 +22,7 @@ export const CreatePost: React.FC = () => {
     const [selectedInterests, setSelectedInterests] = useState<number[]>([]);
     const [location, setLocation] = useState<{ lat: number; lon: number } | null>(null);
     const [locationError, setLocationError] = useState('');
+    const [friendsOnly, setFriendsOnly] = useState(false);
 
     // Get user location
     useEffect(() => {
@@ -78,6 +79,7 @@ export const CreatePost: React.FC = () => {
             longitude: location.lon,
             visibilityRadiusKm: radius,
             interestIds: selectedInterests.length > 0 ? selectedInterests : undefined,
+            friendsOnly,
         });
     };
 
@@ -156,8 +158,8 @@ export const CreatePost: React.FC = () => {
                                     type="button"
                                     onClick={() => setType(postType.value)}
                                     className={`p-3 rounded-lg border-2 transition-all ${type === postType.value
-                                            ? 'border-primary-purple bg-purple-50'
-                                            : 'border-gray-200 hover:border-gray-300'
+                                        ? 'border-primary-purple bg-purple-50'
+                                        : 'border-gray-200 hover:border-gray-300'
                                         }`}
                                 >
                                     <div className="text-2xl mb-1">{postType.icon}</div>
@@ -204,8 +206,8 @@ export const CreatePost: React.FC = () => {
                                         type="button"
                                         onClick={() => toggleInterest(interest.id)}
                                         className={`px-3 py-2 rounded-full text-sm font-semibold transition-all ${selectedInterests.includes(interest.id)
-                                                ? 'bg-primary-purple text-white'
-                                                : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                                            ? 'bg-primary-purple text-white'
+                                            : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                                             }`}
                                     >
                                         #{interest.name}
@@ -214,6 +216,30 @@ export const CreatePost: React.FC = () => {
                             </div>
                         </div>
                     )}
+
+                    {/* Friends Only Toggle */}
+                    <div className="bg-purple-50 border border-purple-200 rounded-lg p-4">
+                        <label className="flex items-center justify-between cursor-pointer">
+                            <div>
+                                <div className="text-sm font-semibold text-gray-900 mb-1">
+                                    🔒 Friends Only
+                                </div>
+                                <p className="text-xs text-gray-600">
+                                    Only your friends can see this post
+                                </p>
+                            </div>
+                            <div className="relative inline-block w-12 h-6">
+                                <input
+                                    type="checkbox"
+                                    checked={friendsOnly}
+                                    onChange={(e) => setFriendsOnly(e.target.checked)}
+                                    className="sr-only peer"
+                                />
+                                <div className="w-12 h-6 bg-gray-300 rounded-full peer peer-checked:bg-primary-purple transition-colors"></div>
+                                <div className="absolute left-1 top-1 w-4 h-4 bg-white rounded-full transition-transform peer-checked:translate-x-6"></div>
+                            </div>
+                        </label>
+                    </div>
 
                     {/* Location Info */}
                     <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">

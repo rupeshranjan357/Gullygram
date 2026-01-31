@@ -85,12 +85,22 @@ public class Post {
     @Builder.Default
     private Set<Comment> comments = new HashSet<>();
 
+    @Enumerated(EnumType.STRING)
+    @Column(name = "visibility", length = 20)
+    @Builder.Default
+    private PostVisibility visibility = PostVisibility.PUBLIC;
+
     public enum PostType {
         GENERAL,
         LOCAL_NEWS,
         MARKETING,
         EVENT_PROMO,
         MARKETPLACE
+    }
+
+    public enum PostVisibility {
+        PUBLIC,
+        FRIENDS_ONLY
     }
 
     public boolean isDeleted() {
