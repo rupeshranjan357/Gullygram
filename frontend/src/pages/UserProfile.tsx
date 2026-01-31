@@ -69,7 +69,7 @@ export const UserProfile: React.FC = () => {
     });
 
     const status = relationshipStatus?.status || 'NONE';
-    const isFriend = status === 'FRIENDS';
+    const isFriend = status === 'ACCEPTED';
 
     if (isLoading) {
         return (
