@@ -15,6 +15,7 @@ import { Discover } from '@/pages/Discover';
 import { UserProfile } from '@/pages/UserProfile';
 import { Messages } from '@/pages/Messages';
 import { Chat } from '@/pages/Chat';
+import { NewChat } from '@/pages/NewChat';
 import { ProtectedRoute } from '@/components/ProtectedRoute';
 import { useAuthStore } from '@/store/authStore';
 
@@ -153,6 +154,14 @@ const AppRoutes: React.FC = () => {
                 element={
                     <ProtectedRoute>
                         <Chat />
+                    </ProtectedRoute>
+                }
+            />
+            <Route
+                path="/messages/new/:userId"
+                element={
+                    <ProtectedRoute>
+                        <NewChat />
                     </ProtectedRoute>
                 }
             />

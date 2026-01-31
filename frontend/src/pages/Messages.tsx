@@ -28,8 +28,7 @@ export const Messages: React.FC = () => {
                 // Navigate to existing conversation
                 navigate(`/messages/${existingConv.id}`, { replace: true });
             } else {
-                // For new conversation, we'll navigate to a special route
-                // The first message will create the conversation
+                // For new conversation, navigate to new chat page
                 navigate(`/messages/new/${userId}`, { replace: true });
             }
         }
