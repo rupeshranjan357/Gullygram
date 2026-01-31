@@ -58,6 +58,7 @@ public class PostService {
             .lon(request.getLongitude())
             .geohash(GeoUtil.generateGeohash(request.getLatitude(), request.getLongitude()))
             .visibilityRadiusKm(request.getVisibilityRadiusKm() != null ? request.getVisibilityRadiusKm() : 10)
+            .visibility(request.isFriendsOnly() ? Post.PostVisibility.FRIENDS_ONLY : Post.PostVisibility.PUBLIC)
             .build();
 
         // Set media URLs directly (converter will handle JSON conversion)
@@ -140,6 +141,7 @@ public class PostService {
             .likeCount(likeCount)
             .commentCount(commentCount)
             .likedByCurrentUser(likedByCurrentUser)
+            .visibility(post.getVisibility().name())
             .createdAt(post.getCreatedAt())
             .updatedAt(post.getUpdatedAt())
             .build();

@@ -31,6 +31,7 @@ public class FeedService {
     private final PostRepository postRepository;
     private final UserProfileRepository userProfileRepository;
     private final PostService postService;
+    private final RelationshipService relationshipService;
 
     // Feed ranking weights
     private static final double RECENCY_WEIGHT = 1.0;
@@ -90,9 +91,31 @@ public class FeedService {
 
         log.info("Filtered to {} posts within {}km radius", filteredPosts.size(), effectiveRadius);
 
+        // Filter out FRIENDS_ONLY posts if viewer is not a friend
+        List<Post> visibilityFilteredPosts = filteredPosts.stream()
+            .filter(post -> {
+                // If post is PUBLIC, everyone can see it
+                if (post.getVisibility() == Post.PostVisibility.PUBLIC) {
+                    return true;
+                }
+                // If post is FRIENDS_ONLY, check relationship
+                if (post.getVisibility() == Post.PostVisibility.FRIENDS_ONLY) {
+                    // Author can always see their own posts
+                    if (post.getAuthor().getId().equals(userId)) {
+                        return true;
+                    }
+                    // Check if viewer is friends with author
+                    return relationshipService.areFriends(userId, post.getAuthor().getId());
+                }
+                return false;
+            })
+            .collect(Collectors.toList());
+
+        log.info("After visibility filtering: {} posts visible to user", visibilityFilteredPosts.size());
+
 
         // Rank posts
-        List<ScoredPost> scoredPosts = filteredPosts.stream()
+        List<ScoredPost> scoredPosts = visibilityFilteredPosts.stream()
             .map(post -> {
                 double score = calculateFeedScore(post, userInterestIds, interestBoost != null && interestBoost);
                 return new ScoredPost(post, score);

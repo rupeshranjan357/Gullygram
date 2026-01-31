@@ -10,6 +10,7 @@ export interface CreatePostRequest {
     visibilityRadiusKm: number;
     interestIds?: number[];
     mediaUrls?: string[];
+    friendsOnly?: boolean;
 }
 
 export interface PostDetail extends FeedPost {

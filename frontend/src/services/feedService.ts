@@ -25,6 +25,7 @@ export interface FeedPost {
     interests: Array<{ id: number; name: string }>;
     createdAt: string;
     mediaUrls?: string[];
+    visibility: 'PUBLIC' | 'FRIENDS_ONLY';
 }
 
 export interface FeedResponse {
