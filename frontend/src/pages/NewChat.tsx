@@ -115,7 +115,7 @@ export const NewChat: React.FC = () => {
                     {sendMutation.isError && (
                         <div className="mt-2 text-red-500 text-sm bg-red-50 p-3 rounded-lg border border-red-100">
                             <p className="font-semibold">Failed to send message</p>
-                            <p>{sendMutation.error instanceof Error ? sendMutation.error.message : 'Unknown error'}</p>
+                            <p>{(sendMutation.error as any)?.message || 'Unknown error'}</p>
                         </div>
                     )}
                 </form>
