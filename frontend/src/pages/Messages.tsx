@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { MessageCircle, Loader } from 'lucide-react';
@@ -8,7 +8,7 @@ import { formatDistanceToNow } from 'date-fns';
 export const Messages: React.FC = () => {
     const navigate = useNavigate();
 
-    const { data: conversations, isLoading, refetch } = useQuery({
+    const { data: conversations, isLoading } = useQuery({
         queryKey: ['conversations'],
         queryFn: messageService.getConversations,
         refetchInterval: 5000, // Poll every 5 seconds

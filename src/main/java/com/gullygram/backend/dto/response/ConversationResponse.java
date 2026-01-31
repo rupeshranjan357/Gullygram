@@ -1,5 +1,6 @@
 package com.gullygram.backend.dto.response;
 
+import com.gullygram.backend.dto.response.AuthorView;
 import lombok.Builder;
 import lombok.Data;
 
@@ -10,7 +11,7 @@ import java.util.UUID;
 @Builder
 public class ConversationResponse {
     private UUID id;
-    private UserView otherUser; // The friend
+    private AuthorView otherUser; // The friend
     private String lastMessagePreview;
     private LocalDateTime lastMessageAt;
     private int unreadCount;

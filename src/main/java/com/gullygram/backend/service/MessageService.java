@@ -4,7 +4,7 @@ import com.gullygram.backend.dto.request.SendMessageRequest;
 import com.gullygram.backend.dto.response.ConversationDetailResponse;
 import com.gullygram.backend.dto.response.ConversationResponse;
 import com.gullygram.backend.dto.response.MessageResponse;
-import com.gullygram.backend.dto.response.UserView;
+import com.gullygram.backend.dto.response.AuthorView;
 import com.gullygram.backend.entity.Conversation;
 import com.gullygram.backend.entity.Message;
 import com.gullygram.backend.entity.User;
@@ -36,6 +36,7 @@ public class MessageService {
     private final ConversationRepository conversationRepository;
     private final UserRepository userRepository;
     private final RelationshipService relationshipService;
+    private final AuthorViewService authorViewService;
 
     /**
      * Send a message to a friend
@@ -116,7 +117,7 @@ public class MessageService {
 
         return ConversationDetailResponse.builder()
                 .id(conversation.getId())
-                .otherUser(convertToUserView(otherUser))
+                .otherUser(convertToAuthorView(otherUser, userId))
                 .messages(messages)
                 .totalMessages((int) messagesPage.getTotalElements())
                 .currentPage(page)
@@ -203,7 +204,7 @@ public class MessageService {
 
         return ConversationResponse.builder()
                 .id(conversation.getId())
-                .otherUser(convertToUserView(otherUser))
+                .otherUser(convertToAuthorView(otherUser, currentUserId))
                 .lastMessagePreview(lastMessagePreview)
                 .lastMessageAt(conversation.getLastMessageAt())
                 .unreadCount(unreadCount)
@@ -228,14 +229,10 @@ public class MessageService {
     }
 
     /**
-     * Convert User to UserView
+     * Convert User to AuthorView
      */
-    private UserView convertToUserView(User user) {
-        return UserView.builder()
-                .userId(user.getId())
-                .alias(user.getAlias())
-                .avatarUrl(user.getAvatarUrl())
-                .build();
+    private AuthorView convertToAuthorView(User user, UUID currentUserId) {
+        return authorViewService.buildAuthorView(currentUserId, user);
     }
 
     /**

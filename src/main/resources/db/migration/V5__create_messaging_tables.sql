@@ -3,8 +3,8 @@
 -- Create conversation table
 CREATE TABLE conversation (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    user1_id UUID NOT NULL REFERENCES "user"(id) ON DELETE CASCADE,
-    user2_id UUID NOT NULL REFERENCES "user"(id) ON DELETE CASCADE,
+    user1_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    user2_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
     last_message_at TIMESTAMP,
     created_at TIMESTAMP NOT NULL DEFAULT NOW(),
     
@@ -17,7 +17,7 @@ CREATE TABLE conversation (
 CREATE TABLE message (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     conversation_id UUID NOT NULL REFERENCES conversation(id) ON DELETE CASCADE,
-    sender_id UUID NOT NULL REFERENCES "user"(id) ON DELETE CASCADE,
+    sender_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
     content TEXT NOT NULL,
     read_at TIMESTAMP,
     created_at TIMESTAMP NOT NULL DEFAULT NOW(),

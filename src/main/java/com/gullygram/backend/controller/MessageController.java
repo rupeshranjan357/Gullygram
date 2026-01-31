@@ -5,7 +5,7 @@ import com.gullygram.backend.dto.response.ApiResponse;
 import com.gullygram.backend.dto.response.ConversationDetailResponse;
 import com.gullygram.backend.dto.response.ConversationResponse;
 import com.gullygram.backend.dto.response.MessageResponse;
-import com.gullygram.backend.security.UserPrincipal;
+import com.gullygram.backend.security.CurrentUser;
 import com.gullygram.backend.service.MessageService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -24,17 +24,17 @@ import java.util.UUID;
 public class MessageController {
 
     private final MessageService messageService;
+    private final CurrentUser currentUser;
 
     /**
      * Get all conversations for the current user
      */
     @GetMapping("/conversations")
-    public ResponseEntity<ApiResponse<List<ConversationResponse>>> getConversations(
-            @AuthenticationPrincipal UserPrincipal currentUser
-    ) {
-        log.info("GET /api/messages/conversations - user: {}", currentUser.getUserId());
+    public ResponseEntity<ApiResponse<List<ConversationResponse>>> getConversations() {
+        UUID userId = currentUser.getUserId();
+        log.info("GET /api/messages/conversations - user: {}", userId);
         
-        List<ConversationResponse> conversations = messageService.getConversations(currentUser.getUserId());
+        List<ConversationResponse> conversations = messageService.getConversations(userId);
         
         return ResponseEntity.ok(ApiResponse.success(conversations));
     }
@@ -44,15 +44,15 @@ public class MessageController {
      */
     @GetMapping("/conversations/{conversationId}")
     public ResponseEntity<ApiResponse<ConversationDetailResponse>> getConversation(
-            @AuthenticationPrincipal UserPrincipal currentUser,
             @PathVariable UUID conversationId,
             @RequestParam(defaultValue = "0") int page
     ) {
+        UUID userId = currentUser.getUserId();
         log.info("GET /api/messages/conversations/{} - user: {}, page: {}", 
-                conversationId, currentUser.getUserId(), page);
+                conversationId, userId, page);
         
         ConversationDetailResponse conversation = messageService.getConversationDetails(
-                currentUser.getUserId(), conversationId, page);
+                userId, conversationId, page);
         
         return ResponseEntity.ok(ApiResponse.success(conversation));
     }
@@ -62,13 +62,13 @@ public class MessageController {
      */
     @PostMapping("/send")
     public ResponseEntity<ApiResponse<MessageResponse>> sendMessage(
-            @AuthenticationPrincipal UserPrincipal currentUser,
             @Valid @RequestBody SendMessageRequest request
     ) {
+        UUID userId = currentUser.getUserId();
         log.info("POST /api/messages/send - from: {} to: {}", 
-                currentUser.getUserId(), request.getRecipientId());
+                userId, request.getRecipientId());
         
-        MessageResponse message = messageService.sendMessage(currentUser.getUserId(), request);
+        MessageResponse message = messageService.sendMessage(userId, request);
         
         return ResponseEntity.ok(ApiResponse.success(message));
     }
@@ -78,13 +78,13 @@ public class MessageController {
      */
     @PostMapping("/conversations/{conversationId}/read")
     public ResponseEntity<ApiResponse<Void>> markAsRead(
-            @AuthenticationPrincipal UserPrincipal currentUser,
             @PathVariable UUID conversationId
     ) {
+        UUID userId = currentUser.getUserId();
         log.info("POST /api/messages/conversations/{}/read - user: {}", 
-                conversationId, currentUser.getUserId());
+                conversationId, userId);
         
-        messageService.markMessagesAsRead(currentUser.getUserId(), conversationId);
+        messageService.markMessagesAsRead(userId, conversationId);
         
         return ResponseEntity.ok(ApiResponse.success(null));
     }
@@ -94,12 +94,12 @@ public class MessageController {
      */
     @DeleteMapping("/{messageId}")
     public ResponseEntity<ApiResponse<Void>> deleteMessage(
-            @AuthenticationPrincipal UserPrincipal currentUser,
             @PathVariable UUID messageId
     ) {
-        log.info("DELETE /api/messages/{} - user: {}", messageId, currentUser.getUserId());
+        UUID userId = currentUser.getUserId();
+        log.info("DELETE /api/messages/{} - user: {}", messageId, userId);
         
-        messageService.deleteMessage(currentUser.getUserId(), messageId);
+        messageService.deleteMessage(userId, messageId);
         
         return ResponseEntity.ok(ApiResponse.success(null));
     }

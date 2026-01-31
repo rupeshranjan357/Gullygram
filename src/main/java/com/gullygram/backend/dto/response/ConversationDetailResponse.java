@@ -1,5 +1,6 @@
 package com.gullygram.backend.dto.response;
 
+import com.gullygram.backend.dto.response.AuthorView;
 import lombok.Builder;
 import lombok.Data;
 
@@ -10,7 +11,7 @@ import java.util.UUID;
 @Builder
 public class ConversationDetailResponse {
     private UUID id;
-    private UserView otherUser;
+    private AuthorView otherUser;
     private List<MessageResponse> messages;
     private int totalMessages;
     private int currentPage;
