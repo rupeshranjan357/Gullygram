@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
-import { useQuery } from '@tantml:function_calls';
+import { useQuery } from '@tanstack/react-query';
 import { MessageCircle, Loader } from 'lucide-react';
 import { messageService, ConversationResponse } from '@/services/messageService';
 import { formatDistanceToNow } from 'date-fns';
