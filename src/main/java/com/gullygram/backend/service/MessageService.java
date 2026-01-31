@@ -46,7 +46,12 @@ public class MessageService {
         log.info("Sending message from {} to {}", senderId, request.getRecipientId());
 
         // Validate friendship
-        if (!relationshipService.areFriends(senderId, request.getRecipientId())) {
+        log.info("Validating friendship between sender {} and recipient {}", senderId, request.getRecipientId());
+        boolean areFriends = relationshipService.areFriends(senderId, request.getRecipientId());
+        log.info("Friendship check result: {}", areFriends);
+        
+        if (!areFriends) {
+            log.error("Friendship validation failed for sender {} and recipient {}", senderId, request.getRecipientId());
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "You can only message friends");
         }
 
