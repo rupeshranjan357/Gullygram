@@ -41,4 +41,7 @@ public class CreatePostRequest {
 
     private Set<Integer> interestIds;
 
+    @Builder.Default
+    private boolean friendsOnly = false;
+
 }

@@ -140,10 +140,21 @@ export const PostCard: React.FC<PostCardProps> = ({ post }) => {
                         </div>
                     </div>
 
-                    {/* Post Type Badge */}
-                    <span className={`px-2 py-1 rounded-full text-xs font-semibold ${POST_TYPE_COLORS[post.type]}`}>
-                        {POST_TYPE_LABELS[post.type]}
-                    </span>
+                    {/* Badges Container */}
+                    <div className="flex items-center gap-2">
+                        {/* Visibility Badge */}
+                        {post.visibility === 'FRIENDS_ONLY' && (
+                            <span className="flex items-center gap-1 px-2 py-1 rounded-full text-xs font-semibold bg-purple-100 text-purple-700">
+                                <Lock className="w-3 h-3" />
+                                Friends Only
+                            </span>
+                        )}
+
+                        {/* Post Type Badge */}
+                        <span className={`px-2 py-1 rounded-full text-xs font-semibold ${POST_TYPE_COLORS[post.type]}`}>
+                            {POST_TYPE_LABELS[post.type]}
+                        </span>
+                    </div>
                 </div>
             </div>
 
