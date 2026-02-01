@@ -19,8 +19,9 @@ public interface UserProfileRepository extends JpaRepository<UserProfile, UUID> 
     
     boolean existsByAlias(String alias);
 
-    @Query(value = "SELECT * FROM user_profile " +
-           "WHERE alias ILIKE %:query% OR real_name ILIKE %:query% " +
+    @Query(value = "SELECT p.* FROM user_profile p " +
+           "JOIN users u ON p.user_id = u.id " +
+           "WHERE p.alias ILIKE %:query% " +
            "LIMIT 20", nativeQuery = true)
     List<UserProfile> searchUsers(@Param("query") String query);
 }

@@ -78,10 +78,12 @@ public class Post {
     private Set<Interest> interests = new HashSet<>();
 
     @OneToMany(mappedBy = "post", cascade = CascadeType.ALL)
+    @org.hibernate.annotations.BatchSize(size = 20)
     @Builder.Default
     private Set<PostLike> likes = new HashSet<>();
 
     @OneToMany(mappedBy = "post", cascade = CascadeType.ALL)
+    @org.hibernate.annotations.BatchSize(size = 20)
     @Builder.Default
     private Set<Comment> comments = new HashSet<>();
 
