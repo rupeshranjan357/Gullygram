@@ -16,7 +16,7 @@ jobs:
         image: postgres:15
         env:
           POSTGRES_DB: gullygram_test
-          POSTGRES_USER: test_user
+          POSTGRES_USER: postgres
           POSTGRES_PASSWORD: test_pass
         ports:
           - 5432:5432
@@ -40,7 +40,7 @@ jobs:
         run: ./mvnw test -B
         env:
           SPRING_DATASOURCE_URL: jdbc:postgresql://localhost:5432/gullygram_test
-          SPRING_DATASOURCE_USERNAME: test_user
+          SPRING_DATASOURCE_USERNAME: postgres
           SPRING_DATASOURCE_PASSWORD: test_pass
       
       - name: Build Backend
