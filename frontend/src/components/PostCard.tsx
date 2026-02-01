@@ -74,7 +74,7 @@ export const PostCard: React.FC<PostCardProps> = ({ post }) => {
         return url;
     };
 
-    const finalAvatarUrl = getImageUrl(avatarUrl || '');
+
 
     return (
         <div

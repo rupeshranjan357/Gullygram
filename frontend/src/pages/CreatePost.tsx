@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useMutation, useQuery } from '@tanstack/react-query';
-import { ArrowLeft, MapPin, Tag, Loader, Image as ImageIcon, X } from 'lucide-react';
+import { ArrowLeft, MapPin, Tag, Loader, X } from 'lucide-react';
 import { postService } from '@/services/postService';
 import { interestService } from '@/services/interestService';
 import { Button } from '@/components/ui/Button';
