@@ -1,12 +1,15 @@
 package com.gullygram.backend.service;
 
+import com.gullygram.backend.entity.Notification;
 import com.gullygram.backend.entity.Post;
 import com.gullygram.backend.entity.PostLike;
 import com.gullygram.backend.entity.User;
+import com.gullygram.backend.entity.UserProfile;
 import com.gullygram.backend.exception.ResourceNotFoundException;
 import com.gullygram.backend.repository.PostLikeRepository;
 import com.gullygram.backend.repository.PostRepository;
 import com.gullygram.backend.repository.UserRepository;
+import com.gullygram.backend.repository.UserProfileRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -23,6 +26,8 @@ public class LikeService {
     private final PostLikeRepository postLikeRepository;
     private final PostRepository postRepository;
     private final UserRepository userRepository;
+    private final UserProfileRepository userProfileRepository;
+    private final NotificationService notificationService;
 
     @Transactional
     public boolean toggleLike(UUID postId, UUID userId) {
@@ -48,6 +53,21 @@ public class LikeService {
                 .build();
             postLikeRepository.save(postLike);
             log.info("User {} liked post {}", userId, postId);
+            
+            // Create notification for post author (don't notify if liking own post)
+            if (!post.getAuthor().getId().equals(userId)) {
+                UserProfile likerProfile = userProfileRepository.findByUserId(userId).orElse(null);
+                String likerAlias = likerProfile != null ? likerProfile.getAlias() : "Someone";
+                notificationService.createNotification(
+                    post.getAuthor().getId(),
+                    Notification.NotificationType.POST_LIKE,
+                    userId,
+                    "POST",
+                    postId,
+                    likerAlias + " liked your post"
+                );
+            }
+            
             return true;
         }
     }

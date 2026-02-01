@@ -25,6 +25,7 @@ public class PostResponse {
     private Double latitude;
     private Double longitude;
     private Integer visibilityRadiusKm;
+    private Double distance; // Distance from user in km
     private Set<InterestResponse> interests;
     private Long likeCount;
     private Long commentCount;

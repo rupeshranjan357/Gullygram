@@ -40,4 +40,34 @@ public interface PostRepository extends JpaRepository<Post, UUID> {
      */
     @Query("SELECT p FROM Post p WHERE p.author.id = :authorId AND p.deletedAt IS NULL ORDER BY p.createdAt DESC")
     Page<Post> findByAuthorId(@Param("authorId") UUID authorId, Pageable pageable);
+
+    @Query(value = "SELECT * FROM post p " +
+           "WHERE p.deleted_at IS NULL " +
+           "AND p.lat BETWEEN :minLat AND :maxLat " +
+           "AND p.lon BETWEEN :minLon AND :maxLon " +
+           "AND to_tsvector('english', p.text) @@ plainto_tsquery('english', :query) " +
+           "ORDER BY p.created_at DESC", nativeQuery = true)
+    Page<Post> searchPosts(
+        @Param("query") String query,
+        @Param("minLat") double minLat,
+        @Param("maxLat") double maxLat,
+        @Param("minLon") double minLon,
+        @Param("maxLon") double maxLon,
+        Pageable pageable
+    );
+
+    @Query(value = "SELECT * FROM post p " +
+           "WHERE p.deleted_at IS NULL " +
+           "AND p.lat BETWEEN :minLat AND :maxLat " +
+           "AND p.lon BETWEEN :minLon AND :maxLon " +
+           "AND p.text LIKE %:hashtag% " +
+           "ORDER BY p.created_at DESC", nativeQuery = true)
+    Page<Post> searchHashtags(
+        @Param("hashtag") String hashtag,
+        @Param("minLat") double minLat,
+        @Param("maxLat") double maxLat,
+        @Param("minLon") double minLon,
+        @Param("maxLon") double maxLon,
+        Pageable pageable
+    );
 }

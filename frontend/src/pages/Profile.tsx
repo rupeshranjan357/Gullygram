@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
 import { InterestPill } from '@/components/ui/InterestPill';
 import { BottomNav } from '@/components/BottomNav';
+import { ImageUpload } from '@/components/ImageUpload';
 import { profileService } from '@/services/profileService';
 import { interestService } from '@/services/interestService';
 import { relationshipService } from '@/services/relationshipService';
@@ -20,7 +21,8 @@ export const Profile: React.FC = () => {
     const [editForm, setEditForm] = useState({
         alias: '',
         realName: '',
-        bio: ''
+        bio: '',
+        avatarUrlAlias: ''
     });
 
     const { data: profileData, isLoading } = useQuery({
@@ -50,7 +52,8 @@ export const Profile: React.FC = () => {
             setEditForm({
                 alias: profileData.alias || '',
                 realName: profileData.realName || '',
-                bio: profileData.bio || ''
+                bio: profileData.bio || '',
+                avatarUrlAlias: profileData.avatarUrlAlias || ''
             });
         }
     }, [profileData]);
@@ -80,8 +83,13 @@ export const Profile: React.FC = () => {
         updateProfileMutation.mutate({
             alias: editForm.alias,
             realName: editForm.realName,
-            bio: editForm.bio
+            bio: editForm.bio,
+            avatarUrlAlias: editForm.avatarUrlAlias
         });
+    };
+
+    const handleAvatarUploaded = (url: string) => {
+        setEditForm(prev => ({ ...prev, avatarUrlAlias: url }));
     };
 
     if (isLoading) {
@@ -93,7 +101,7 @@ export const Profile: React.FC = () => {
             {/* Edit Profile Modal */}
             {isEditing && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 animate-fade-in">
-                    <div className="bg-white rounded-xl shadow-xl w-full max-w-md p-6 relative">
+                    <div className="bg-white rounded-xl shadow-xl w-full max-w-md p-6 relative h-[80vh] overflow-y-auto">
                         <button
                             onClick={() => setIsEditing(false)}
                             className="absolute top-4 right-4 text-gray-400 hover:text-gray-600"
@@ -103,6 +111,19 @@ export const Profile: React.FC = () => {
                         <h2 className="text-xl font-bold mb-6">Edit Profile</h2>
 
                         <form onSubmit={handleEditSubmit} className="space-y-4">
+                            <div className="flex justify-center mb-6">
+                                <div className="w-32 h-32">
+                                    <ImageUpload
+                                        currentImageUrl={editForm.avatarUrlAlias}
+                                        onImageUploaded={handleAvatarUploaded}
+                                        folder="avatars"
+                                        circle={true}
+                                        label="Upload Avatar"
+                                        className="w-full h-full"
+                                    />
+                                </div>
+                            </div>
+
                             <Input
                                 label="Alias (Username)"
                                 value={editForm.alias}
@@ -170,10 +191,18 @@ export const Profile: React.FC = () => {
                     <div className="flex justify-center -mt-20 mb-4">
                         <div className="relative">
                             <div className="w-32 h-32 rounded-full gradient-primary p-1">
-                                <div className="w-full h-full rounded-full bg-white flex items-center justify-center">
-                                    <div className="w-28 h-28 rounded-full bg-gradient-to-br from-purple-200 to-blue-200 flex items-center justify-center text-4xl font-bold text-primary-purple">
-                                        {profileData?.alias?.[0]?.toUpperCase() || alias?.[0]?.toUpperCase() || 'U'}
-                                    </div>
+                                <div className="w-full h-full rounded-full bg-white flex items-center justify-center overflow-hidden">
+                                    {profileData?.avatarUrlAlias ? (
+                                        <img
+                                            src={profileData.avatarUrlAlias}
+                                            alt="Profile"
+                                            className="w-full h-full object-cover"
+                                        />
+                                    ) : (
+                                        <div className="w-full h-full bg-gradient-to-br from-purple-200 to-blue-200 flex items-center justify-center text-4xl font-bold text-primary-purple">
+                                            {profileData?.alias?.[0]?.toUpperCase() || alias?.[0]?.toUpperCase() || 'U'}
+                                        </div>
+                                    )}
                                 </div>
                             </div>
                             <button

@@ -3,6 +3,7 @@ package com.gullygram.backend.service;
 import com.gullygram.backend.dto.request.FriendRequestDTO;
 import com.gullygram.backend.dto.response.RelationshipResponse;
 import com.gullygram.backend.dto.response.UserSummary;
+import com.gullygram.backend.entity.Notification;
 import com.gullygram.backend.entity.Relationship;
 import com.gullygram.backend.entity.Relationship.RelationshipStatus;
 import com.gullygram.backend.entity.User;
@@ -31,6 +32,7 @@ public class RelationshipService {
     private final UserRepository userRepository;
     private final UserProfileRepository userProfileRepository;
     private final AuthorViewService authorViewService;
+    private final NotificationService notificationService;
 
     /**
      * Send a friend request to another user
@@ -91,6 +93,19 @@ public class RelationshipService {
 
         Relationship saved = relationshipRepository.save(relationship);
         log.info("User {} sent friend request to user {}", requesterId, receiverId);
+        
+        
+        // Create notification for receiver
+        UserProfile requesterProfile = userProfileRepository.findByUserId(requesterId).orElse(null);
+        String requesterAlias = requesterProfile != null ? requesterProfile.getAlias() : "Someone";
+        notificationService.createNotification(
+            receiverId,
+            Notification. NotificationType.FRIEND_REQUEST,
+            requesterId,
+            "RELATIONSHIP",
+            saved.getId(),
+            requesterAlias + " sent you a friend request"
+        );
 
         return buildRelationshipResponse(saved, requesterId);
     }
@@ -121,6 +136,19 @@ public class RelationshipService {
         
         log.info("User {} accepted friend request from user {}", 
                  relationship.getReceiver().getId(), relationship.getRequester().getId());
+        
+        
+        // Create notification for requester
+        UserProfile accepterProfile = userProfileRepository.findByUserId(relationship.getReceiver().getId()).orElse(null);
+        String accepterAlias = accepterProfile != null ? accepterProfile.getAlias() : "Someone";
+        notificationService.createNotification(
+            relationship.getRequester().getId(),
+            Notification.NotificationType.FRIEND_ACCEPT,
+            relationship.getReceiver().getId(),
+            "RELATIONSHIP",
+            saved.getId(),
+            accepterAlias + " accepted your friend request"
+        );
 
         return buildRelationshipResponse(saved, userId);
     }

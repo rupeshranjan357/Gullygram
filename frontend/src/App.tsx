@@ -12,10 +12,12 @@ import { Feed } from '@/pages/Feed';
 import { CreatePost } from '@/pages/CreatePost';
 import { PostDetail } from '@/pages/PostDetail';
 import { Discover } from '@/pages/Discover';
+import Search from '@/pages/Search';
 import { UserProfile } from '@/pages/UserProfile';
 import { Messages } from '@/pages/Messages';
 import { Chat } from '@/pages/Chat';
 import { NewChat } from '@/pages/NewChat';
+import Notifications from '@/pages/Notifications';
 import { ProtectedRoute } from '@/components/ProtectedRoute';
 import { useAuthStore } from '@/store/authStore';
 
@@ -118,6 +120,14 @@ const AppRoutes: React.FC = () => {
                 }
             />
             <Route
+                path="/search"
+                element={
+                    <ProtectedRoute>
+                        <Search />
+                    </ProtectedRoute>
+                }
+            />
+            <Route
                 path="/user/:userId"
                 element={
                     <ProtectedRoute>
@@ -162,6 +172,14 @@ const AppRoutes: React.FC = () => {
                 element={
                     <ProtectedRoute>
                         <NewChat />
+                    </ProtectedRoute>
+                }
+            />
+            <Route
+                path="/notifications"
+                element={
+                    <ProtectedRoute>
+                        <Notifications />
                     </ProtectedRoute>
                 }
             />

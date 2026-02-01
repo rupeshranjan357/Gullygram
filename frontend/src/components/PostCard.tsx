@@ -4,6 +4,7 @@ import { MessageCircle, MapPin, Clock, Lock, UserCheck, Shield } from 'lucide-re
 import { LikeButton } from './LikeButton';
 import { FeedPost } from '@/services/feedService';
 import { formatDistanceToNow } from 'date-fns';
+import { api } from '@/services/api';
 
 interface PostCardProps {
     post: FeedPost;
@@ -63,6 +64,17 @@ export const PostCard: React.FC<PostCardProps> = ({ post }) => {
     const avatarUrl = post.author.isFriend && post.author.realAvatarUrl
         ? post.author.realAvatarUrl
         : post.author.avatarUrl;
+
+    const getImageUrl = (url: string) => {
+        if (!url) return '';
+        if (url.startsWith('http')) return url;
+        if (url.startsWith('/')) {
+            return `${api.defaults.baseURL?.replace('/api', '')}${url}`;
+        }
+        return url;
+    };
+
+    const finalAvatarUrl = getImageUrl(avatarUrl || '');
 
     return (
         <div
@@ -168,7 +180,7 @@ export const PostCard: React.FC<PostCardProps> = ({ post }) => {
                         {post.mediaUrls.map((url, idx) => (
                             <img
                                 key={idx}
-                                src={url}
+                                src={getImageUrl(url)}
                                 alt={`Post media ${idx + 1}`}
                                 className="rounded-lg max-h-80 w-full object-cover"
                             />

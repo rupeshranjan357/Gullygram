@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useMutation, useQuery } from '@tanstack/react-query';
-import { ArrowLeft, MapPin, Tag, Loader } from 'lucide-react';
+import { ArrowLeft, MapPin, Tag, Loader, Image as ImageIcon, X } from 'lucide-react';
 import { postService } from '@/services/postService';
 import { interestService } from '@/services/interestService';
 import { Button } from '@/components/ui/Button';
+import { ImageUpload } from '@/components/ImageUpload';
 
 const POST_TYPES = [
     { value: 'GENERAL', label: 'General', icon: '💬' },
@@ -23,6 +24,7 @@ export const CreatePost: React.FC = () => {
     const [location, setLocation] = useState<{ lat: number; lon: number } | null>(null);
     const [locationError, setLocationError] = useState('');
     const [friendsOnly, setFriendsOnly] = useState(false);
+    const [mediaUrls, setMediaUrls] = useState<string[]>([]);
 
     // Get user location
     useEffect(() => {
@@ -58,17 +60,14 @@ export const CreatePost: React.FC = () => {
         },
         onError: (error: any) => {
             console.error('Failed to create post:', error);
-            // Fallback alert if UI doesn't show it clearly
             alert(`Failed to create post: ${error.message || 'Unknown error'}`);
         }
     });
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
-        console.log('Submitting post...', { text, type, location, radius, selectedInterests });
 
         if (!text.trim() || !location) {
-            console.warn('Validation failed: text or location missing');
             return;
         }
 
@@ -80,6 +79,7 @@ export const CreatePost: React.FC = () => {
             visibilityRadiusKm: radius,
             interestIds: selectedInterests.length > 0 ? selectedInterests : undefined,
             friendsOnly,
+            mediaUrls: mediaUrls.filter(Boolean),
         });
     };
 
@@ -89,6 +89,16 @@ export const CreatePost: React.FC = () => {
                 ? prev.filter(id => id !== interestId)
                 : [...prev, interestId]
         );
+    };
+
+    const handleImageUploaded = (url: string) => {
+        if (url) {
+            setMediaUrls(prev => [...prev, url]);
+        }
+    };
+
+    const removeImage = (indexToRemove: number) => {
+        setMediaUrls(prev => prev.filter((_, index) => index !== indexToRemove));
     };
 
     if (!location) {
@@ -125,26 +135,64 @@ export const CreatePost: React.FC = () => {
             {/* Form */}
             <form onSubmit={handleSubmit} className="max-w-2xl mx-auto px-4 py-6">
                 <div className="bg-white rounded-xl shadow-md p-6 space-y-6">
-                    {/* Text Input */}
-                    <div>
-                        <label className="block text-sm font-semibold text-gray-700 mb-2">
-                            What's happening?
-                        </label>
-                        <textarea
-                            value={text}
-                            onChange={(e) => setText(e.target.value)}
-                            placeholder="Share something with your local community..."
-                            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-purple focus:border-transparent resize-none"
-                            rows={6}
-                            maxLength={1000}
-                            required
-                        />
-                        <div className="flex justify-between mt-2">
-                            <span className="text-sm text-gray-500">
-                                {text.length}/1000 characters
-                            </span>
+                    {/* Text Input & Post Type */}
+                    <div className="space-y-4">
+                        <div>
+                            <label className="block text-sm font-semibold text-gray-700 mb-2">
+                                What's happening?
+                            </label>
+                            <textarea
+                                value={text}
+                                onChange={(e) => setText(e.target.value)}
+                                placeholder="Share something with your local community..."
+                                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-purple focus:border-transparent resize-none"
+                                rows={4}
+                                maxLength={1000}
+                                required
+                            />
+                            <div className="flex justify-between mt-2">
+                                <span className="text-sm text-gray-500">
+                                    {text.length}/1000 characters
+                                </span>
+                            </div>
                         </div>
+
+                        {/* Inline Image Preview */}
+                        {mediaUrls.length > 0 && (
+                            <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
+                                {mediaUrls.map((url, index) => (
+                                    <div key={index} className="relative aspect-square rounded-lg overflow-hidden group">
+                                        <img src={url} alt={`Upload ${index + 1}`} className="w-full h-full object-cover" />
+                                        <button
+                                            type="button"
+                                            onClick={() => removeImage(index)}
+                                            className="absolute top-1 right-1 bg-black/50 text-white p-1 rounded-full hover:bg-black/70 transition-colors"
+                                        >
+                                            <X size={14} />
+                                        </button>
+                                    </div>
+                                ))}
+                            </div>
+                        )}
+
+                        {/* Add Photo Button - Show only if less than 4 images */}
+                        {mediaUrls.length < 4 && (
+                            <div>
+                                <div className="inline-block">
+                                    <ImageUpload
+                                        currentImageUrl=""
+                                        onImageUploaded={handleImageUploaded}
+                                        folder="posts"
+                                        label={mediaUrls.length === 0 ? "Add Photos" : "Add Another"}
+                                        className="w-32 h-32"
+                                    />
+                                </div>
+                                <p className="text-xs text-gray-500 mt-1">Max 4 photos</p>
+                            </div>
+                        )}
                     </div>
+
+                    <hr className="border-gray-100" />
 
                     {/* Post Type */}
                     <div>
@@ -248,15 +296,6 @@ export const CreatePost: React.FC = () => {
                             Your post will be visible to people within {radius}km of your current location
                         </p>
                     </div>
-
-                    {/* Error Display */}
-                    {createPostMutation.isError && (
-                        <div className="bg-red-50 border border-red-200 rounded-lg p-3">
-                            <p className="text-sm text-red-800">
-                                Failed to create post. Please try again.
-                            </p>
-                        </div>
-                    )}
 
                     {/* Submit Button */}
                     <div className="flex gap-3">

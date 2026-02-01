@@ -7,10 +7,13 @@ import com.gullygram.backend.dto.response.MessageResponse;
 import com.gullygram.backend.dto.response.AuthorView;
 import com.gullygram.backend.entity.Conversation;
 import com.gullygram.backend.entity.Message;
+import com.gullygram.backend.entity.Notification;
 import com.gullygram.backend.entity.User;
+import com.gullygram.backend.entity.UserProfile;
 import com.gullygram.backend.repository.ConversationRepository;
 import com.gullygram.backend.repository.MessageRepository;
 import com.gullygram.backend.repository.UserRepository;
+import com.gullygram.backend.repository.UserProfileRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -37,6 +40,8 @@ public class MessageService {
     private final UserRepository userRepository;
     private final RelationshipService relationshipService;
     private final AuthorViewService authorViewService;
+    private final UserProfileRepository userProfileRepository;
+    private final NotificationService notificationService;
 
     /**
      * Send a message to a friend
@@ -78,6 +83,18 @@ public class MessageService {
         conversationRepository.save(conversation);
 
         log.info("Message sent successfully: {}", message.getId());
+        
+        // Create notification for recipient
+        UserProfile senderProfile = userProfileRepository.findByUserId(senderId).orElse(null);
+        String senderAlias = senderProfile != null ? senderProfile.getAlias() : "Someone";
+        notificationService.createNotification(
+            recipient.getId(),
+            Notification.NotificationType.NEW_MESSAGE,
+            senderId,
+            "MESSAGE",
+            message.getId(),
+            senderAlias + " sent you a message"
+        );
         return convertToMessageResponse(message, senderId);
     }
 
