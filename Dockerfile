@@ -15,6 +15,7 @@ COPY --from=builder /app/target/*.jar app.jar
 
 # Add non-root user for security
 RUN addgroup -S spring && adduser -S spring -G spring
+RUN mkdir uploads && chown spring:spring uploads
 USER spring:spring
 
 EXPOSE 8080
