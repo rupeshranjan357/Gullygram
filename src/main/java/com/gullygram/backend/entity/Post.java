@@ -92,6 +92,15 @@ public class Post {
     @Builder.Default
     private PostVisibility visibility = PostVisibility.PUBLIC;
 
+    @Column(name = "event_date")
+    private LocalDateTime eventDate;
+
+    @Column(name = "event_location_name")
+    private String eventLocationName;
+
+    @Column(name = "event_city", length = 100)
+    private String eventCity;
+
     public enum PostType {
         GENERAL,
         LOCAL_NEWS,

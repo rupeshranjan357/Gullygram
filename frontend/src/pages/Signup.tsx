@@ -148,6 +148,55 @@ export const Signup: React.FC = () => {
                         </div>
                     )}
 
+                    {/* Account Type Toggle */}
+                    <div className="bg-purple-50 p-4 rounded-lg">
+                        <label className="flex items-center justify-between cursor-pointer mb-2">
+                            <span className="text-gray-900 font-medium">Register as Company?</span>
+                            <div className="relative inline-block w-12 h-6 align-middle select-none transition duration-200 ease-in">
+                                <input
+                                    type="checkbox"
+                                    name="isCompany"
+                                    id="accountTypeToggle"
+                                    checked={formData.accountType === 'COMPANY'}
+                                    onChange={(e) => setFormData({
+                                        ...formData,
+                                        accountType: e.target.checked ? 'COMPANY' : 'INDIVIDUAL',
+                                        marketingCategory: e.target.checked ? 'TECH' : undefined
+                                    })}
+                                    className="toggle-checkbox absolute block w-6 h-6 rounded-full bg-white border-4 appearance-none cursor-pointer"
+                                    style={{ right: formData.accountType === 'COMPANY' ? '0' : '50%' }}
+                                />
+                                <label
+                                    htmlFor="accountTypeToggle"
+                                    className={`toggle-label block overflow-hidden h-6 rounded-full cursor-pointer ${formData.accountType === 'COMPANY' ? 'bg-primary-purple' : 'bg-gray-300'}`}
+                                ></label>
+                            </div>
+                        </label>
+                        {formData.accountType === 'COMPANY' && (
+                            <p className="text-xs text-gray-600">Companies can create Marketing posts (1 per day).</p>
+                        )}
+                    </div>
+
+                    {/* Marketing Category (Only for Company) */}
+                    {formData.accountType === 'COMPANY' && (
+                        <div>
+                            <label className="block text-sm font-semibold text-gray-700 mb-2">Marketing Category</label>
+                            <select
+                                name="marketingCategory"
+                                value={formData.marketingCategory}
+                                onChange={(e) => setFormData({ ...formData, marketingCategory: e.target.value })}
+                                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-purple focus:border-transparent"
+                            >
+                                <option value="TECH">Technology</option>
+                                <option value="FASHION">Fashion</option>
+                                <option value="FOOD">Food & Beverage</option>
+                                <option value="ENTERTAINMENT">Entertainment</option>
+                                <option value="SPORTS">Sports</option>
+                                <option value="NEWS">News</option>
+                            </select>
+                        </div>
+                    )}
+
                     <Button
                         type="submit"
                         variant="primary"

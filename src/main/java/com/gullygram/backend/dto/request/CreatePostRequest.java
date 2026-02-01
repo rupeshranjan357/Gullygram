@@ -44,4 +44,7 @@ public class CreatePostRequest {
     @Builder.Default
     private boolean friendsOnly = false;
 
+    private String eventDate; // ISO format
+    private String eventLocationName;
+    private String eventCity;
 }

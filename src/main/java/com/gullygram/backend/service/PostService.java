@@ -35,6 +35,7 @@ public class PostService {
     private final PostLikeRepository postLikeRepository;
     private final CommentRepository commentRepository;
     private final AuthorViewService authorViewService;
+    private final MarketplaceService marketplaceService;
 
     @Transactional
     public PostResponse createPost(UUID userId, CreatePostRequest request) {
@@ -49,8 +50,13 @@ public class PostService {
         User user = userRepository.findById(userId)
             .orElseThrow(() -> new ResourceNotFoundException("User not found"));
 
+        // Validate Marketing Rate Limit
+        if (request.getType() == Post.PostType.MARKETING) {
+            marketplaceService.validateMarketingPostLimit(user);
+        }
+
         // Build post
-        Post post = Post.builder()
+        Post.PostBuilder postBuilder = Post.builder()
             .author(user)
             .type(request.getType())
             .text(request.getText())
@@ -58,8 +64,18 @@ public class PostService {
             .lon(request.getLongitude())
             .geohash(GeoUtil.generateGeohash(request.getLatitude(), request.getLongitude()))
             .visibilityRadiusKm(request.getVisibilityRadiusKm() != null ? request.getVisibilityRadiusKm() : 10)
-            .visibility(request.isFriendsOnly() ? Post.PostVisibility.FRIENDS_ONLY : Post.PostVisibility.PUBLIC)
-            .build();
+            .visibility(request.isFriendsOnly() ? Post.PostVisibility.FRIENDS_ONLY : Post.PostVisibility.PUBLIC);
+
+        // Map Event Fields
+        if (request.getType() == Post.PostType.EVENT_PROMO) {
+            if (request.getEventDate() != null) {
+                postBuilder.eventDate(java.time.LocalDateTime.parse(request.getEventDate()));
+            }
+            postBuilder.eventLocationName(request.getEventLocationName());
+            postBuilder.eventCity(request.getEventCity());
+        }
+
+        Post post = postBuilder.build();
 
         // Set media URLs directly (converter will handle JSON conversion)
         if (request.getMediaUrls() != null && !request.getMediaUrls().isEmpty()) {
@@ -77,8 +93,11 @@ public class PostService {
             post.setInterests(interests);
         }
 
-
         Post savedPost = postRepository.save(post);
+        
+        // Handle post-creation logic (e.g., updating limits)
+        marketplaceService.handlePostCreated(user, savedPost);
+
         log.info("Created post {} by user {} at location ({}, {})", 
                 savedPost.getId(), userId, request.getLatitude(), request.getLongitude());
 

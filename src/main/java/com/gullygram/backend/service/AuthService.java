@@ -69,6 +69,12 @@ public class AuthService {
             .phone(request.getPhone())
             .passwordHash(passwordEncoder.encode(request.getPassword()))
             .status(User.UserStatus.ACTIVE)
+            .accountType(
+                "COMPANY".equalsIgnoreCase(request.getAccountType()) 
+                ? User.AccountType.COMPANY 
+                : User.AccountType.INDIVIDUAL
+            )
+            .marketingCategory(request.getMarketingCategory())
             .build();
 
         user = userRepository.save(user);

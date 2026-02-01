@@ -11,6 +11,9 @@ export interface CreatePostRequest {
     interestIds?: number[];
     mediaUrls?: string[];
     friendsOnly?: boolean;
+    eventDate?: string;
+    eventCity?: string;
+    eventLocationName?: string;
 }
 
 export interface PostDetail extends FeedPost {

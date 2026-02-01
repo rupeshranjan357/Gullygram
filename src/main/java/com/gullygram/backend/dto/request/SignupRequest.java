@@ -24,4 +24,8 @@ public class SignupRequest {
     private String alias;
     
     private String realName;
+
+    // Company Registration Fields
+    private String accountType; // "INDIVIDUAL" or "COMPANY"
+    private String marketingCategory;
 }

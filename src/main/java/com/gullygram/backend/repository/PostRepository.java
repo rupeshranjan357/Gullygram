@@ -10,6 +10,7 @@ import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
 import java.util.UUID;
+import java.util.List;
 
 @Repository
 public interface PostRepository extends JpaRepository<Post, UUID> {
@@ -70,4 +71,22 @@ public interface PostRepository extends JpaRepository<Post, UUID> {
         @Param("maxLon") double maxLon,
         Pageable pageable
     );
+
+    // Find upcoming events in a specific city
+    @Query("SELECT p FROM Post p WHERE p.type = 'EVENT_PROMO' AND LOWER(p.eventCity) = LOWER(:city) AND p.eventDate > CURRENT_TIMESTAMP ORDER BY p.eventDate ASC")
+    List<java.util.UUID> findUpcomingEventsByCityIds(@Param("city") String city);
+    
+    default java.util.List<Post> findUpcomingEventsByCity(String city) {
+        // Workaround for JPQL with PostType enum if needed, or straight JPQL
+        return this.findPostsByEventCity(city);
+    }
+    
+    @Query("SELECT p FROM Post p WHERE p.type = 'EVENT_PROMO' AND LOWER(p.eventCity) = LOWER(:city) AND p.eventDate > CURRENT_TIMESTAMP ORDER BY p.eventDate ASC")
+    java.util.List<Post> findPostsByEventCity(@Param("city") String city);
+
+
+    @Query("SELECT p FROM Post p WHERE p.type = 'EVENT_PROMO' AND p.eventDate > CURRENT_TIMESTAMP AND " +
+           "(6371 * acos(cos(radians(:lat)) * cos(radians(p.lat)) * cos(radians(p.lon) - radians(:lon)) + sin(radians(:lat)) * sin(radians(p.lat)))) < :radius " +
+           "ORDER BY p.eventDate ASC")
+    java.util.List<Post> findUpcomingEventsNearby(@Param("lat") double lat, @Param("lon") double lon, @Param("radius") double radius);
 }

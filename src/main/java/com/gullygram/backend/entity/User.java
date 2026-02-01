@@ -48,7 +48,22 @@ public class User {
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private UserProfile profile;
 
+    @Enumerated(EnumType.STRING)
+    @Column(name = "account_type", length = 20)
+    @Builder.Default
+    private AccountType accountType = AccountType.INDIVIDUAL;
+
+    @Column(name = "marketing_category", length = 50)
+    private String marketingCategory;
+
+    @Column(name = "last_marketing_post_at")
+    private LocalDateTime lastMarketingPostAt;
+
     public enum UserStatus {
         ACTIVE, SUSPENDED, DELETED
+    }
+
+    public enum AccountType {
+        INDIVIDUAL, COMPANY
     }
 }

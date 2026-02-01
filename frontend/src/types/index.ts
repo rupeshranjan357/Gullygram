@@ -65,6 +65,8 @@ export interface SignupRequest {
     password: string;
     alias: string;
     realName?: string;
+    accountType?: 'INDIVIDUAL' | 'COMPANY';
+    marketingCategory?: string;
 }
 
 export interface LoginRequest {

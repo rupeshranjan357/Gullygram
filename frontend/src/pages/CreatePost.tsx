@@ -26,6 +26,11 @@ export const CreatePost: React.FC = () => {
     const [friendsOnly, setFriendsOnly] = useState(false);
     const [mediaUrls, setMediaUrls] = useState<string[]>([]);
 
+    // Event State
+    const [eventDate, setEventDate] = useState('');
+    const [eventCity, setEventCity] = useState('');
+    const [eventLocationName, setEventLocationName] = useState('');
+
     // Get user location
     useEffect(() => {
         if ('geolocation' in navigator) {
@@ -78,8 +83,11 @@ export const CreatePost: React.FC = () => {
             longitude: location.lon,
             visibilityRadiusKm: radius,
             interestIds: selectedInterests.length > 0 ? selectedInterests : undefined,
-            friendsOnly,
+            friendsOnly: friendsOnly,
             mediaUrls: mediaUrls.filter(Boolean),
+            eventDate: type === 'EVENT_PROMO' ? eventDate : undefined,
+            eventCity: type === 'EVENT_PROMO' ? eventCity : undefined,
+            eventLocationName: type === 'EVENT_PROMO' ? eventLocationName : undefined,
         });
     };
 
@@ -188,6 +196,46 @@ export const CreatePost: React.FC = () => {
                                     />
                                 </div>
                                 <p className="text-xs text-gray-500 mt-1">Max 4 photos</p>
+                            </div>
+                        )}
+                        {/* Event Details (Only for EVENT_PROMO) */}
+                        {type === 'EVENT_PROMO' && (
+                            <div className="space-y-4 bg-purple-50 p-4 rounded-lg border border-purple-100">
+                                <h3 className="font-semibold text-purple-900">Event Details</h3>
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    <div>
+                                        <label className="block text-sm font-medium text-purple-900 mb-1">Event Date</label>
+                                        <input
+                                            type="datetime-local"
+                                            className="w-full p-2 border rounded-md"
+                                            value={eventDate}
+                                            onChange={(e) => setEventDate(e.target.value)}
+                                            required={type === 'EVENT_PROMO'}
+                                        />
+                                    </div>
+                                    <div>
+                                        <label className="block text-sm font-medium text-purple-900 mb-1">City</label>
+                                        <input
+                                            type="text"
+                                            placeholder="e.g. Bangalore"
+                                            className="w-full p-2 border rounded-md"
+                                            value={eventCity}
+                                            onChange={(e) => setEventCity(e.target.value)}
+                                            required={type === 'EVENT_PROMO'}
+                                        />
+                                    </div>
+                                    <div className="md:col-span-2">
+                                        <label className="block text-sm font-medium text-purple-900 mb-1">Venue / Location Name</label>
+                                        <input
+                                            type="text"
+                                            placeholder="e.g. Chinnaswamy Stadium"
+                                            className="w-full p-2 border rounded-md"
+                                            value={eventLocationName}
+                                            onChange={(e) => setEventLocationName(e.target.value)}
+                                            required={type === 'EVENT_PROMO'}
+                                        />
+                                    </div>
+                                </div>
                             </div>
                         )}
                     </div>
