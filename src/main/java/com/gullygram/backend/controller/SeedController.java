@@ -24,4 +24,10 @@ public class SeedController {
         seedContentService.seedIndiranagar();
         return ResponseEntity.ok(new ApiResponse<>(true, "Seeded Indiranagar content successfully", null));
     }
+
+    @PostMapping("/custom")
+    public ResponseEntity<ApiResponse<String>> seedCustom(@RequestParam double lat, @RequestParam double lon) {
+        seedContentService.seedCustomLocation(lat, lon);
+        return ResponseEntity.ok(new ApiResponse<>(true, "Seeded content at " + lat + ", " + lon, null));
+    }
 }

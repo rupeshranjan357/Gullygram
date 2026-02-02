@@ -76,6 +76,33 @@ public class SeedContentService {
         log.info("Seeded Indiranagar content");
     }
 
+    @Transactional
+    public void seedCustomLocation(double lat, double lon) {
+        User bot = getOrCreateBot();
+        String locationName = "Current Location";
+
+        // 1. Events nearby
+        createEvent(bot, "Local Tech Meetup", 
+            "Weekly developer hangout. Come say hi!", 
+            lat + 0.002, lon + 0.002, "Nearby Cafe", locationName, LocalDateTime.now().plusDays(1).withHour(18), "#Tech #Networking");
+
+        createEvent(bot, "Morning Yoga Session", 
+            "Open air yoga session tomorrow morning. Bring your mats!", 
+            lat - 0.002, lon - 0.001, "Local Park", locationName, LocalDateTime.now().plusDays(1).withHour(6), "#Fitness #Yoga");
+
+        // 2. Chatter around the user
+        createPost(bot, "Does anyone know if the gym nearby is open 24/7?", 
+            lat + 0.001, lon - 0.001, "#Fitness #Question");
+
+        createPost(bot, "Found a set of keys near the metro station. DM me if lost!", 
+            lat - 0.001, lon + 0.001, "#LostAndFound");
+            
+        createPost(bot, "Beautiful sunset today! ☀️", 
+            lat, lon, "#Nature #Vibes");
+
+        log.info("Seeded content at custom location: {}, {}", lat, lon);
+    }
+
     private User getOrCreateBot() {
         return userRepository.findByEmail(BOT_EMAIL)
             .orElseGet(() -> {
