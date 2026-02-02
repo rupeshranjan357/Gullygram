@@ -15,13 +15,12 @@ import java.util.UUID;
 
 @Entity
 @Table(name = "post")
-@Getter
-@Setter
-@ToString(exclude = {"author", "interests", "likes", "comments"})
-@EqualsAndHashCode(exclude = {"author", "interests", "likes", "comments"})
+@Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@ToString(exclude = {"author", "interests", "likes", "comments"})
+@EqualsAndHashCode(exclude = {"author", "interests", "likes", "comments"})
 public class Post {
 
     @Id

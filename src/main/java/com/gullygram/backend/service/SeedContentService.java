@@ -3,12 +3,15 @@ package com.gullygram.backend.service;
 import com.gullygram.backend.entity.Interest;
 import com.gullygram.backend.entity.Post;
 import com.gullygram.backend.entity.User;
+import com.gullygram.backend.entity.UserProfile;
 import com.gullygram.backend.repository.InterestRepository;
 import com.gullygram.backend.repository.PostRepository;
 import com.gullygram.backend.repository.UserRepository;
+import com.gullygram.backend.repository.UserProfileRepository;
 import com.gullygram.backend.util.GeoUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -22,7 +25,9 @@ public class SeedContentService {
 
     private final PostRepository postRepository;
     private final UserRepository userRepository;
-    private final InterestRepository interestRepository; 
+    private final UserProfileRepository userProfileRepository;
+    private final InterestRepository interestRepository;
+    private final PasswordEncoder passwordEncoder; 
 
     private static final String BOT_EMAIL = "community@gullygram.com";
     private static final String BOT_ALIAS = "GullyGuide";
@@ -108,12 +113,23 @@ public class SeedContentService {
             .orElseGet(() -> {
                 User newBot = User.builder()
                         .email(BOT_EMAIL)
-                        .password("Start123!") // Dummy
-                        .alias(BOT_ALIAS)
+                        .passwordHash(passwordEncoder.encode("Start123!")) // Dummy
                         .phone("+919999999999")
                         .status(User.UserStatus.ACTIVE)
                         .build();
-                return userRepository.save(newBot);
+                User savedBot = userRepository.save(newBot);
+                
+                // Create profile for bot
+                UserProfile botProfile = UserProfile.builder()
+                        .user(savedBot)
+                        .alias(BOT_ALIAS)
+                        .realName("Gully Guide")
+                        .bio("Your friendly neighborhood guide to local happenings!")
+                        .defaultRadiusKm(20)
+                        .build();
+                userProfileRepository.save(botProfile);
+                
+                return savedBot;
             });
     }
 

@@ -114,34 +114,7 @@ public class ProfileService {
         return buildProfileResponse(user, profile);
     }
 
-    private ProfileResponse buildProfileResponse(User user, UserProfile profile) {
-        return ProfileResponse.builder()
-            .userId(user.getId())
-            .email(user.getEmail())
-            .phone(user.getPhone())
-            .alias(profile.getAlias())
-            .realName(profile.getRealName())
-            .bio(profile.getBio())
-            .avatarUrlAlias(profile.getAvatarUrlAlias())
-            .avatarUrlReal(profile.getAvatarUrlReal())
-            .dob(profile.getDob())
-            .homeLat(profile.getHomeLat())
-            .homeLon(profile.getHomeLon())
-            .defaultRadiusKm(profile.getDefaultRadiusKm())
-            .lastSeenLat(profile.getLastSeenLat())
-            .lastSeenLon(profile.getLastSeenLon())
-            .lastSeenAt(profile.getLastSeenAt())
-            .interests(profile.getInterests().stream()
-                .map(interest -> InterestResponse.builder()
-                    .id(interest.getId())
-                    .name(interest.getName())
-                    .description(interest.getDescription())
-                    .build())
-                .collect(Collectors.toList()))
-            .trustScore(profile.getTrustScore())
-            .trustLevel(profile.getTrustLevel())
-            .friendsCount(relationshipRepository.countFriends(user.getId()))
-            .pendingRequestsCount(relationshipRepository.countPendingRequests(user.getId()))
-            .build();
-    }
+    private final UserRepository userRepository;
+    private final UserProfileRepository userProfileRepository;
+    private final RelationshipRepository relationshipRepository;
 }

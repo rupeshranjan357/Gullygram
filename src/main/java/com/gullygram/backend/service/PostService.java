@@ -178,4 +178,24 @@ public class PostService {
             .build();
     }
 
+    /**
+     * Extract hashtags from text (words starting with #)
+     */
+    private Set<String> extractHashtags(String text) {
+        Set<String> hashtags = new HashSet<>();
+        if (text == null || text.isEmpty()) {
+            return hashtags;
+        }
+        
+        // Match hashtags: # followed by alphanumeric characters
+        java.util.regex.Pattern pattern = java.util.regex.Pattern.compile("#(\\w+)");
+        java.util.regex.Matcher matcher = pattern.matcher(text);
+        
+        while (matcher.find()) {
+            hashtags.add(matcher.group(1).toLowerCase()); // Remove # and lowercase
+        }
+        
+        return hashtags;
+    }
+
 }

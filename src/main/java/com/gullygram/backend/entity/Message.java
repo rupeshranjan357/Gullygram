@@ -8,11 +8,10 @@ import java.util.UUID;
 
 @Entity
 @Table(name = "message")
-@Getter
-@Setter
+@Data
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
 public class Message {
 
     @Id
