@@ -53,7 +53,43 @@ Users can now discover local events using two primary filters: **City-wide** (fo
 
 ---
 
-## 3. Verification & Testing
+
+---
+
+## 3. Phase 3: Seed Content & Feed Algorithm 🚀
+
+### Overview
+To solve the "Cold Start" problem for demos and ensure relevant content discovery, we implemented a **Seed Engine** and a **Tiered Feed Algorithm**.
+
+### Architecture Changes
+*   **Seed Engine (`SeedContentService`)**:
+    *   **Bot User**: Automatically creates a "GullyGuide" bot account.
+    *   **Logic**: Generates realistic Events (Next 2-3 days) and Chatter (General posts) around specific coordinates.
+    *   **Endpoints**:
+        *   `POST /api/admin/seed/koramangala` (Fixed)
+        *   `POST /api/admin/seed/indiranagar` (Fixed)
+        *   `POST /api/admin/seed/custom?lat=..&lon=..` (Dynamic)
+
+*   **Tiered Feed (`FeedService`)**:
+    *   **Tier 1 (0-5km)**: Shows ALL posts (Hyper-local).
+    *   **Tier 2 (5-20km)**: Shows ONLY "Hyped" posts (>10 likes) OR "Interest Matches" (if Interest Boost is ON).
+    *   **Tier 3 (>20km)**: Filtered out unless explicitly searched.
+
+*   **Cloudinary Storage**:
+    *   Moved from local file system to Cloudinary for production-ready image hosting.
+    *   Configured via `STORAGE_TYPE=cloudinary` and API keys.
+
+### User Flow (Demo)
+1.  **Launch**: Deploy to Render.
+2.  **Seed**: Admin runs `./seed_data.sh` -> Selects target location.
+3.  **Experience**:
+    *   User opens Feed -> Sees standard "Nearby" content.
+    *   User changes location -> Content changes.
+    *   User adds Interest -> Tier 2 content matching interest appears from further away.
+
+---
+
+## 4. Verification & Testing
 
 ### automated_tests.sh / verify_week5_backend.sh
 We verified the following scenarios via `curl` scripts:
@@ -62,15 +98,17 @@ We verified the following scenarios via `curl` scripts:
 *   ✅ **Event Creation**: Event fields are persisted correctly.
 *   ✅ **City Search**: Returns events matching the city string.
 *   ✅ **Radius Search**: Returns events within the Haversine distance.
+*   ✅ **Seed Engine**: `/custom` endpoint successfully populates DB.
 
 ### Manual Verification Steps
 1.  **Run Server**: `./mvnw spring-boot:run`
-2.  **Login**: As a Company user.
-3.  **Test Limit**: Post an ad, then try immediately again. Confirm rejection.
-4.  **Events**: Create an event. Go to "Events" tab. Check if it appears in "In My City".
+2.  **Seed Data**: Run `./seed_data.sh`.
+3.  **Check Feed**: Verify posts appear in "Nearby" and respecting distance tiers.
+4.  **Cloudinary**: Upload a profile picture and verify it loads from `res.cloudinary.com`.
 
 ---
 
-## 4. Migration Details
+## 5. Migration Details
 *   **Script**: `src/main/resources/db/migration/V9__add_marketplace_events.sql`
 *   **Status**: Applied. Schema version is now **9**.
+

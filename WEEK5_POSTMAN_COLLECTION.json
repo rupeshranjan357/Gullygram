@@ -200,6 +200,78 @@
                     "response": []
                 }
             ]
+        },
+        {
+            "name": "Admin / Seed",
+            "item": [
+                {
+                    "name": "Seed Koramangala (Fixed)",
+                    "request": {
+                        "method": "POST",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/admin/seed/koramangala",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "admin",
+                                "seed",
+                                "koramangala"
+                            ]
+                        }
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Seed Indiranagar (Fixed)",
+                    "request": {
+                        "method": "POST",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/admin/seed/indiranagar",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "admin",
+                                "seed",
+                                "indiranagar"
+                            ]
+                        }
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Seed Custom Location",
+                    "request": {
+                        "method": "POST",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/admin/seed/custom?lat=12.9716&lon=77.5946",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "admin",
+                                "seed",
+                                "custom"
+                            ],
+                            "query": [
+                                {
+                                    "key": "lat",
+                                    "value": "12.9716"
+                                },
+                                {
+                                    "key": "lon",
+                                    "value": "77.5946"
+                                }
+                            ]
+                        }
+                    },
+                    "response": []
+                }
+            ]
         }
     ],
     "variable": [
