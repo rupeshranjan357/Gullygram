@@ -13,7 +13,7 @@ jobs:
     
     services:
       postgres:
-        image: postgres:15
+        image: postgis/postgis:15-3.4-alpine
         env:
           POSTGRES_DB: gullygram_test
           POSTGRES_USER: postgres
