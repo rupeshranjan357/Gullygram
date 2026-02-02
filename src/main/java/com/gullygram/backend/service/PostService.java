@@ -68,8 +68,13 @@ public class PostService {
 
         // Map Event Fields
         if (request.getType() == Post.PostType.EVENT_PROMO) {
-            if (request.getEventDate() != null) {
-                postBuilder.eventDate(java.time.LocalDateTime.parse(request.getEventDate()));
+            String dateStr = request.getEventDate();
+            if (dateStr != null && !dateStr.trim().isEmpty()) {
+                try {
+                    postBuilder.eventDate(java.time.LocalDateTime.parse(dateStr));
+                } catch (java.time.format.DateTimeParseException e) {
+                    throw new BadRequestException("Invalid event date format: " + dateStr);
+                }
             }
             postBuilder.eventLocationName(request.getEventLocationName());
             postBuilder.eventCity(request.getEventCity());
