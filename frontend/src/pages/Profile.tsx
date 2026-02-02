@@ -233,7 +233,9 @@ export const Profile: React.FC = () => {
                     {/* Stats */}
                     <div className="grid grid-cols-3 gap-4 mb-6">
                         <div className="text-center">
-                            <div className="text-2xl font-bold text-gray-900">42</div>
+                            <div className="text-2xl font-bold text-gray-900">
+                                {profileData?.postCount || 0}
+                            </div>
                             <div className="text-xs text-primary-purple font-semibold">Posts</div>
                         </div>
                         <button

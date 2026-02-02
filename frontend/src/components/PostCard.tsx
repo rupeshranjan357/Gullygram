@@ -5,6 +5,7 @@ import { LikeButton } from './LikeButton';
 import { FeedPost } from '@/services/feedService';
 import { formatDistanceToNow } from 'date-fns';
 import { api } from '@/services/api';
+import { useAuthStore } from '@/store/authStore';
 
 interface PostCardProps {
     post: FeedPost;
@@ -42,9 +43,15 @@ export const PostCard: React.FC<PostCardProps> = ({ post }) => {
         navigate(`/post/${post.id}`);
     };
 
+    const { userId } = useAuthStore();
+
     const handleAuthorClick = (e: React.MouseEvent) => {
         e.stopPropagation();
-        navigate(`/user/${post.author.userId}`);
+        if (post.author.userId === userId) {
+            navigate('/profile');
+        } else {
+            navigate(`/user/${post.author.userId}`);
+        }
     };
 
     const formatDistance = (distanceKm?: number) => {
@@ -53,7 +60,9 @@ export const PostCard: React.FC<PostCardProps> = ({ post }) => {
         return `${distanceKm.toFixed(1)}km away`;
     };
 
-    const timeAgo = formatDistanceToNow(new Date(post.createdAt), { addSuffix: true });
+    // Ensure we handle UTC correctly. If string lacks 'Z', we assume it's UTC.
+    const date = new Date(post.createdAt.endsWith('Z') ? post.createdAt : post.createdAt + 'Z');
+    const timeAgo = formatDistanceToNow(date, { addSuffix: true });
 
     // Determine what name to show
     const displayName = post.author.isFriend && post.author.realName

@@ -40,4 +40,6 @@ public class ProfileResponse {
     // Relationship counts
     private Long friendsCount;
     private Long pendingRequestsCount;
+    
+    private Long postCount;
 }

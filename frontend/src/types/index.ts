@@ -57,6 +57,7 @@ export interface ProfileResponse {
     lastSeenLon?: number;
     lastSeenAt?: string;
     interests: Interest[];
+    postCount?: number;
 }
 
 // Request Types

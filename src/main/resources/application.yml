@@ -29,3 +29,11 @@ app:
   otp:
     expiration-minutes: 5
     length: 6
+
+storage:
+  type: ${STORAGE_TYPE:local}
+
+cloudinary:
+  cloud-name: ${CLOUDINARY_CLOUD_NAME:placeholder}
+  api-key: ${CLOUDINARY_API_KEY:placeholder}
+  api-secret: ${CLOUDINARY_API_SECRET:placeholder}

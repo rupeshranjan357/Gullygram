@@ -25,6 +25,14 @@ services:
         generateValue: true
       - key: FRONTEND_URL
         value: https://gullygram-staging.vercel.app
+      - key: STORAGE_TYPE
+        value: cloudinary
+      - key: CLOUDINARY_CLOUD_NAME
+        sync: false
+      - key: CLOUDINARY_API_KEY
+        sync: false
+      - key: CLOUDINARY_API_SECRET
+        sync: false
     healthCheckPath: /api/health
 
 databases:

@@ -42,6 +42,8 @@ public interface PostRepository extends JpaRepository<Post, UUID> {
     @Query("SELECT p FROM Post p WHERE p.author.id = :authorId AND p.deletedAt IS NULL ORDER BY p.createdAt DESC")
     Page<Post> findByAuthorId(@Param("authorId") UUID authorId, Pageable pageable);
 
+    long countByAuthorId(UUID authorId);
+
     @Query(value = "SELECT * FROM post p " +
            "WHERE p.deleted_at IS NULL " +
            "AND p.lat BETWEEN :minLat AND :maxLat " +

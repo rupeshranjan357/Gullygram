@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useQuery } from '@tanstack/react-query';
+import { useInfiniteQuery } from '@tanstack/react-query';
 import { Plus, MapPin, Zap, RefreshCw, Loader } from 'lucide-react';
-import { feedService } from '@/services/feedService';
+import { feedService, FeedResponse } from '@/services/feedService';
 import { PostCard } from '@/components/PostCard';
 import { Button } from '@/components/ui/Button';
 import { BottomNav } from '@/components/BottomNav';
@@ -44,16 +44,28 @@ export const Feed: React.FC = () => {
         }
     }, [isAuthenticated, navigate]);
 
-    const { data: feedData, isLoading, isError, refetch } = useQuery({
+    const {
+        data: feedData,
+        isLoading,
+        isError,
+        refetch,
+        fetchNextPage,
+        hasNextPage,
+        isFetchingNextPage
+    } = useInfiniteQuery<FeedResponse>({
         queryKey: ['feed', location, radius, interestBoost],
-        queryFn: () => feedService.getFeed({
+        queryFn: ({ pageParam = 0 }) => feedService.getFeed({
             lat: location!.lat,
             lon: location!.lon,
             radiusKm: radius,
             interestBoost,
-            page: 0,
+            page: pageParam as number,
             size: 20
         }),
+        getNextPageParam: (lastPage) => {
+            return lastPage.hasNext ? lastPage.currentPage + 1 : undefined;
+        },
+        initialPageParam: 0,
         enabled: !!location,
         refetchOnWindowFocus: false
     });
@@ -165,7 +177,7 @@ export const Feed: React.FC = () => {
                             Try Again
                         </Button>
                     </div>
-                ) : feedData?.posts.length === 0 ? (
+                ) : feedData?.pages[0]?.posts.length === 0 ? (
                     <div className="bg-white rounded-xl shadow-md p-8 text-center">
                         <MapPin className="w-16 h-16 text-gray-300 mx-auto mb-4" />
                         <h3 className="text-xl font-bold text-gray-900 mb-2">No posts nearby</h3>
@@ -178,15 +190,24 @@ export const Feed: React.FC = () => {
                     </div>
                 ) : (
                     <div className="space-y-4">
-                        {feedData?.posts.map((post) => (
-                            <PostCard key={post.id} post={post} />
+                        {feedData?.pages.map((page, i) => (
+                            <React.Fragment key={i}>
+                                {page.posts.map((post) => (
+                                    <PostCard key={post.id} post={post} />
+                                ))}
+                            </React.Fragment>
                         ))}
 
                         {/* Load More */}
-                        {feedData?.hasNext && (
+                        {hasNextPage && (
                             <div className="text-center pt-4">
-                                <Button variant="secondary" size="lg">
-                                    Load More
+                                <Button
+                                    variant="secondary"
+                                    size="lg"
+                                    onClick={() => fetchNextPage()}
+                                    disabled={isFetchingNextPage}
+                                >
+                                    {isFetchingNextPage ? 'Loading...' : 'Load More'}
                                 </Button>
                             </div>
                         )}

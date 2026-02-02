@@ -1,6 +1,6 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import {
     Dumbbell,
     BookOpen,
@@ -16,11 +16,13 @@ import {
     Heart,
     Laptop,
     CircleDot,
+    ArrowLeft
 } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
 import { InterestCard } from '@/components/ui/InterestCard';
 import { interestService } from '@/services/interestService';
 import { useOnboardingStore } from '@/store/onboardingStore';
+import { useAuthStore } from '@/store/authStore';
 import type { Interest } from '@/types';
 
 // Icon mapping for interests
@@ -62,11 +64,38 @@ const colorClassMap: Record<string, string> = {
 
 export const InterestSelection: React.FC = () => {
     const navigate = useNavigate();
+    const queryClient = useQueryClient();
     const { selectedInterests, setInterests } = useOnboardingStore();
+    const { isNewUser } = useAuthStore();
+    const isEditing = !isNewUser;
 
-    const { data: interests, isLoading } = useQuery({
+    const { data: interests, isLoading: isLoadingAll } = useQuery({
         queryKey: ['interests'],
         queryFn: interestService.getAllInterests,
+    });
+
+    const { data: myInterests, isLoading: isLoadingMy } = useQuery({
+        queryKey: ['myInterests'],
+        queryFn: interestService.getMyInterests,
+        enabled: isEditing,
+    });
+
+    useEffect(() => {
+        if (isEditing && myInterests) {
+            setInterests(myInterests.map(i => i.id));
+        }
+    }, [isEditing, myInterests, setInterests]);
+
+    const updateInterestsMutation = useMutation({
+        mutationFn: interestService.updateInterests,
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['myInterests'] });
+            queryClient.invalidateQueries({ queryKey: ['profile'] });
+            navigate('/profile');
+        },
+        onError: (error: any) => {
+            alert(`Failed to update interests: ${error.message}`);
+        }
     });
 
     const toggleInterest = (interestId: number) => {
@@ -82,10 +111,15 @@ export const InterestSelection: React.FC = () => {
             alert('Please select at least one interest');
             return;
         }
-        navigate('/onboarding/radius');
+
+        if (isEditing) {
+            updateInterestsMutation.mutate({ interestIds: selectedInterests });
+        } else {
+            navigate('/onboarding/radius');
+        }
     };
 
-    if (isLoading) {
+    if (isLoadingAll || (isEditing && isLoadingMy)) {
         return (
             <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 flex items-center justify-center">
                 <div className="text-gray-600">Loading interests...</div>
@@ -97,12 +131,22 @@ export const InterestSelection: React.FC = () => {
         <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 py-8 px-6">
             <div className="max-w-4xl mx-auto animate-slide-up">
                 {/* Header */}
-                <div className="text-center mb-8">
+                <div className="text-center mb-8 relative">
+                    {isEditing && (
+                        <button
+                            onClick={() => navigate('/profile')}
+                            className="absolute left-0 top-1 p-2 bg-white rounded-full shadow-sm hover:shadow-md transition-shadow"
+                        >
+                            <ArrowLeft className="w-5 h-5 text-gray-600" />
+                        </button>
+                    )}
                     <h1 className="text-3xl font-bold text-gray-900 mb-2">
-                        Pick Your Interests
+                        {isEditing ? 'Edit Your Interests' : 'Pick Your Interests'}
                     </h1>
                     <p className="text-gray-600">
-                        We'll show you relevant local content
+                        {isEditing
+                            ? 'Update what you want to see in your feed'
+                            : "We'll show you relevant local content"}
                     </p>
                 </div>
 
@@ -122,18 +166,23 @@ export const InterestSelection: React.FC = () => {
 
                 {/* Progress and Next Button */}
                 <div className="flex flex-col items-center gap-4">
-                    <div className="flex gap-2">
-                        <div className="w-3 h-3 rounded-full bg-primary-purple"></div>
-                        <div className="w-3 h-3 rounded-full bg-gray-300"></div>
-                    </div>
-                    <p className="text-sm text-gray-600">Step 1 of 2</p>
+                    {!isEditing && (
+                        <>
+                            <div className="flex gap-2">
+                                <div className="w-3 h-3 rounded-full bg-primary-purple"></div>
+                                <div className="w-3 h-3 rounded-full bg-gray-300"></div>
+                            </div>
+                            <p className="text-sm text-gray-600">Step 1 of 2</p>
+                        </>
+                    )}
                     <Button
                         variant="primary"
                         size="lg"
                         onClick={handleNext}
                         className="px-12"
+                        loading={updateInterestsMutation.isPending}
                     >
-                        Next
+                        {isEditing ? 'Save Changes' : 'Next'}
                     </Button>
                 </div>
             </div>

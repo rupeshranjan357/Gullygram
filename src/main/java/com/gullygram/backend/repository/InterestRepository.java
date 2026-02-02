@@ -13,4 +13,6 @@ public interface InterestRepository extends JpaRepository<Interest, Integer> {
     Optional<Interest> findByName(String name);
     
     List<Interest> findByIdIn(List<Integer> ids);
+
+    List<Interest> findByNameInIgnoreCase(List<String> names);
 }

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { Home, Users, MessageCircle, Bell, PlusSquare, Calendar } from 'lucide-react';
+import { Home, Users, MessageCircle, Bell, PlusSquare, Calendar, Search } from 'lucide-react';
 import clsx from 'clsx';
 import notificationService from '../services/notificationService';
 
@@ -39,6 +39,7 @@ export const BottomNav: React.FC = () => {
 
     const navItems: NavItem[] = [
         { path: '/feed', icon: Home, label: 'Home' },
+        { path: '/search', icon: Search, label: 'Search' },
         { path: '/events', icon: Calendar, label: 'Events' },
         { path: '/create-post', icon: PlusSquare, label: 'Create' },
         { path: '/notifications', icon: Bell, label: 'Notifs', badge: unreadCount },

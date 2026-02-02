@@ -17,6 +17,7 @@ import java.util.UUID;
 
 @Service
 @Slf4j
+@org.springframework.boot.autoconfigure.condition.ConditionalOnProperty(name = "storage.type", havingValue = "local", matchIfMissing = true)
 public class LocalStorageServiceImpl implements StorageService {
 
     private final Path rootLocation;

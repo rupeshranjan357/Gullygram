@@ -149,11 +149,11 @@ const MessageBubble: React.FC<MessageBubbleProps> = ({ message }) => {
     const timeAgo = formatDistanceToNow(new Date(message.createdAt), { addSuffix: true });
 
     return (
-        <div className={`flex ${message.isMine ? 'justify-end' : 'justify-start'}`}>
+        <div className={`flex w-full ${message.isMine ? 'justify-end' : 'justify-start'}`}>
             <div
                 className={`max-w-[70%] rounded-2xl px-4 py-2 ${message.isMine
-                        ? 'bg-primary-purple text-white'
-                        : 'bg-gray-200 text-gray-900'
+                    ? 'bg-primary-purple text-white'
+                    : 'bg-gray-200 text-gray-900'
                     }`}
             >
                 <p className="break-words">{message.content}</p>

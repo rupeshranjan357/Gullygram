@@ -83,15 +83,27 @@ public class PostService {
         }
 
         // Add interests
+        Set<Interest> interests = new HashSet<>();
         if (request.getInterestIds() != null && !request.getInterestIds().isEmpty()) {
-            Set<Interest> interests = new HashSet<>();
             for (Integer interestId : request.getInterestIds()) {
                 Interest interest = interestRepository.findById(interestId)
                     .orElseThrow(() -> new ResourceNotFoundException("Interest not found: " + interestId));
                 interests.add(interest);
             }
-            post.setInterests(interests);
         }
+        
+        // Auto-detect hashtags from text
+        if (request.getText() != null) {
+            Set<String> hashtags = extractHashtags(request.getText());
+            if (!hashtags.isEmpty()) {
+                List<Interest> matchingInterests = interestRepository.findByNameInIgnoreCase(new ArrayList<>(hashtags));
+                interests.addAll(matchingInterests);
+            }
+        }
+        
+
+        
+        post.setInterests(interests);
 
         Post savedPost = postRepository.save(post);
         

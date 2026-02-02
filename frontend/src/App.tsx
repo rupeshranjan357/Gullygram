@@ -207,10 +207,15 @@ const AppRoutes: React.FC = () => {
     );
 };
 
+import { ToastContainer } from '@/components/Toast';
+import { NotificationListener } from '@/components/NotificationListener';
+
 function App() {
     return (
         <QueryClientProvider client={queryClient}>
             <BrowserRouter>
+                <NotificationListener />
+                <ToastContainer />
                 <AppRoutes />
             </BrowserRouter>
         </QueryClientProvider>

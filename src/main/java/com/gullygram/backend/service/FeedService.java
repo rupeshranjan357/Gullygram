@@ -114,12 +114,39 @@ public class FeedService {
         log.info("After visibility filtering: {} posts visible to user", visibilityFilteredPosts.size());
 
 
-        // Rank posts
+        // Rank and Filter posts using Tiered Hybrid Algorithm
         List<ScoredPost> scoredPosts = visibilityFilteredPosts.stream()
             .map(post -> {
-                double score = calculateFeedScore(post, userInterestIds, interestBoost != null && interestBoost);
-                return new ScoredPost(post, score);
+                double distance = GeoUtil.calculateDistance(lat, lon, post.getLat(), post.getLon());
+                boolean isInterestMatch = isInterestMatch(post, userInterestIds);
+
+                // TIER 1: Local Zone (0-5km)
+                if (distance <= 5.0) {
+                    // Show EVERYTHING.
+                    // Score is primarily time-based, but we boost interest matches slightly for visual ordering
+                    double score = calculateRecencyScore(post);
+                    if (isInterestMatch) score += 5; // Slight boost
+                    return new ScoredPost(post, score);
+                }
+
+                // TIER 2: Hype Zone (5-20km)
+                if (distance <= 20.0) {
+                    // Rule: Must be "Hyped" (>10 likes) OR be an Interest Match (if Boost is ON)
+                    boolean isHyped = post.getLikes().size() > 10;
+                    boolean effectiveInterestMatch = isInterestMatch && (interestBoost != null && interestBoost);
+                    
+                    if (isHyped || effectiveInterestMatch) {
+                        double score = calculateEngagementScore(post);
+                        if (effectiveInterestMatch) score += 20; // Major boost for interests
+                        return new ScoredPost(post, score);
+                    }
+                }
+
+                // TIER 3: Too far (>20km)
+                // Filter out (return null or score -1)
+                return null; 
             })
+            .filter(Objects::nonNull) // Remove nulls (filtered out posts)
             .sorted(Comparator.comparingDouble(ScoredPost::getScore).reversed())
             .collect(Collectors.toList());
 
@@ -132,7 +159,10 @@ public class FeedService {
             postResponses = new ArrayList<>();
         } else {
             postResponses = scoredPosts.subList(start, end).stream()
-                .map(sp -> postService.convertToResponse(sp.getPost(), userId))
+                .map(sp -> {
+                    // Add "Reason" to response if needed (not in MVP schema yet)
+                    return postService.convertToResponse(sp.getPost(), userId);
+                })
                 .collect(Collectors.toList());
         }
 
@@ -150,36 +180,25 @@ public class FeedService {
             .build();
     }
 
-    private double calculateFeedScore(Post post, Set<Integer> userInterestIds, boolean applyInterestBoost) {
-        double score = 0.0;
+    private boolean isInterestMatch(Post post, Set<Integer> userInterestIds) {
+        if (post.getInterests() == null || post.getInterests().isEmpty()) return false;
+        return post.getInterests().stream()
+            .anyMatch(i -> userInterestIds.contains(i.getId()));
+    }
 
-        // 1. Recency score (newer posts get higher scores)
+    private double calculateRecencyScore(Post post) {
         long hoursSinceCreation = ChronoUnit.HOURS.between(post.getCreatedAt(), LocalDateTime.now());
-        double recencyScore = Math.max(0, 100 - hoursSinceCreation); // Decays over time
-        score += recencyScore * RECENCY_WEIGHT;
+        // Simple decay: 100 points - 1 point per hour
+        return Math.max(0, 100 - hoursSinceCreation); 
+    }
 
-        // 2. Interest match score
-        if (applyInterestBoost && post.getInterests() != null && !post.getInterests().isEmpty()) {
-            Set<Integer> postInterestIds = post.getInterests().stream()
-                .map(Interest::getId)
-                .collect(Collectors.toSet());
-            
-            long matchingInterests = postInterestIds.stream()
-                .filter(userInterestIds::contains)
-                .count();
-            
-            if (matchingInterests > 0) {
-                double interestScore = (matchingInterests * 50.0); // 50 points per match
-                score += interestScore * INTEREST_MATCH_WEIGHT;
-            }
-        }
-
-        // 3. Engagement score (likes + comments)
-        long engagement = post.getLikes().size() + post.getComments().size();
-        double engagementScore = Math.min(engagement, MAX_ENGAGEMENT_SCORE);
-        score += engagementScore * ENGAGEMENT_WEIGHT;
-
-        return score;
+    private double calculateEngagementScore(Post post) {
+        // Engagement score for Hype Zone
+        long likes = post.getLikes().size();
+        long comments = post.getComments().size();
+        
+        // Cap at 100
+        return Math.min(100, (likes * 2) + (comments * 3));
     }
 
 
