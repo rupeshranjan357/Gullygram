@@ -12,7 +12,7 @@ export const Feed: React.FC = () => {
     const navigate = useNavigate();
     const { isAuthenticated } = useAuthStore();
     const [location, setLocation] = useState<{ lat: number; lon: number } | null>(null);
-    const [radius, setRadius] = useState<number>(10);
+    const [radius, setRadius] = useState<number>(50);
     const [interestBoost, setInterestBoost] = useState<boolean>(true);
     const [locationError, setLocationError] = useState<string>('');
 

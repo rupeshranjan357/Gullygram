@@ -9,7 +9,7 @@ export const Events: React.FC = () => {
     const [activeTab, setActiveTab] = useState<'CITY' | 'NEARBY'>('CITY');
     const [city, setCity] = useState('Bangalore');
     const [location, setLocation] = useState<{ lat: number; lon: number } | null>(null);
-    const [radius, setRadius] = useState(5);
+    const [radius, setRadius] = useState(50);
 
     // Get Location for Nearby Search
     useEffect(() => {

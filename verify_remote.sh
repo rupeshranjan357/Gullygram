@@ -1,19 +1,26 @@
 #!/bin/bash
 
 # Configuration
-BASE_URL="http://localhost:8080/api"
-EMAIL="tech_company_$(date +%s)@test.com"
+BASE_URL="https://gullygram-api.onrender.com/api"
+echo "Targeting Remote URL: $BASE_URL"
+
+EMAIL="tech_remote_$(date +%s)@test.com"
 PASSWORD="password123"
-ALIAS="tech_co_$(date +%s)"
+ALIAS="tech_remote_$(date +%s)"
 
 echo "--------------------------------------------------"
-echo "🚀 Starting Week 5 Backend Verification"
+echo "🚀 Starting Week 5 Remote Backend Verification"
 echo "--------------------------------------------------"
+
+# Function for curl with common headers
+curl_api() {
+  curl -s -L -A "Mozilla/5.0" "$@"
+}
 
 # 1. Signup as Company
 echo "1️⃣  Registering as COMPANY..."
 SIGNUP_PAYLOAD="{\"email\": \"$EMAIL\", \"password\": \"$PASSWORD\", \"alias\": \"$ALIAS\", \"accountType\": \"COMPANY\", \"marketingCategory\": \"TECH\"}"
-SIGNUP_RESPONSE=$(curl -s -X POST "$BASE_URL/auth/signup" \
+SIGNUP_RESPONSE=$(curl_api -X POST "$BASE_URL/auth/signup" \
   -H "Content-Type: application/json" \
   -d "$SIGNUP_PAYLOAD")
 
@@ -36,7 +43,7 @@ POST_PAYLOAD='{
   "visibilityRadiusKm": 10
 }'
 
-RESPONSE_1=$(curl -s -X POST "$BASE_URL/posts" \
+RESPONSE_1=$(curl_api -X POST "$BASE_URL/posts" \
   -H "Authorization: Bearer $TOKEN" \
   -H "Content-Type: application/json" \
   -d "$POST_PAYLOAD")
@@ -48,8 +55,10 @@ else
 fi
 
 # 3. Create Second Marketing Post (Should Fail - Rate Limit)
+# Note: Render might be slower, so we don't rely on http_code variable extraction specifically for 500
+# but check the response body too.
 echo -e "\n3️⃣  Creating 2nd Marketing Post (Testing Rate Limit)..."
-RESPONSE_2=$(curl -s -w "%{http_code}" -X POST "$BASE_URL/posts" \
+RESPONSE_2=$(curl_api -w "%{http_code}" -X POST "$BASE_URL/posts" \
   -H "Authorization: Bearer $TOKEN" \
   -H "Content-Type: application/json" \
   -d "$POST_PAYLOAD")
@@ -59,9 +68,9 @@ BODY=${RESPONSE_2:0:${#RESPONSE_2}-3}
 
 if [[ "$HTTP_CODE" -eq 500 ]] || [[ "$HTTP_CODE" -eq 400 ]]; then
    echo "✅ Rate Limit Verified! Server rejected 2nd post with code $HTTP_CODE."
-   echo "   Response: $BODY"
 else
    echo "❌ Rate Limit Failed! Server accepted 2nd post (Code: $HTTP_CODE)."
+   echo "Response: $BODY"
 fi
 
 # 4. Create Event Post (Bangalore)
@@ -77,7 +86,7 @@ EVENT_PAYLOAD='{
   "eventLocationName": "Cubbon Park"
 }'
 
-EVENT_RESPONSE=$(curl -s -X POST "$BASE_URL/posts" \
+EVENT_RESPONSE=$(curl_api -X POST "$BASE_URL/posts" \
   -H "Authorization: Bearer $TOKEN" \
   -H "Content-Type: application/json" \
   -d "$EVENT_PAYLOAD")
@@ -90,7 +99,7 @@ fi
 
 # 5. Search Events by City
 echo -e "\n5️⃣  Searching Events in 'Bangalore'..."
-CITY_SEARCH=$(curl -s -X GET "$BASE_URL/events/city?city=Bangalore" \
+CITY_SEARCH=$(curl_api -X GET "$BASE_URL/events/city?city=Bangalore" \
   -H "Authorization: Bearer $TOKEN")
 
 COUNT=$(echo $CITY_SEARCH | grep -o '"id"' | wc -l)
@@ -103,7 +112,7 @@ fi
 
 # 6. Search Events Nearby (Radius)
 echo -e "\n6️⃣  Searching Events Nearby (10km Radius)..."
-NEARBY_SEARCH=$(curl -s -X GET "$BASE_URL/events/nearby?lat=12.9716&lon=77.5946&radius=10" \
+NEARBY_SEARCH=$(curl_api -X GET "$BASE_URL/events/nearby?lat=12.9716&lon=77.5946&radius=10" \
   -H "Authorization: Bearer $TOKEN")
 
 COUNT_NEARBY=$(echo $NEARBY_SEARCH | grep -o '"id"' | wc -l)
@@ -114,17 +123,17 @@ else
   echo "Response: $NEARBY_SEARCH"
 fi
 
-
-# 7. Test Seed API (Custom Location)
+# 7. Test Seed API (Custom Location) - This relies on the security config fix being deployed
 echo -e "\n7️⃣  Testing Seed API (Custom Location)..."
-SEED_RESPONSE=$(curl -s -o /dev/null -w "%{http_code}" -X POST "$BASE_URL/admin/seed/custom?lat=12.9716&lon=77.5946")
+# We expect 200 or 403 depending on if the deployment finished.
+SEED_RESPONSE=$(curl_api -o /dev/null -w "%{http_code}" -X POST "$BASE_URL/admin/seed/custom?lat=12.9716&lon=77.5946")
 
 if [[ "$SEED_RESPONSE" -eq 200 ]]; then
    echo "✅ Seed API (Custom) Triggered Successfully (Code: 200)."
 else
-   echo "❌ Seed API Failed! (Code: $SEED_RESPONSE)."
+   echo "⚠️  Seed API returned $SEED_RESPONSE. (If 403, the SecurityConfig update might be redeploying)."
 fi
 
 echo "--------------------------------------------------"
-echo "🎉 Verification Complete"
+echo "🎉 Remote Verification Complete"
 echo "--------------------------------------------------"

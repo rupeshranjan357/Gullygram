@@ -191,7 +191,7 @@ export const PostCard: React.FC<PostCardProps> = ({ post }) => {
                                 key={idx}
                                 src={getImageUrl(url)}
                                 alt={`Post media ${idx + 1}`}
-                                className="rounded-lg max-h-80 w-full object-cover"
+                                className="rounded-lg w-full aspect-square object-cover bg-gray-100"
                             />
                         ))}
                     </div>
