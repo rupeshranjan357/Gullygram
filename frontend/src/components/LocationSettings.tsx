@@ -14,6 +14,7 @@ export const LocationSettings: React.FC<{ onClose: () => void }> = ({ onClose })
     } = useLocationStore((state: any) => state); // Using any temporarily for quick proto
 
     const [searchQuery, setSearchQuery] = useState('');
+    const [isSearching, setIsSearching] = useState(false);
     const [isLocating, setIsLocating] = useState(false);
 
     const handleGPSClick = () => {
