@@ -192,8 +192,8 @@ export const CreatePost: React.FC = () => {
 
                         {/* Add Photo Button - Show only if less than 4 images */}
                         {mediaUrls.length < 4 && (
-                            <div>
-                                <div className="inline-block">
+                            <div className="pb-4 border-b border-gray-100 mb-6">
+                                <div className="inline-block relative">
                                     <ImageUpload
                                         currentImageUrl=""
                                         onImageUploaded={handleImageUploaded}
@@ -202,13 +202,13 @@ export const CreatePost: React.FC = () => {
                                         className="w-32 h-32"
                                     />
                                 </div>
-                                <p className="text-xs text-gray-500 mt-1">Max 4 photos</p>
+                                <p className="text-xs text-gray-500 mt-2">Max 4 photos</p>
                             </div>
                         )}
                         {/* Event Details (Only for EVENT_PROMO) */}
                         {type === 'EVENT_PROMO' && (
-                            <div className="space-y-6 bg-purple-50 p-6 rounded-lg border border-purple-100 relative z-0">
-                                <h3 className="font-semibold text-purple-900 border-b border-purple-200 pb-2">Event Details</h3>
+                            <div className="mt-8 space-y-6 bg-purple-50 p-6 rounded-lg border border-purple-100 relative z-0">
+                                <h3 className="font-bold text-lg text-purple-900 border-b border-purple-200 pb-3 mb-2">Event Details</h3>
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                     <div>
                                         <label className="block text-sm font-medium text-purple-900 mb-2">Event Date</label>
