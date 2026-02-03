@@ -248,17 +248,12 @@ export const CreatePost: React.FC = () => {
                                                     window.debounceTimer = setTimeout(async () => {
                                                         if (val.length > 2) {
                                                             try {
-                                                                const res = await geocodingService.searchAddress(val);
-                                                                if (res) {
-                                                                    // Normally searchAddress returns one result, but for autocomplete we might want list
-                                                                    // Since our service currently returns 1, we show 1. Ideally service should return list.
-                                                                    // For now, let's just show the one result if it matches well.
-                                                                    setThemeSuggestions([res]);
-                                                                } else {
-                                                                    setThemeSuggestions([]);
-                                                                }
+                                                                console.log("Searching for:", val);
+                                                                const res = await geocodingService.searchAddresses(val);
+                                                                console.log("Search results:", res);
+                                                                setThemeSuggestions(res || []);
                                                             } catch (err) {
-                                                                console.error(err);
+                                                                console.error("Autocomplete error:", err);
                                                             }
                                                         } else {
                                                             setThemeSuggestions([]);
@@ -273,13 +268,23 @@ export const CreatePost: React.FC = () => {
                                                         <button
                                                             key={idx}
                                                             type="button"
-                                                            className="w-full text-left px-4 py-3 hover:bg-purple-50 border-b border-gray-100 last:border-0 text-sm transition-colors"
-                                                            onClick={() => {
+                                                            className="w-full text-left px-4 py-3 hover:bg-purple-50 border-b border-gray-100 last:border-0 text-sm transition-colors block"
+                                                            onMouseDown={(e) => {
+                                                                // Use onMouseDown to prevent blur before click registers
+                                                                e.preventDefault();
+                                                                console.log("Selected:", place);
                                                                 setEventLocationName(place.display_name.split(',')[0]);
-                                                                // Optimistic ID of city from display name
-                                                                const parts = place.display_name.split(',');
-                                                                if (parts.length > 2) {
-                                                                    setEventCity(parts[parts.length - 3].trim()); // rough guess for city
+
+                                                                // Extract City from address object if available
+                                                                if (place.address) {
+                                                                    const city = place.address.city || place.address.town || place.address.village || place.address.state_district;
+                                                                    if (city) setEventCity(city);
+                                                                } else {
+                                                                    // Fallback parsing
+                                                                    const parts = place.display_name.split(',');
+                                                                    if (parts.length > 2) {
+                                                                        setEventCity(parts[parts.length - 3].trim());
+                                                                    }
                                                                 }
                                                                 setThemeSuggestions([]);
                                                             }}

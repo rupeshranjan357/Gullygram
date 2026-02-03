@@ -2,15 +2,22 @@ interface GeocodeResult {
     lat: number;
     lon: number;
     display_name: string;
+    address?: any;
 }
 
 export const geocodingService = {
-    // 1. Search text -> Coords
+    // 1. Search text -> Coords (Single - Legacy)
     searchAddress: async (query: string): Promise<GeocodeResult | null> => {
+        const results = await geocodingService.searchAddresses(query);
+        return results.length > 0 ? results[0] : null;
+    },
+
+    // 1b. Search text -> List of Coords (Autocomplete)
+    searchAddresses: async (query: string): Promise<GeocodeResult[]> => {
         try {
-            // Using OpenStreetMap Nominatim (Free, requires user-agent)
+            // Using OpenStreetMap Nominatim
             const response = await fetch(
-                `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}&limit=1`,
+                `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}&limit=5&addressdetails=1`,
                 {
                     headers: {
                         'User-Agent': 'GullyGram-App/1.0'
@@ -19,17 +26,18 @@ export const geocodingService = {
             );
             const data = await response.json();
 
-            if (data && data.length > 0) {
-                return {
-                    lat: parseFloat(data[0].lat),
-                    lon: parseFloat(data[0].lon),
-                    display_name: data[0].display_name
-                };
+            if (data && Array.isArray(data)) {
+                return data.map((item: any) => ({
+                    lat: parseFloat(item.lat),
+                    lon: parseFloat(item.lon),
+                    display_name: item.display_name,
+                    address: item.address // Keep address details for city extraction
+                }));
             }
-            return null;
+            return [];
         } catch (error) {
             console.error("Geocoding error:", error);
-            return null;
+            return [];
         }
     },
 
