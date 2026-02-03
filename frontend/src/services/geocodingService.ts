@@ -49,8 +49,9 @@ export const geocodingService = {
             // Format nice short address
             if (data && data.address) {
                 const add = data.address;
-                const suburb = add.suburb || add.neighbourhood || add.district;
-                const city = add.city || add.town || add.village;
+                // Prioritize "neighbourhood" or "residential" over "suburb" (which is often a Ward number in Bangalore)
+                const suburb = add.neighbourhood || add.residential || add.suburb || add.district || add.quarter;
+                const city = add.city || add.town || add.village || add.state_district;
                 return `${suburb}, ${city}`;
             }
             return "Unknown Location";
