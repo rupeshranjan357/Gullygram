@@ -4,8 +4,14 @@ import { useMutation, useQuery } from '@tanstack/react-query';
 import { ArrowLeft, MapPin, Tag, Loader, X } from 'lucide-react';
 import { postService } from '@/services/postService';
 import { interestService } from '@/services/interestService';
+import { geocodingService } from '@/services/geocodingService';
 import { Button } from '@/components/ui/Button';
 import { ImageUpload } from '@/components/ImageUpload';
+
+// Quick hack for debounce timer
+declare global {
+    interface Window { debounceTimer: any; }
+}
 
 const POST_TYPES = [
     { value: 'GENERAL', label: 'General', icon: '💬' },
@@ -30,6 +36,7 @@ export const CreatePost: React.FC = () => {
     const [eventDate, setEventDate] = useState('');
     const [eventCity, setEventCity] = useState('');
     const [eventLocationName, setEventLocationName] = useState('');
+    const [themeSuggestions, setThemeSuggestions] = useState<any[]>([]);
 
     // Get user location
     useEffect(() => {
@@ -200,40 +207,90 @@ export const CreatePost: React.FC = () => {
                         )}
                         {/* Event Details (Only for EVENT_PROMO) */}
                         {type === 'EVENT_PROMO' && (
-                            <div className="space-y-4 bg-purple-50 p-4 rounded-lg border border-purple-100">
-                                <h3 className="font-semibold text-purple-900">Event Details</h3>
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div className="space-y-6 bg-purple-50 p-6 rounded-lg border border-purple-100 relative z-0">
+                                <h3 className="font-semibold text-purple-900 border-b border-purple-200 pb-2">Event Details</h3>
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                     <div>
-                                        <label className="block text-sm font-medium text-purple-900 mb-1">Event Date</label>
+                                        <label className="block text-sm font-medium text-purple-900 mb-2">Event Date</label>
                                         <input
                                             type="datetime-local"
-                                            className="w-full p-2 border rounded-md"
+                                            className="w-full p-2.5 bg-white border border-purple-200 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-shadow"
                                             value={eventDate}
                                             onChange={(e) => setEventDate(e.target.value)}
                                             required={type === 'EVENT_PROMO'}
                                         />
                                     </div>
                                     <div>
-                                        <label className="block text-sm font-medium text-purple-900 mb-1">City</label>
+                                        <label className="block text-sm font-medium text-purple-900 mb-2">City</label>
                                         <input
                                             type="text"
                                             placeholder="e.g. Bangalore"
-                                            className="w-full p-2 border rounded-md"
+                                            className="w-full p-2.5 bg-white border border-purple-200 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-shadow"
                                             value={eventCity}
                                             onChange={(e) => setEventCity(e.target.value)}
                                             required={type === 'EVENT_PROMO'}
                                         />
                                     </div>
-                                    <div className="md:col-span-2">
-                                        <label className="block text-sm font-medium text-purple-900 mb-1">Venue / Location Name</label>
-                                        <input
-                                            type="text"
-                                            placeholder="e.g. Chinnaswamy Stadium"
-                                            className="w-full p-2 border rounded-md"
-                                            value={eventLocationName}
-                                            onChange={(e) => setEventLocationName(e.target.value)}
-                                            required={type === 'EVENT_PROMO'}
-                                        />
+                                    <div className="md:col-span-2 relative">
+                                        <label className="block text-sm font-medium text-purple-900 mb-2">Venue / Location Name (Autofill)</label>
+                                        <div className="relative">
+                                            <input
+                                                type="text"
+                                                placeholder="Start typing to search (e.g. Chinnaswamy Stadium)"
+                                                className="w-full p-2.5 bg-white border border-purple-200 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-shadow pr-10"
+                                                value={eventLocationName}
+                                                onChange={(e) => {
+                                                    const val = e.target.value;
+                                                    setEventLocationName(val);
+
+                                                    // Simple debounce
+                                                    if (window.debounceTimer) clearTimeout(window.debounceTimer);
+                                                    window.debounceTimer = setTimeout(async () => {
+                                                        if (val.length > 2) {
+                                                            try {
+                                                                const res = await geocodingService.searchAddress(val);
+                                                                if (res) {
+                                                                    // Normally searchAddress returns one result, but for autocomplete we might want list
+                                                                    // Since our service currently returns 1, we show 1. Ideally service should return list.
+                                                                    // For now, let's just show the one result if it matches well.
+                                                                    setThemeSuggestions([res]);
+                                                                } else {
+                                                                    setThemeSuggestions([]);
+                                                                }
+                                                            } catch (err) {
+                                                                console.error(err);
+                                                            }
+                                                        } else {
+                                                            setThemeSuggestions([]);
+                                                        }
+                                                    }, 500);
+                                                }}
+                                                required={type === 'EVENT_PROMO'}
+                                            />
+                                            {themeSuggestions.length > 0 && (
+                                                <div className="absolute z-50 w-full mt-1 bg-white border border-gray-200 rounded-lg shadow-xl max-h-60 overflow-y-auto">
+                                                    {themeSuggestions.map((place, idx) => (
+                                                        <button
+                                                            key={idx}
+                                                            type="button"
+                                                            className="w-full text-left px-4 py-3 hover:bg-purple-50 border-b border-gray-100 last:border-0 text-sm transition-colors"
+                                                            onClick={() => {
+                                                                setEventLocationName(place.display_name.split(',')[0]);
+                                                                // Optimistic ID of city from display name
+                                                                const parts = place.display_name.split(',');
+                                                                if (parts.length > 2) {
+                                                                    setEventCity(parts[parts.length - 3].trim()); // rough guess for city
+                                                                }
+                                                                setThemeSuggestions([]);
+                                                            }}
+                                                        >
+                                                            <div className="font-semibold text-gray-900">{place.display_name.split(',')[0]}</div>
+                                                            <div className="text-xs text-gray-500 truncate">{place.display_name}</div>
+                                                        </button>
+                                                    ))}
+                                                </div>
+                                            )}
+                                        </div>
                                     </div>
                                 </div>
                             </div>
