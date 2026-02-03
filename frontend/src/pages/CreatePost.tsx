@@ -192,7 +192,7 @@ export const CreatePost: React.FC = () => {
 
                         {/* Add Photo Button - Show only if less than 4 images */}
                         {mediaUrls.length < 4 && (
-                            <div className="pb-4 border-b border-gray-100 mb-6">
+                            <div className="pb-4 border-b border-gray-100 mb-6 relative" style={{ minHeight: '220px' }}>
                                 <div className="inline-block relative">
                                     <ImageUpload
                                         currentImageUrl=""
@@ -258,7 +258,7 @@ export const CreatePost: React.FC = () => {
                                                         } else {
                                                             setThemeSuggestions([]);
                                                         }
-                                                    }, 500);
+                                                    }, 300);
                                                 }}
                                                 required={type === 'EVENT_PROMO'}
                                             />
