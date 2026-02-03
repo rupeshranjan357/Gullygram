@@ -14,17 +14,28 @@ export const LocationSettings: React.FC<{ onClose: () => void }> = ({ onClose })
     } = useLocationStore((state: any) => state); // Using any temporarily for quick proto
 
     const [searchQuery, setSearchQuery] = useState('');
-    const [isSearching, setIsSearching] = useState(false);
+    const [isLocating, setIsLocating] = useState(false);
 
     const handleGPSClick = () => {
-        // Mocking GPS refresh for now since it's a store action validation
+        setIsLocating(true);
         navigator.geolocation.getCurrentPosition(async (pos) => {
-            const lat = pos.coords.latitude;
-            const lon = pos.coords.longitude;
-            const label = await geocodingService.reverseGeocode(lat, lon);
+            try {
+                const lat = pos.coords.latitude;
+                const lon = pos.coords.longitude;
+                const label = await geocodingService.reverseGeocode(lat, lon);
 
-            setLocation({ lat, lon }, label, 'GPS');
-            onClose();
+                setLocation({ lat, lon }, label, 'GPS');
+                onClose();
+            } catch (error) {
+                console.error("GPS Error", error);
+                alert("Could not detect location name");
+            } finally {
+                setIsLocating(false);
+            }
+        }, (err) => {
+            console.error("Geolocation Error", err);
+            setIsLocating(false);
+            alert("Location access denied or failed");
         });
     };
 
@@ -106,11 +117,12 @@ export const LocationSettings: React.FC<{ onClose: () => void }> = ({ onClose })
             <div className="flex gap-2 mb-6">
                 <button
                     onClick={handleGPSClick}
+                    disabled={isLocating}
                     className={`flex-1 p-3 rounded-lg border flex items-center justify-center gap-2 ${mode === 'GPS' ? 'bg-purple-50 border-primary-purple text-primary-purple' : 'border-gray-200'
-                        }`}
+                        } ${isLocating ? 'opacity-50 cursor-wait' : ''}`}
                 >
-                    <Navigation className="w-5 h-5" />
-                    <span className="font-medium">Use GPS</span>
+                    <Navigation className={`w-5 h-5 ${isLocating ? 'animate-spin' : ''}`} />
+                    <span className="font-medium">{isLocating ? 'Locating...' : 'Use GPS'}</span>
                 </button>
                 <div className={`flex-1 p-3 rounded-lg border flex items-center justify-center gap-2 ${mode === 'MANUAL' ? 'bg-purple-50 border-primary-purple text-primary-purple' : 'border-gray-200'
                     }`}>

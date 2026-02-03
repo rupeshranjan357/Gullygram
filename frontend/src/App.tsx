@@ -23,6 +23,7 @@ const Messages = React.lazy(() => import('@/pages/Messages').then(module => ({ d
 const Chat = React.lazy(() => import('@/pages/Chat').then(module => ({ default: module.Chat })));
 const NewChat = React.lazy(() => import('@/pages/NewChat').then(module => ({ default: module.NewChat })));
 const Notifications = React.lazy(() => import('@/pages/Notifications')); // Default export
+const LaunchDashboard = React.lazy(() => import('@/pages/LaunchDashboard').then(module => ({ default: module.LaunchDashboard })));
 
 const queryClient = new QueryClient({
     defaultOptions: {
@@ -140,6 +141,14 @@ const AppRoutes: React.FC = () => {
                     element={
                         <ProtectedRoute>
                             <Search />
+                        </ProtectedRoute>
+                    }
+                />
+                <Route
+                    path="/launch"
+                    element={
+                        <ProtectedRoute>
+                            <LaunchDashboard />
                         </ProtectedRoute>
                     }
                 />

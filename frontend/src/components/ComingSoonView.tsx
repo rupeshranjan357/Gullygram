@@ -1,4 +1,4 @@
-import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import { MapPin, PartyPopper } from 'lucide-react';
 import { Button } from './ui/Button';
 import { useLocationStore } from '@/store/locationStore';
@@ -9,6 +9,7 @@ interface ComingSoonViewProps {
 
 export const ComingSoonView: React.FC<ComingSoonViewProps> = ({ onChangeLocation }) => {
     const { addressLabel } = useLocationStore();
+    const navigate = useNavigate();
 
     return (
         <div className="flex flex-col items-center justify-center min-h-[60vh] px-4 text-center">
@@ -29,7 +30,10 @@ export const ComingSoonView: React.FC<ComingSoonViewProps> = ({ onChangeLocation
                 <Button
                     variant="primary"
                     className="w-full"
-                    onClick={() => alert("Thanks for voting! We'll notify you when we launch here.")}
+                    onClick={() => {
+                        // In real app, we would cast a vote API call here
+                        navigate('/launch');
+                    }}
                 >
                     🚀 Vote for {addressLabel}
                 </Button>
