@@ -12,6 +12,13 @@ import org.springframework.web.bind.annotation.*;
 public class SeedController {
 
     private final SeedContentService seedContentService;
+    private final com.gullygram.backend.service.MagicContentService magicContentService;
+
+    @PostMapping("/magic")
+    public ResponseEntity<ApiResponse<String>> seedMagic(@RequestParam Double lat, @RequestParam Double lon) {
+        magicContentService.seedMagicContent(lat, lon);
+        return ResponseEntity.ok(new ApiResponse<>(true, "Magic Seeding Complete for location: " + lat + ", " + lon, null));
+    }
 
     @PostMapping("/koramangala")
     public ResponseEntity<ApiResponse<String>> seedKoramangala() {

@@ -129,22 +129,32 @@ public class FeedService {
                     return new ScoredPost(post, score);
                 }
 
-                // TIER 2: Hype Zone (5-20km)
-                if (distance <= 20.0) {
-                    // Rule: Must be "Hyped" (>10 likes) OR be an Interest Match (if Boost is ON)
-                    boolean isHyped = post.getLikes().size() > 10;
-                    boolean effectiveInterestMatch = isInterestMatch && (interestBoost != null && interestBoost);
-                    
-                    if (isHyped || effectiveInterestMatch) {
-                        double score = calculateEngagementScore(post);
-                        if (effectiveInterestMatch) score += 20; // Major boost for interests
-                        return new ScoredPost(post, score);
-                    }
+                // TIER 2: Extended Zone (5km to effectiveRadius)
+                // We already filtered by effectiveRadius at line 88.
+                
+                double baseScore = calculateRecencyScore(post);
+                double engagementBonus = calculateEngagementScore(post);
+                
+                double finalScore = baseScore + (engagementBonus * 0.5);
+
+                // DISCOVERY LOGIC:
+                // If user asked for a LARGE radius (> 15km), they want to explore.
+                // Boost distant posts so they see what's new out there, instead of just local stuff.
+                if (effectiveRadius > 15 && distance > 5.0) {
+                     // "The Wanderlust Boost": +2 points per km away
+                     finalScore += (distance * 2.0); 
+                } else {
+                     // Normal Mode: Slight decay for distance to keep feed relevant
+                     double decay = Math.max(0.8, 1.0 - (distance / 100.0));
+                     finalScore *= decay;
+                }
+                
+                // Interest Boost matches get a flat bonus
+                if (isInterestMatch && (interestBoost != null && interestBoost)) {
+                    finalScore += 20; 
                 }
 
-                // TIER 3: Too far (>20km)
-                // Filter out (return null or score -1)
-                return null; 
+                return new ScoredPost(post, finalScore);
             })
             .filter(Objects::nonNull) // Remove nulls (filtered out posts)
             .sorted(Comparator.comparingDouble(ScoredPost::getScore).reversed())

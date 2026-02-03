@@ -4,11 +4,22 @@ While apps like TikTok, Threads, and Telegram focus on **Global Reach** or **Nic
 
 Here is how GullyGram distinguishes itself from the giants:
 
-## 1. The Core Differentiator: "The Radius" 📍
-*   **The Giants (TikTok, Threads, Instagram)**: Feed algorithms prioritize *engagement* regardless of location. You see a viral video from New York while sitting in Bangalore.
-*   **GullyGram**: Prioritizes *proximity*.
-    *   **Feature**: Content is strictly bounded by a 1-50km radius.
-    *   **Value**: You find out about a robbery in *your* layout or a sale at *your* local grocery store, not unrelated global news. **GullyGram is the Digital Noticeboard for your neighborhood.**
+## 1. The Core Differentiator: "The Global Radar" 📍
+Most apps treat location as a secondary filter. GullyGram treats it as the **Primary Lens**.
+
+*   **The Competitors (Fragmented Experience)**:
+    *   **Instagram**: No distance control. Algorithm decides.
+    *   **Tinder**: Radius only for dating.
+    *   **Facebook Marketplace**: Radius only for buying.
+    *   **Nextdoor**: Fixed "Neighborhood" boundaries. You can't easily see what's happening 5km away if it crosses a "boundary".
+
+*   **GullyGram (Unified "Radar" Experience)**:
+    *   **Feature**: A single **Master Radius Slider** (1km - 100km).
+    *   **The Magic**: When you slide from 5km to 20km, **EVERYTHING** expands instantly.
+        *   **Feed**: You see posts from the next town over.
+        *   **Events**: You see regional concerts, not just local meetups.
+        *   **Marketplace**: You see items available for shipping, not just pickup.
+    *   **Value**: It gives the user **control over their world size**. It's not just a feed; it's a real-time scanner of physical reality.
 
 ## 2. Utility vs. Entertainment 🛠️
 *   **The Giants (BeReal, Lemon8)**: Focus on aesthetics, lifestyle inspiration, and "vibes".
@@ -36,7 +47,7 @@ Big tech struggles with hyperlocal nuances.
 | Feature | TikTok / Instagram | Threads / X | Jagat | **GullyGram** |
 | :--- | :--- | :--- | :--- | :--- |
 | **Primary Goal** | Entertainment | Discourse | Social Map | **Hyperlocal Utility** |
-| **Feed Source** | Global / Interest Graph | Follower Graph | Friends Map | **Geo-Radius** |
+| **Feed Source** | Global / Interest Graph | Follower Graph | Friends Map | **Global Radar (1-100km)** |
 | **Commerce** | Global E-com / Influencers | Minimal | None | **Local SMBs (Direct)** |
 | **Vibe** | "Watch this" | "Read this" | "Track this" | **"Do this (Here)"** |
 
@@ -77,4 +88,3 @@ The user also asked about **BeReal, Lemon8, Cara, and Noplace**. Here is how Gul
 | **Aesthetics** | **Lemon8** (Curated) | **Actionable Utility** (Raw/Live) |
 | **Talent** | **Cara** (Global Portfolio) | **Service Marketplace** (Local Hired) |
 | **Identity** | **Noplace** (Digital Avatar) | **Verified Neighbor** (Physical Self) |
-

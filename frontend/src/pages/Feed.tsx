@@ -1,48 +1,59 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useInfiniteQuery } from '@tanstack/react-query';
-import { Plus, MapPin, Zap, RefreshCw, Loader } from 'lucide-react';
+import { Plus, RefreshCw, Loader, Sliders } from 'lucide-react';
 import { feedService, FeedResponse } from '@/services/feedService';
 import { PostCard } from '@/components/PostCard';
 import { Button } from '@/components/ui/Button';
 import { BottomNav } from '@/components/BottomNav';
 import { useAuthStore } from '@/store/authStore';
+import { useLocationStore } from '@/store/locationStore';
+import { ComingSoonView } from '@/components/ComingSoonView';
+import { LocationSettings } from '@/components/LocationSettings';
 
 export const Feed: React.FC = () => {
     const navigate = useNavigate();
     const { isAuthenticated } = useAuthStore();
-    const [location, setLocation] = useState<{ lat: number; lon: number } | null>(null);
-    const [radius, setRadius] = useState<number>(10);
-    const [interestBoost, setInterestBoost] = useState<boolean>(true);
-    const [locationError, setLocationError] = useState<string>('');
 
-    // Get user location on mount
+    // Global Location State
+    const {
+        coords,
+        radius,
+        addressLabel,
+        isSupportedZone,
+        setLocation
+    } = useLocationStore();
+
+    const [interestBoost, setInterestBoost] = useState<boolean>(true);
+    const [showSettings, setShowSettings] = useState(false);
+
+    // Initial Location Check
     useEffect(() => {
         if (!isAuthenticated) {
             navigate('/login');
             return;
         }
 
-        if ('geolocation' in navigator) {
-            navigator.geolocation.getCurrentPosition(
-                (position) => {
-                    setLocation({
-                        lat: position.coords.latitude,
-                        lon: position.coords.longitude
-                    });
-                },
-                (error) => {
-                    console.error('Location error:', error);
-                    setLocationError('Unable to get your location. Using default location.');
-                    // Fallback to MG Road, Bangalore
-                    setLocation({ lat: 12.9716, lon: 77.5946 });
-                }
-            );
-        } else {
-            setLocationError('Geolocation not supported. Using default location.');
-            setLocation({ lat: 12.9716, lon: 77.5946 });
+        // If no location set yet, try GPS once
+        if (!coords) {
+            if ('geolocation' in navigator) {
+                navigator.geolocation.getCurrentPosition(
+                    (position) => {
+                        setLocation(
+                            { lat: position.coords.latitude, lon: position.coords.longitude },
+                            'Current Location',
+                            'GPS'
+                        );
+                    },
+                    (error) => {
+                        console.error('Location error:', error);
+                        // Default fallback if GPS fails
+                        setLocation({ lat: 12.9716, lon: 77.5946 }, 'Bangalore Default', 'MANUAL');
+                    }
+                );
+            }
         }
-    }, [isAuthenticated, navigate]);
+    }, [isAuthenticated, navigate, coords, setLocation]);
 
     const {
         data: feedData,
@@ -53,10 +64,10 @@ export const Feed: React.FC = () => {
         hasNextPage,
         isFetchingNextPage
     } = useInfiniteQuery<FeedResponse>({
-        queryKey: ['feed', location, radius, interestBoost],
+        queryKey: ['feed', coords, radius, interestBoost],
         queryFn: ({ pageParam = 0 }) => feedService.getFeed({
-            lat: location!.lat,
-            lon: location!.lon,
+            lat: coords!.lat,
+            lon: coords!.lon,
             radiusKm: radius,
             interestBoost,
             page: pageParam as number,
@@ -66,7 +77,7 @@ export const Feed: React.FC = () => {
             return lastPage.hasNext ? lastPage.currentPage + 1 : undefined;
         },
         initialPageParam: 0,
-        enabled: !!location,
+        enabled: !!coords && isSupportedZone, // Only fetch if allowed
         refetchOnWindowFocus: false
     });
 
@@ -74,13 +85,39 @@ export const Feed: React.FC = () => {
         refetch();
     };
 
-    if (!location && !locationError) {
+    if (!coords) {
         return (
             <div className="min-h-screen bg-gray-50 flex items-center justify-center">
                 <div className="text-center">
                     <Loader className="w-12 h-12 animate-spin text-primary-purple mx-auto mb-4" />
-                    <p className="text-gray-600">Getting your location...</p>
+                    <p className="text-gray-600">Locating you...</p>
                 </div>
+            </div>
+        );
+    }
+
+    // BETA ZONE BLOCKER
+    if (!isSupportedZone) {
+        return (
+            <div className="min-h-screen bg-gray-50 pb-20">
+                {/* Header (Simplified) */}
+                <div className="bg-white border-b border-gray-200 sticky top-0 z-10 px-4 py-4 flex justify-between items-center">
+                    <h1 className="text-xl font-bold text-gray-900">GullyGram Beta</h1>
+                    <button onClick={() => setShowSettings(true)} className="text-primary-purple text-sm font-semibold">
+                        {addressLabel}
+                    </button>
+                </div>
+
+                <ComingSoonView onChangeLocation={() => setShowSettings(true)} />
+
+                {showSettings && (
+                    <div className="fixed inset-0 bg-black/50 z-50 flex items-end sm:items-center justify-center p-4">
+                        <div className="w-full max-w-md">
+                            <LocationSettings onClose={() => setShowSettings(false)} />
+                        </div>
+                    </div>
+                )}
+                <BottomNav />
             </div>
         );
     }
@@ -91,7 +128,16 @@ export const Feed: React.FC = () => {
             <div className="bg-white border-b border-gray-200 sticky top-0 z-10">
                 <div className="max-w-2xl mx-auto px-4 py-4">
                     <div className="flex items-center justify-between mb-4">
-                        <h1 className="text-2xl font-bold text-gray-900">Feed</h1>
+                        <div className="flex flex-col">
+                            <h1 className="text-2xl font-bold text-gray-900">Feed</h1>
+                            <button
+                                onClick={() => setShowSettings(true)}
+                                className="text-xs font-semibold text-primary-purple flex items-center gap-1"
+                            >
+                                📍 {addressLabel} ({radius}km)
+                            </button>
+                        </div>
+
                         <div className="flex items-center gap-2">
                             <button
                                 onClick={handleRefresh}
@@ -110,41 +156,24 @@ export const Feed: React.FC = () => {
                         </div>
                     </div>
 
-                    {/* Location Alert */}
-                    {locationError && (
-                        <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-3 mb-4">
-                            <p className="text-sm text-yellow-800">{locationError}</p>
-                        </div>
-                    )}
-
-                    {/* Filters */}
-                    <div className="flex items-center gap-3 overflow-x-auto pb-2">
-                        {/* Radius Selector */}
-                        <div className="flex items-center gap-2 bg-gray-100 rounded-full px-3 py-2">
-                            <MapPin className="w-4 h-4 text-gray-600" />
-                            <select
-                                value={radius}
-                                onChange={(e) => setRadius(Number(e.target.value))}
-                                className="bg-transparent text-sm font-semibold text-gray-700 focus:outline-none"
-                            >
-                                <option value={5}>5 km</option>
-                                <option value={10}>10 km</option>
-                                <option value={20}>20 km</option>
-                                <option value={30}>30 km</option>
-                                <option value={50}>50 km</option>
-                            </select>
-                        </div>
-
+                    {/* Filters Row */}
+                    <div className="flex items-center gap-3 overflow-x-auto pb-2 scrollbar-hide">
+                        <button
+                            onClick={() => setShowSettings(true)}
+                            className="bg-gray-100 text-gray-700 px-3 py-1.5 rounded-full text-xs font-medium flex items-center gap-1 whitespace-nowrap"
+                        >
+                            <Sliders className="w-3 h-3" />
+                            Radius: {radius}km
+                        </button>
                         {/* Interest Boost Toggle */}
                         <button
                             onClick={() => setInterestBoost(!interestBoost)}
-                            className={`flex items-center gap-2 rounded-full px-3 py-2 transition-colors ${interestBoost
-                                ? 'bg-primary-purple text-white'
-                                : 'bg-gray-100 text-gray-700'
+                            className={`px-3 py-1.5 rounded-full text-xs font-medium border transition-colors whitespace-nowrap ${interestBoost
+                                    ? 'bg-purple-50 border-purple-200 text-primary-purple'
+                                    : 'bg-white border-gray-200 text-gray-600'
                                 }`}
                         >
-                            <Zap className="w-4 h-4" />
-                            <span className="text-sm font-semibold">Interest Boost</span>
+                            ⚡ Interest Boost: {interestBoost ? 'ON' : 'OFF'}
                         </button>
                     </div>
                 </div>
@@ -156,36 +185,27 @@ export const Feed: React.FC = () => {
                     <div className="space-y-4">
                         {[1, 2, 3].map((i) => (
                             <div key={i} className="bg-white rounded-xl shadow-md p-4 animate-pulse">
-                                <div className="flex items-center gap-3 mb-4">
-                                    <div className="w-10 h-10 rounded-full bg-gray-200"></div>
-                                    <div className="flex-1 space-y-2">
-                                        <div className="h-4 bg-gray-200 rounded w-1/4"></div>
-                                        <div className="h-3 bg-gray-200 rounded w-1/3"></div>
-                                    </div>
-                                </div>
+                                <div className="h-40 bg-gray-200 rounded mb-4"></div>
                                 <div className="space-y-2">
-                                    <div className="h-4 bg-gray-200 rounded"></div>
-                                    <div className="h-4 bg-gray-200 rounded w-5/6"></div>
+                                    <div className="h-4 bg-gray-200 rounded w-3/4"></div>
+                                    <div className="h-4 bg-gray-200 rounded w-1/2"></div>
                                 </div>
                             </div>
                         ))}
                     </div>
                 ) : isError ? (
-                    <div className="bg-white rounded-xl shadow-md p-8 text-center">
-                        <p className="text-red-600 mb-4">Failed to load feed</p>
-                        <Button onClick={handleRefresh} variant="primary">
-                            Try Again
-                        </Button>
+                    <div className="text-center py-10">
+                        <p className="text-red-500 mb-2">Something went wrong</p>
+                        <Button variant="secondary" onClick={handleRefresh}>Retry</Button>
                     </div>
                 ) : feedData?.pages[0]?.posts.length === 0 ? (
                     <div className="bg-white rounded-xl shadow-md p-8 text-center">
-                        <MapPin className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-                        <h3 className="text-xl font-bold text-gray-900 mb-2">No posts nearby</h3>
+                        <h3 className="text-xl font-bold text-gray-900 mb-2">Target Zero!</h3>
                         <p className="text-gray-600 mb-4">
-                            Be the first to post in your area!
+                            You are the first explorer in {addressLabel}.
                         </p>
                         <Button onClick={() => navigate('/create-post')} variant="primary">
-                            Create Post
+                            Plant the First Flag 🚩
                         </Button>
                     </div>
                 ) : (
@@ -197,13 +217,10 @@ export const Feed: React.FC = () => {
                                 ))}
                             </React.Fragment>
                         ))}
-
-                        {/* Load More */}
                         {hasNextPage && (
                             <div className="text-center pt-4">
                                 <Button
                                     variant="secondary"
-                                    size="lg"
                                     onClick={() => fetchNextPage()}
                                     disabled={isFetchingNextPage}
                                 >
@@ -215,8 +232,17 @@ export const Feed: React.FC = () => {
                 )}
             </div>
 
-            {/* Bottom Navigation */}
+            {/* Settings Modal */}
+            {showSettings && (
+                <div className="fixed inset-0 bg-black/50 z-50 flex items-end sm:items-center justify-center p-4">
+                    <div className="w-full max-w-md">
+                        <LocationSettings onClose={() => setShowSettings(false)} />
+                    </div>
+                </div>
+            )}
+
             <BottomNav />
         </div>
     );
 };
+

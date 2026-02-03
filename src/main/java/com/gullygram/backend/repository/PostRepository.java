@@ -91,4 +91,7 @@ public interface PostRepository extends JpaRepository<Post, UUID> {
            "(6371 * acos(cos(radians(:lat)) * cos(radians(p.lat)) * cos(radians(p.lon) - radians(:lon)) + sin(radians(:lat)) * sin(radians(p.lat)))) < :radius " +
            "ORDER BY p.eventDate ASC")
     java.util.List<Post> findUpcomingEventsNearby(@Param("lat") double lat, @Param("lon") double lon, @Param("radius") double radius);
+    @org.springframework.data.jpa.repository.Modifying
+    @Query("UPDATE Post p SET p.createdAt = :createdAt WHERE p.id = :id")
+    void updateCreatedAt(@Param("id") UUID id, @Param("createdAt") java.time.LocalDateTime createdAt);
 }
