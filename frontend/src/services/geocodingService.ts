@@ -46,30 +46,33 @@ export const geocodingService = {
             );
             const data = await response.json();
 
-            // Smart Selection Logic
-            let primary = add.neighbourhood || add.residential || add.suburb || add.district;
+            if (data && data.address) {
+                const add = data.address;
 
-            const suburb = add.suburb;
-            const neighbourhood = add.neighbourhood || add.residential;
+                // Smart Selection Logic
+                let primary = add.neighbourhood || add.residential || add.suburb || add.district;
 
-            // Specific Overrides for Bangalore Context
-            if (suburb && (suburb.includes('Whitefield') || suburb.includes('Marathahalli'))) {
-                primary = suburb;
-            } else if (suburb && suburb.toLowerCase().includes('ward')) {
-                // If suburb is a Ward, try neighbourhood
-                if (neighbourhood) primary = neighbourhood;
-                else primary = suburb; // Stuck with Ward if no neighbourhood
-            } else if (neighbourhood) {
-                primary = neighbourhood;
+                const suburb = add.suburb;
+                const neighbourhood = add.neighbourhood || add.residential;
+
+                // Specific Overrides for Bangalore Context
+                if (suburb && (suburb.includes('Whitefield') || suburb.includes('Marathahalli'))) {
+                    primary = suburb;
+                } else if (suburb && suburb.toLowerCase().includes('ward')) {
+                    // If suburb is a Ward, try neighbourhood
+                    if (neighbourhood) primary = neighbourhood;
+                    else primary = suburb; // Stuck with Ward if no neighbourhood
+                } else if (neighbourhood) {
+                    primary = neighbourhood;
+                }
+
+                const city = add.city || add.town || add.village || add.state_district;
+                return `${primary}, ${city}`;
             }
-
-            const city = add.city || add.town || add.village || add.state_district;
-            return `${primary}, ${city}`;
-        }
             return "Unknown Location";
-    } catch(error) {
-        console.error("Reverse geocoding error:", error);
-        return "Unknown Location";
+        } catch (error) {
+            console.error("Reverse geocoding error:", error);
+            return "Unknown Location";
+        }
     }
-}
 };
