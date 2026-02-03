@@ -123,7 +123,11 @@ export const ImageUpload: React.FC<ImageUploadProps> = ({
                 className="hidden"
             />
 
-            {error && <p className="text-red-500 text-xs mt-1 absolute -bottom-6 w-full text-center">{error}</p>}
+            {error && (
+                <p className="text-red-500 text-xs mt-2 text-center w-full break-words px-1">
+                    {error}
+                </p>
+            )}
         </div>
     );
 };
