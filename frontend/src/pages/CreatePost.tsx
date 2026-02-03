@@ -199,7 +199,7 @@ export const CreatePost: React.FC = () => {
                                         onImageUploaded={handleImageUploaded}
                                         folder="posts"
                                         label={mediaUrls.length === 0 ? "Add Photos" : "Add Another"}
-                                        className="w-32 h-32"
+                                        className="w-full md:w-48 h-48"
                                     />
                                 </div>
                                 <p className="text-xs text-gray-500 mt-2">Max 4 photos</p>

@@ -73,7 +73,7 @@ export const ImageUpload: React.FC<ImageUploadProps> = ({
     };
 
     return (
-        <div className={`relative inline-block ${className}`}>
+        <div className={`relative inline-block overflow-hidden ${className}`}>
             <div
                 onClick={handleClick}
                 className={`
