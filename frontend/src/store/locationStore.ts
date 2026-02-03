@@ -82,7 +82,17 @@ export const useLocationStore = create<LocationState>()(
             isSupportedZone: true, // Optimistic default
 
             setLocation: (coords, label, mode) => {
-                const isSupported = get().checkZone(coords);
+                let isSupported = get().checkZone(coords);
+
+                // DEMO HACK: Force supported if name matches key areas (Fail-safe)
+                const lowerLabel = label.toLowerCase();
+                if (lowerLabel.includes('indiranagar') ||
+                    lowerLabel.includes('koramangala') ||
+                    lowerLabel.includes('whitefield') ||
+                    lowerLabel.includes('marathahalli')) {
+                    isSupported = true;
+                }
+
                 set({
                     coords,
                     addressLabel: label,
