@@ -46,18 +46,30 @@ export const geocodingService = {
             );
             const data = await response.json();
 
-            // Format nice short address
-            if (data && data.address) {
-                const add = data.address;
-                // Prioritize "neighbourhood" or "residential" over "suburb" (which is often a Ward number in Bangalore)
-                const suburb = add.neighbourhood || add.residential || add.suburb || add.district || add.quarter;
-                const city = add.city || add.town || add.village || add.state_district;
-                return `${suburb}, ${city}`;
+            // Smart Selection Logic
+            let primary = add.neighbourhood || add.residential || add.suburb || add.district;
+
+            const suburb = add.suburb;
+            const neighbourhood = add.neighbourhood || add.residential;
+
+            // Specific Overrides for Bangalore Context
+            if (suburb && (suburb.includes('Whitefield') || suburb.includes('Marathahalli'))) {
+                primary = suburb;
+            } else if (suburb && suburb.toLowerCase().includes('ward')) {
+                // If suburb is a Ward, try neighbourhood
+                if (neighbourhood) primary = neighbourhood;
+                else primary = suburb; // Stuck with Ward if no neighbourhood
+            } else if (neighbourhood) {
+                primary = neighbourhood;
             }
-            return "Unknown Location";
-        } catch (error) {
-            console.error("Reverse geocoding error:", error);
-            return "Unknown Location";
+
+            const city = add.city || add.town || add.village || add.state_district;
+            return `${primary}, ${city}`;
         }
+            return "Unknown Location";
+    } catch(error) {
+        console.error("Reverse geocoding error:", error);
+        return "Unknown Location";
     }
+}
 };
