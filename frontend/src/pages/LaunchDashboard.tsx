@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ArrowLeft, Trophy, MapPin, Zap } from 'lucide-react';
-import { Button } from '@/components/ui/Button';
+import { ArrowLeft, Trophy, Zap } from 'lucide-react';
 
 interface AreaVote {
     areaName: string;

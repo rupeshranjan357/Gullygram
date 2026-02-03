@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { MapPin, Navigation, Search, Check } from 'lucide-react';
+import { MapPin, Navigation, Search } from 'lucide-react';
 import { useLocationStore } from '@/store/locationStore';
 import { geocodingService } from '@/services/geocodingService';
 import { Button } from './ui/Button';
@@ -8,11 +8,9 @@ export const LocationSettings: React.FC<{ onClose: () => void }> = ({ onClose })
     const {
         coords,
         radius,
-        addressLabel,
         mode,
         setLocation,
-        setRadius,
-        refreshGPS: storeRefreshGPS
+        setRadius
     } = useLocationStore((state: any) => state); // Using any temporarily for quick proto
 
     const [searchQuery, setSearchQuery] = useState('');
