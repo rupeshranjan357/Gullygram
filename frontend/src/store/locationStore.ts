@@ -26,6 +26,18 @@ const BETA_ZONES: BetaZone[] = [
         lat: 12.9591,
         lon: 77.6974,
         radius: 4000 // 4km
+    },
+    {
+        name: 'Indiranagar',
+        lat: 12.9716,
+        lon: 77.6412,
+        radius: 5000 // 5km
+    },
+    {
+        name: 'Koramangala',
+        lat: 12.9352,
+        lon: 77.6245,
+        radius: 5000 // 5km
     }
 ];
 

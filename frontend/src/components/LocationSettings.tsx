@@ -62,9 +62,10 @@ export const LocationSettings: React.FC<{ onClose: () => void }> = ({ onClose })
         setIsSeeding(true);
         try {
             // Call Backend Magic Seed
-            // We use fetch directly or a service. Let's use fetch for speed.
+            // Use relative path for deployed envs (Vite proxy handles it)
             const token = localStorage.getItem('token');
-            await fetch(`http://localhost:8080/api/admin/seed/magic?lat=${coords.lat}&lon=${coords.lon}`, {
+            const baseUrl = import.meta.env.VITE_API_URL || 'http://localhost:8080';
+            await fetch(`${baseUrl}/api/admin/seed/magic?lat=${coords.lat}&lon=${coords.lon}`, {
                 method: 'POST',
                 headers: { 'Authorization': `Bearer ${token}` }
             });
