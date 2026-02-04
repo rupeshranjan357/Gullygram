@@ -5,11 +5,13 @@ import com.gullygram.backend.dto.response.AuthorView;
 import com.gullygram.backend.dto.response.InterestResponse;
 import com.gullygram.backend.dto.response.PostResponse;
 import com.gullygram.backend.entity.Interest;
+import com.gullygram.backend.entity.InterestAlias;
 import com.gullygram.backend.entity.Post;
 import com.gullygram.backend.entity.User;
 import com.gullygram.backend.entity.UserProfile;
 import com.gullygram.backend.exception.BadRequestException;
 import com.gullygram.backend.exception.ResourceNotFoundException;
+import com.gullygram.backend.repository.InterestAliasRepository;
 import com.gullygram.backend.repository.InterestRepository;
 import com.gullygram.backend.repository.PostLikeRepository;
 import com.gullygram.backend.repository.CommentRepository;
@@ -21,7 +23,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.gullygram.backend.entity.InterestAlias;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -33,7 +34,7 @@ public class PostService {
     private final PostRepository postRepository;
     private final UserRepository userRepository;
     private final InterestRepository interestRepository;
-    private final com.gullygram.backend.repository.InterestAliasRepository interestAliasRepository;
+    private final InterestAliasRepository interestAliasRepository;
     private final PostLikeRepository postLikeRepository;
     private final CommentRepository commentRepository;
     private final AuthorViewService authorViewService;
@@ -114,8 +115,6 @@ public class PostService {
                 }
             }
         }
-        
-
         
         post.setInterests(interests);
 
