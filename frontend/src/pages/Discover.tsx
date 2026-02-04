@@ -6,7 +6,7 @@ import {
     RefreshCw, Bell, ChevronRight, Clock, Shield
 } from 'lucide-react';
 import { relationshipService, peopleService, PeopleSuggestion, RelationshipResponse } from '@/services/relationshipService';
-import { BottomNav } from '@/components/BottomNav';
+
 
 type Tab = 'suggestions' | 'requests' | 'friends';
 
@@ -249,7 +249,7 @@ export const Discover: React.FC = () => {
                 </div>
             )}
 
-            <BottomNav />
+
         </div>
     );
 };

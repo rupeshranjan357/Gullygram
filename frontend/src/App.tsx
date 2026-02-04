@@ -25,6 +25,8 @@ const NewChat = React.lazy(() => import('@/pages/NewChat').then(module => ({ def
 const Notifications = React.lazy(() => import('@/pages/Notifications')); // Default export
 const LaunchDashboard = React.lazy(() => import('@/pages/LaunchDashboard').then(module => ({ default: module.LaunchDashboard })));
 
+import { MainLayout } from '@/components/MainLayout';
+
 const queryClient = new QueryClient({
     defaultOptions: {
         queries: {
@@ -77,7 +79,7 @@ const AppRoutes: React.FC = () => {
                     element={isAuthenticated ? <Navigate to="/profile" replace /> : <Login />}
                 />
 
-                {/* Protected Onboarding Routes */}
+                {/* Protected Onboarding Routes - No BottomNav */}
                 <Route
                     path="/onboarding/interests"
                     element={
@@ -95,119 +97,121 @@ const AppRoutes: React.FC = () => {
                     }
                 />
 
-                {/* Protected App Routes */}
-                <Route
-                    path="/feed"
-                    element={
-                        <ProtectedRoute>
-                            <Feed />
-                        </ProtectedRoute>
-                    }
-                />
-                <Route
-                    path="/create-post"
-                    element={
-                        <ProtectedRoute>
-                            <CreatePost />
-                        </ProtectedRoute>
-                    }
-                />
-                <Route
-                    path="/post/:id"
-                    element={
-                        <ProtectedRoute>
-                            <PostDetail />
-                        </ProtectedRoute>
-                    }
-                />
-                <Route
-                    path="/discover"
-                    element={
-                        <ProtectedRoute>
-                            <Discover />
-                        </ProtectedRoute>
-                    }
-                />
-                <Route
-                    path="/events"
-                    element={
-                        <ProtectedRoute>
-                            <Events />
-                        </ProtectedRoute>
-                    }
-                />
-                <Route
-                    path="/search"
-                    element={
-                        <ProtectedRoute>
-                            <Search />
-                        </ProtectedRoute>
-                    }
-                />
-                <Route
-                    path="/launch"
-                    element={
-                        <ProtectedRoute>
-                            <LaunchDashboard />
-                        </ProtectedRoute>
-                    }
-                />
-                <Route
-                    path="/user/:userId"
-                    element={
-                        <ProtectedRoute>
-                            <UserProfile />
-                        </ProtectedRoute>
-                    }
-                />
-                <Route
-                    path="/profile"
-                    element={
-                        <ProtectedRoute>
-                            <Profile />
-                        </ProtectedRoute>
-                    }
-                />
-                <Route
-                    path="/settings"
-                    element={
-                        <ProtectedRoute>
-                            <Settings />
-                        </ProtectedRoute>
-                    }
-                />
-                <Route
-                    path="/messages"
-                    element={
-                        <ProtectedRoute>
-                            <Messages />
-                        </ProtectedRoute>
-                    }
-                />
-                <Route
-                    path="/messages/:conversationId"
-                    element={
-                        <ProtectedRoute>
-                            <Chat />
-                        </ProtectedRoute>
-                    }
-                />
-                <Route
-                    path="/messages/new/:userId"
-                    element={
-                        <ProtectedRoute>
-                            <NewChat />
-                        </ProtectedRoute>
-                    }
-                />
-                <Route
-                    path="/notifications"
-                    element={
-                        <ProtectedRoute>
-                            <Notifications />
-                        </ProtectedRoute>
-                    }
-                />
+                {/* Main App Layout with BottomNav */}
+                <Route element={<MainLayout />}>
+                    <Route
+                        path="/feed"
+                        element={
+                            <ProtectedRoute>
+                                <Feed />
+                            </ProtectedRoute>
+                        }
+                    />
+                    <Route
+                        path="/create-post"
+                        element={
+                            <ProtectedRoute>
+                                <CreatePost />
+                            </ProtectedRoute>
+                        }
+                    />
+                    <Route
+                        path="/post/:id"
+                        element={
+                            <ProtectedRoute>
+                                <PostDetail />
+                            </ProtectedRoute>
+                        }
+                    />
+                    <Route
+                        path="/discover"
+                        element={
+                            <ProtectedRoute>
+                                <Discover />
+                            </ProtectedRoute>
+                        }
+                    />
+                    <Route
+                        path="/events"
+                        element={
+                            <ProtectedRoute>
+                                <Events />
+                            </ProtectedRoute>
+                        }
+                    />
+                    <Route
+                        path="/search"
+                        element={
+                            <ProtectedRoute>
+                                <Search />
+                            </ProtectedRoute>
+                        }
+                    />
+                    <Route
+                        path="/launch"
+                        element={
+                            <ProtectedRoute>
+                                <LaunchDashboard />
+                            </ProtectedRoute>
+                        }
+                    />
+                    <Route
+                        path="/user/:userId"
+                        element={
+                            <ProtectedRoute>
+                                <UserProfile />
+                            </ProtectedRoute>
+                        }
+                    />
+                    <Route
+                        path="/profile"
+                        element={
+                            <ProtectedRoute>
+                                <Profile />
+                            </ProtectedRoute>
+                        }
+                    />
+                    <Route
+                        path="/settings"
+                        element={
+                            <ProtectedRoute>
+                                <Settings />
+                            </ProtectedRoute>
+                        }
+                    />
+                    <Route
+                        path="/messages"
+                        element={
+                            <ProtectedRoute>
+                                <Messages />
+                            </ProtectedRoute>
+                        }
+                    />
+                    <Route
+                        path="/messages/:conversationId"
+                        element={
+                            <ProtectedRoute>
+                                <Chat />
+                            </ProtectedRoute>
+                        }
+                    />
+                    <Route
+                        path="/messages/new/:userId"
+                        element={
+                            <ProtectedRoute>
+                                <NewChat />
+                            </ProtectedRoute>
+                        }
+                    />
+                    <Route
+                        path="/notifications"
+                        element={
+                            <ProtectedRoute>
+                                <Notifications />
+                            </ProtectedRoute>
+                        }
+                    />
+                </Route>
 
                 {/* Catch all - redirect to home */}
                 <Route path="*" element={<Navigate to="/" replace />} />

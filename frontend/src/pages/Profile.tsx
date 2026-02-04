@@ -5,7 +5,7 @@ import { Settings, Lock, Edit2, Camera, Calendar, Bookmark, ArrowLeft, X, Save, 
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
 import { InterestPill } from '@/components/ui/InterestPill';
-import { BottomNav } from '@/components/BottomNav';
+
 import { ImageUpload } from '@/components/ImageUpload';
 import { profileService } from '@/services/profileService';
 import { interestService } from '@/services/interestService';
@@ -368,8 +368,6 @@ export const Profile: React.FC = () => {
                 </div>
             </div>
 
-            {/* Bottom Navigation */}
-            <BottomNav />
         </div>
     );
 };

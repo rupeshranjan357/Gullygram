@@ -5,7 +5,7 @@ import { Plus, RefreshCw, Loader, Sliders } from 'lucide-react';
 import { feedService, FeedResponse } from '@/services/feedService';
 import { PostCard } from '@/components/PostCard';
 import { Button } from '@/components/ui/Button';
-import { BottomNav } from '@/components/BottomNav';
+
 import { useAuthStore } from '@/store/authStore';
 import { useLocationStore } from '@/store/locationStore';
 import { ComingSoonView } from '@/components/ComingSoonView';
@@ -26,6 +26,7 @@ export const Feed: React.FC = () => {
 
     const [interestBoost, setInterestBoost] = useState<boolean>(true);
     const [showSettings, setShowSettings] = useState(false);
+    const [feedTab, setFeedTab] = useState<'feed' | 'huddle' | 'marketplace'>('feed');
 
     // Initial Location Check
     useEffect(() => {
@@ -117,7 +118,7 @@ export const Feed: React.FC = () => {
                         </div>
                     </div>
                 )}
-                <BottomNav />
+
             </div>
         );
     }
@@ -169,11 +170,42 @@ export const Feed: React.FC = () => {
                         <button
                             onClick={() => setInterestBoost(!interestBoost)}
                             className={`px-3 py-1.5 rounded-full text-xs font-medium border transition-colors whitespace-nowrap ${interestBoost
-                                    ? 'bg-purple-50 border-purple-200 text-primary-purple'
-                                    : 'bg-white border-gray-200 text-gray-600'
+                                ? 'bg-purple-50 border-purple-200 text-primary-purple'
+                                : 'bg-white border-gray-200 text-gray-600'
                                 }`}
                         >
                             ⚡ Interest Boost: {interestBoost ? 'ON' : 'OFF'}
+                        </button>
+                    </div>
+
+                    {/* Main Tab Navigation */}
+                    <div className="flex border-t border-gray-100 mt-3 pt-1">
+                        <button
+                            onClick={() => setFeedTab('feed')}
+                            className={`flex-1 py-2 text-sm font-bold transition-all border-b-2 ${feedTab === 'feed'
+                                ? 'border-primary-purple text-primary-purple'
+                                : 'border-transparent text-gray-500 hover:text-gray-700'
+                                }`}
+                        >
+                            Feed
+                        </button>
+                        <button
+                            onClick={() => setFeedTab('huddle')}
+                            className={`flex-1 py-2 text-sm font-bold transition-all border-b-2 ${feedTab === 'huddle'
+                                ? 'border-primary-purple text-primary-purple'
+                                : 'border-transparent text-gray-500 hover:text-gray-700'
+                                }`}
+                        >
+                            Huddles 🤝
+                        </button>
+                        <button
+                            onClick={() => setFeedTab('marketplace')}
+                            className={`flex-1 py-2 text-sm font-bold transition-all border-b-2 ${feedTab === 'marketplace'
+                                ? 'border-primary-purple text-primary-purple'
+                                : 'border-transparent text-gray-500 hover:text-gray-700'
+                                }`}
+                        >
+                            Bazaar 🏷️
                         </button>
                     </div>
                 </div>
@@ -181,53 +213,77 @@ export const Feed: React.FC = () => {
 
             {/* Feed Content */}
             <div className="max-w-2xl mx-auto px-4 py-6">
-                {isLoading ? (
-                    <div className="space-y-4">
-                        {[1, 2, 3].map((i) => (
-                            <div key={i} className="bg-white rounded-xl shadow-md p-4 animate-pulse">
-                                <div className="h-40 bg-gray-200 rounded mb-4"></div>
-                                <div className="space-y-2">
-                                    <div className="h-4 bg-gray-200 rounded w-3/4"></div>
-                                    <div className="h-4 bg-gray-200 rounded w-1/2"></div>
+                {feedTab === 'feed' ? (
+                    isLoading ? (
+                        <div className="space-y-4">
+                            {[1, 2, 3].map((i) => (
+                                <div key={i} className="bg-white rounded-xl shadow-md p-4 animate-pulse">
+                                    <div className="h-40 bg-gray-200 rounded mb-4"></div>
+                                    <div className="space-y-2">
+                                        <div className="h-4 bg-gray-200 rounded w-3/4"></div>
+                                        <div className="h-4 bg-gray-200 rounded w-1/2"></div>
+                                    </div>
                                 </div>
-                            </div>
-                        ))}
-                    </div>
-                ) : isError ? (
-                    <div className="text-center py-10">
-                        <p className="text-red-500 mb-2">Something went wrong</p>
-                        <Button variant="secondary" onClick={handleRefresh}>Retry</Button>
-                    </div>
-                ) : feedData?.pages[0]?.posts.length === 0 ? (
-                    <div className="bg-white rounded-xl shadow-md p-8 text-center">
-                        <h3 className="text-xl font-bold text-gray-900 mb-2">Target Zero!</h3>
-                        <p className="text-gray-600 mb-4">
-                            You are the first explorer in {addressLabel}.
+                            ))}
+                        </div>
+                    ) : isError ? (
+                        <div className="text-center py-10">
+                            <p className="text-red-500 mb-2">Something went wrong</p>
+                            <Button variant="secondary" onClick={handleRefresh}>Retry</Button>
+                        </div>
+                    ) : feedData?.pages[0]?.posts.length === 0 ? (
+                        <div className="bg-white rounded-xl shadow-md p-8 text-center">
+                            <h3 className="text-xl font-bold text-gray-900 mb-2">Target Zero!</h3>
+                            <p className="text-gray-600 mb-4">
+                                You are the first explorer in {addressLabel}.
+                            </p>
+                            <Button onClick={() => navigate('/create-post')} variant="primary">
+                                Plant the First Flag 🚩
+                            </Button>
+                        </div>
+                    ) : (
+                        <div className="space-y-4">
+                            {feedData?.pages.map((page, i) => (
+                                <React.Fragment key={i}>
+                                    {page.posts.map((post) => (
+                                        <PostCard key={post.id} post={post} />
+                                    ))}
+                                </React.Fragment>
+                            ))}
+                            {hasNextPage && (
+                                <div className="text-center pt-4">
+                                    <Button
+                                        variant="secondary"
+                                        onClick={() => fetchNextPage()}
+                                        disabled={isFetchingNextPage}
+                                    >
+                                        {isFetchingNextPage ? 'Loading...' : 'Load More'}
+                                    </Button>
+                                </div>
+                            )}
+                        </div>
+                    )
+                ) : feedTab === 'huddle' ? (
+                    <div className="bg-white rounded-xl shadow-md p-8 text-center animate-in fade-in">
+                        <div className="text-6xl mb-4">🤝</div>
+                        <h3 className="text-2xl font-bold text-gray-900 mb-2">Huddles Nearby</h3>
+                        <p className="text-gray-600 mb-6">
+                            Join offline meetups, sports, and casual hangouts in {addressLabel}.
                         </p>
-                        <Button onClick={() => navigate('/create-post')} variant="primary">
-                            Plant the First Flag 🚩
-                        </Button>
+                        <span className="inline-block bg-primary-purple/10 text-primary-purple px-4 py-2 rounded-full text-sm font-semibold">
+                            Coming Soon
+                        </span>
                     </div>
                 ) : (
-                    <div className="space-y-4">
-                        {feedData?.pages.map((page, i) => (
-                            <React.Fragment key={i}>
-                                {page.posts.map((post) => (
-                                    <PostCard key={post.id} post={post} />
-                                ))}
-                            </React.Fragment>
-                        ))}
-                        {hasNextPage && (
-                            <div className="text-center pt-4">
-                                <Button
-                                    variant="secondary"
-                                    onClick={() => fetchNextPage()}
-                                    disabled={isFetchingNextPage}
-                                >
-                                    {isFetchingNextPage ? 'Loading...' : 'Load More'}
-                                </Button>
-                            </div>
-                        )}
+                    <div className="bg-white rounded-xl shadow-md p-8 text-center animate-in fade-in">
+                        <div className="text-6xl mb-4">🏷️</div>
+                        <h3 className="text-2xl font-bold text-gray-900 mb-2">Gully Bazaar</h3>
+                        <p className="text-gray-600 mb-6">
+                            Buy, sell, and trade with neighbors in {addressLabel}.
+                        </p>
+                        <span className="inline-block bg-primary-purple/10 text-primary-purple px-4 py-2 rounded-full text-sm font-semibold">
+                            Coming Soon
+                        </span>
                     </div>
                 )}
             </div>
@@ -241,7 +297,7 @@ export const Feed: React.FC = () => {
                 </div>
             )}
 
-            <BottomNav />
+
         </div>
     );
 };

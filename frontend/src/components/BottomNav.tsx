@@ -3,6 +3,7 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import { Home, Users, MessageCircle, Bell, PlusSquare, Calendar, Search } from 'lucide-react';
 import clsx from 'clsx';
 import notificationService from '../services/notificationService';
+import { useAuthStore } from '@/store/authStore';
 
 interface NavItem {
     path: string;
@@ -16,7 +17,11 @@ export const BottomNav: React.FC = () => {
     const location = useLocation();
     const [unreadCount, setUnreadCount] = useState(0);
 
+    const { isAuthenticated } = useAuthStore();
+
     useEffect(() => {
+        if (!isAuthenticated) return;
+
         // Initial load
         loadUnreadCount();
 
@@ -26,7 +31,7 @@ export const BottomNav: React.FC = () => {
         }, 15000);
 
         return () => clearInterval(interval);
-    }, []);
+    }, [isAuthenticated]);
 
     const loadUnreadCount = async () => {
         try {
