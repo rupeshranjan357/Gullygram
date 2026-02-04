@@ -76,7 +76,7 @@ export const useLocationStore = create<LocationState>()(
     persist(
         (set, get) => ({
             coords: null,
-            radius: 5, // Default 5km
+            radius: 5, // Default 5km - enforced request
             addressLabel: 'Locating...',
             mode: 'GPS',
             isSupportedZone: true, // Optimistic default
@@ -112,7 +112,7 @@ export const useLocationStore = create<LocationState>()(
             }
         }),
         {
-            name: 'gullygram-location', // unique name
+            name: 'gullygram-location-v2', // bumped version to reset defaults
             partialize: (state) => ({
                 coords: state.coords,
                 radius: state.radius,

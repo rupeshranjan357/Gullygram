@@ -21,4 +21,20 @@ export const profileService = {
         const response = await api.post<ApiResponse<void>>('/me/location', data);
         return { message: response.data.message };
     },
+
+    async getMyPosts(page: number = 0, size: number = 20): Promise<import('./feedService').FeedPost[]> {
+        const response = await api.get<ApiResponse<{
+            content: import('./feedService').FeedPost[];
+            page: number;
+            size: number;
+            totalElements: number;
+            totalPages: number;
+            hasNext: boolean;
+            hasPrevious: boolean;
+        }>>('/me/posts', {
+            params: { page, size }
+        });
+        // Return just the content array for now (can add pagination later)
+        return response.data.data.content;
+    },
 };

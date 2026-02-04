@@ -134,17 +134,14 @@ export const PostDetail: React.FC = () => {
                                 {post.mediaUrls.map((url, idx) => (
                                     <img
                                         key={idx}
-                                        src={url.startsWith('http') ? url : `${import.meta.env.VITE_API_URL || 'http://localhost:8080'}${url}`}
+                                        src={url.startsWith('http') ? url : `http://localhost:8080${url}`}
                                         alt={`Post media ${idx + 1}`}
                                         className="w-full h-auto rounded-xl object-contain bg-gray-100 max-h-[600px]"
                                         onError={(e) => {
-                                            // Fallback for relative paths if VITE_API_URL is tricky, 
-                                            // but usually we want to point to backend. 
-                                            // PostCard uses api.defaults.baseURL.
                                             const target = e.target as HTMLImageElement;
-                                            if (url.startsWith('/') && !target.src.includes('localhost')) {
-                                                // simplistic fallback
-                                            }
+                                            target.onerror = null; // Prevent infinite loop
+                                            // Provide placeholder or hide
+                                            target.style.display = 'none';
                                         }}
                                     />
                                 ))}

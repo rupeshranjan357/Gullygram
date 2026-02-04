@@ -152,7 +152,7 @@ export const InterestSelection: React.FC = () => {
 
                 {/* Interest Grid */}
                 <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mb-8">
-                    {interests?.map((interest: Interest) => (
+                    {interests?.filter((i: Interest) => !i.name.match(/[0-9_]/))?.map((interest: Interest) => (
                         <InterestCard
                             key={interest.id}
                             name={interest.name}

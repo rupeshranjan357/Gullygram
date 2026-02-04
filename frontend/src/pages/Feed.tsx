@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { useInfiniteQuery } from '@tanstack/react-query';
 import { Plus, RefreshCw, Loader, Sliders } from 'lucide-react';
 import { feedService, FeedResponse } from '@/services/feedService';
@@ -24,9 +24,18 @@ export const Feed: React.FC = () => {
         setLocation
     } = useLocationStore();
 
+    const location = useLocation();
     const [interestBoost, setInterestBoost] = useState<boolean>(true);
     const [showSettings, setShowSettings] = useState(false);
-    const [feedTab, setFeedTab] = useState<'feed' | 'huddle' | 'marketplace'>('feed');
+
+    // Determine tab from URL
+    const isHuddleRoute = location.pathname === '/huddles';
+    const [feedTab, setFeedTab] = useState<'feed' | 'huddle' | 'marketplace'>(isHuddleRoute ? 'huddle' : 'feed');
+
+    useEffect(() => {
+        if (location.pathname === '/huddles') setFeedTab('huddle');
+        else if (location.pathname === '/feed') setFeedTab('feed');
+    }, [location.pathname]);
 
     // Initial Location Check
     useEffect(() => {

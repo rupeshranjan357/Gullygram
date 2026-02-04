@@ -21,6 +21,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.gullygram.backend.entity.InterestAlias;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -32,6 +33,7 @@ public class PostService {
     private final PostRepository postRepository;
     private final UserRepository userRepository;
     private final InterestRepository interestRepository;
+    private final com.gullygram.backend.repository.InterestAliasRepository interestAliasRepository;
     private final PostLikeRepository postLikeRepository;
     private final CommentRepository commentRepository;
     private final AuthorViewService authorViewService;
@@ -97,12 +99,19 @@ public class PostService {
             }
         }
         
-        // Auto-detect hashtags from text
+        // Auto-detect hashtags from text and map to Interests via Aliases
         if (request.getText() != null) {
             Set<String> hashtags = extractHashtags(request.getText());
             if (!hashtags.isEmpty()) {
-                List<Interest> matchingInterests = interestRepository.findByNameInIgnoreCase(new ArrayList<>(hashtags));
-                interests.addAll(matchingInterests);
+                // 1. Direct Match (Hashtag = Interest Name)
+                List<Interest> directMatches = interestRepository.findByNameInIgnoreCase(new ArrayList<>(hashtags));
+                interests.addAll(directMatches);
+                
+                // 2. Alias Match (Hashtag = Alias -> Interest)
+                List<InterestAlias> aliasMatches = interestAliasRepository.findByAliasIn(hashtags);
+                for (InterestAlias alias : aliasMatches) {
+                    interests.add(alias.getInterest());
+                }
             }
         }
         
@@ -127,6 +136,22 @@ public class PostService {
             .orElseThrow(() -> new ResourceNotFoundException("Post not found"));
         
         return convertToResponse(post, currentUserId);
+    }
+
+    /**
+     * Get posts by user (for profile page)
+     */
+    @Transactional(readOnly = true)
+    public org.springframework.data.domain.Page<PostResponse> getPostsByUser(
+            UUID userId, UUID currentUserId, int page, int size) {
+        
+        org.springframework.data.domain.Pageable pageable = 
+            org.springframework.data.domain.PageRequest.of(page, size);
+        
+        org.springframework.data.domain.Page<Post> posts = 
+            postRepository.findByAuthorId(userId, pageable);
+        
+        return posts.map(post -> convertToResponse(post, currentUserId));
     }
 
     @Transactional

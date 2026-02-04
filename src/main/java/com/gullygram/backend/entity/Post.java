@@ -105,7 +105,8 @@ public class Post {
         LOCAL_NEWS,
         MARKETING,
         EVENT_PROMO,
-        MARKETPLACE
+        MARKETPLACE,
+        HUDDLE // Spontaneous meetup
     }
 
     public enum PostVisibility {

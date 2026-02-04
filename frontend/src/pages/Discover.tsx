@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import {
     Users, UserPlus, Check, X, MapPin, Sparkles,
     RefreshCw, Bell, ChevronRight, Clock, Shield
@@ -12,8 +12,12 @@ type Tab = 'suggestions' | 'requests' | 'friends';
 
 export const Discover: React.FC = () => {
     const navigate = useNavigate();
+    const locationHook = useLocation(); // unexpected variable naming collision handling
     const queryClient = useQueryClient();
-    const [activeTab, setActiveTab] = useState<Tab>('suggestions');
+
+    // Check if state was passed via navigation
+    const initialTab = (locationHook.state as { tab?: Tab })?.tab || 'suggestions';
+    const [activeTab, setActiveTab] = useState<Tab>(initialTab);
     const [location, setLocation] = useState<{ lat: number; lon: number } | null>(null);
 
     // Modal state for friend request message

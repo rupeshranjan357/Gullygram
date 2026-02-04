@@ -17,6 +17,7 @@ const POST_TYPES = [
     { value: 'GENERAL', label: 'General', icon: '💬' },
     { value: 'EVENT_PROMO', label: 'Event', icon: '🎉' },
     { value: 'MARKETPLACE', label: 'Marketplace', icon: '🛒' },
+    { value: 'HUDDLE', label: 'Huddle', icon: '🤝' }, // New Huddle Type
     { value: 'LOCAL_NEWS', label: 'News', icon: '📰' },
     { value: 'MARKETING', label: 'Marketing', icon: '📢' },
 ] as const;
@@ -24,7 +25,7 @@ const POST_TYPES = [
 export const CreatePost: React.FC = () => {
     const navigate = useNavigate();
     const [text, setText] = useState('');
-    const [type, setType] = useState<'GENERAL' | 'LOCAL_NEWS' | 'MARKETING' | 'EVENT_PROMO' | 'MARKETPLACE'>('GENERAL');
+    const [type, setType] = useState<'GENERAL' | 'LOCAL_NEWS' | 'MARKETING' | 'EVENT_PROMO' | 'MARKETPLACE' | 'HUDDLE'>('GENERAL');
     const [radius, setRadius] = useState<number>(10);
     const [selectedInterests, setSelectedInterests] = useState<number[]>([]);
     const [location, setLocation] = useState<{ lat: number; lon: number } | null>(null);
@@ -433,6 +434,7 @@ export const CreatePost: React.FC = () => {
                             </Button>
                         </div>
                     </div>
+                </div>
             </form>
         </div>
     );

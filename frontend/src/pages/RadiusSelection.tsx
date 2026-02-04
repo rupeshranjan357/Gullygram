@@ -14,7 +14,7 @@ export const RadiusSelection: React.FC = () => {
     const navigate = useNavigate();
     const { selectedInterests, selectedRadius, reset } = useOnboardingStore();
     const { setProfileComplete } = useAuthStore();
-    const [localRadius, setLocalRadius] = useState(selectedRadius);
+    const [localRadius, setLocalRadius] = useState(selectedRadius || 5);
 
     const updateInterestsMutation = useMutation({
         mutationFn: interestService.updateInterests,
@@ -80,16 +80,46 @@ export const RadiusSelection: React.FC = () => {
                 {/* Radius Options */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
                     <button
+                        onClick={() => setLocalRadius(5)}
+                        className={clsx(
+                            'transition-all',
+                            localRadius === 5 && 'ring-4 ring-primary-purple ring-offset-2'
+                        )}
+                    >
+                        <Card className="text-left hover-lift cursor-pointer h-full">
+                            <div className="flex items-start gap-4">
+                                <div className="p-3 bg-blue-50 rounded-lg">
+                                    <MapPin className="w-6 h-6 text-primary-blue" />
+                                </div>
+                                <div className="flex-1">
+                                    <div className="flex items-center gap-2 mb-1">
+                                        <h3 className="font-bold text-lg">5km</h3>
+                                        {localRadius === 5 && (
+                                            <div className="w-3 h-3 rounded-full bg-primary-purple"></div>
+                                        )}
+                                    </div>
+                                    <p className="text-sm text-gray-600">
+                                        Smaller area.
+                                    </p>
+                                    <p className="text-sm text-gray-600">
+                                        Focused on local community.
+                                    </p>
+                                </div>
+                            </div>
+                        </Card>
+                    </button>
+
+                    <button
                         onClick={() => setLocalRadius(10)}
                         className={clsx(
                             'transition-all',
                             localRadius === 10 && 'ring-4 ring-primary-purple ring-offset-2'
                         )}
                     >
-                        <Card className="text-left hover-lift cursor-pointer">
+                        <Card className="text-left hover-lift cursor-pointer h-full">
                             <div className="flex items-start gap-4">
-                                <div className="p-3 bg-blue-50 rounded-lg">
-                                    <MapPin className="w-6 h-6 text-primary-blue" />
+                                <div className="p-3 bg-purple-50 rounded-lg">
+                                    <Compass className="w-6 h-6 text-primary-purple" />
                                 </div>
                                 <div className="flex-1">
                                     <div className="flex items-center gap-2 mb-1">
@@ -99,40 +129,10 @@ export const RadiusSelection: React.FC = () => {
                                         )}
                                     </div>
                                     <p className="text-sm text-gray-600">
-                                        Smaller area, focused.
+                                        Larger area.
                                     </p>
                                     <p className="text-sm text-gray-600">
-                                        Ideal for local discoveries.
-                                    </p>
-                                </div>
-                            </div>
-                        </Card>
-                    </button>
-
-                    <button
-                        onClick={() => setLocalRadius(20)}
-                        className={clsx(
-                            'transition-all',
-                            localRadius === 20 && 'ring-4 ring-primary-purple ring-offset-2'
-                        )}
-                    >
-                        <Card className="text-left hover-lift cursor-pointer">
-                            <div className="flex items-start gap-4">
-                                <div className="p-3 bg-purple-50 rounded-lg">
-                                    <Compass className="w-6 h-6 text-primary-purple" />
-                                </div>
-                                <div className="flex-1">
-                                    <div className="flex items-center gap-2 mb-1">
-                                        <h3 className="font-bold text-lg">20km</h3>
-                                        {localRadius === 20 && (
-                                            <div className="w-3 h-3 rounded-full bg-primary-purple"></div>
-                                        )}
-                                    </div>
-                                    <p className="text-sm text-gray-600">
-                                        Wider area, explorer.
-                                    </p>
-                                    <p className="text-sm text-gray-600">
-                                        Perfect for finding new gems.
+                                        Explore the wider city.
                                     </p>
                                 </div>
                             </div>

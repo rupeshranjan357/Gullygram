@@ -16,7 +16,6 @@ const Feed = React.lazy(() => import('@/pages/Feed').then(module => ({ default: 
 const CreatePost = React.lazy(() => import('@/pages/CreatePost').then(module => ({ default: module.CreatePost })));
 const PostDetail = React.lazy(() => import('@/pages/PostDetail').then(module => ({ default: module.PostDetail })));
 const Discover = React.lazy(() => import('@/pages/Discover').then(module => ({ default: module.Discover })));
-const Events = React.lazy(() => import('@/pages/Events').then(module => ({ default: module.Events })));
 const Search = React.lazy(() => import('@/pages/Search')); // Default export
 const UserProfile = React.lazy(() => import('@/pages/UserProfile').then(module => ({ default: module.UserProfile })));
 const Messages = React.lazy(() => import('@/pages/Messages').then(module => ({ default: module.Messages })));
@@ -132,10 +131,10 @@ const AppRoutes: React.FC = () => {
                         }
                     />
                     <Route
-                        path="/events"
+                        path="/huddles"
                         element={
                             <ProtectedRoute>
-                                <Events />
+                                <Feed />
                             </ProtectedRoute>
                         }
                     />

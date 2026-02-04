@@ -4,7 +4,7 @@ import { FeedPost } from './feedService';
 
 export interface CreatePostRequest {
     text: string;
-    type: 'GENERAL' | 'LOCAL_NEWS' | 'MARKETING' | 'EVENT_PROMO' | 'MARKETPLACE';
+    type: 'GENERAL' | 'LOCAL_NEWS' | 'MARKETING' | 'EVENT_PROMO' | 'MARKETPLACE' | 'HUDDLE';
     latitude: number;
     longitude: number;
     visibilityRadiusKm: number;

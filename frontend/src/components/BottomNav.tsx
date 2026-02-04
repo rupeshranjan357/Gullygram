@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { Home, Users, MessageCircle, Bell, PlusSquare, Calendar, Search } from 'lucide-react';
+import { Home, Users, User, MessageCircle, Bell, PlusSquare, Search } from 'lucide-react';
 import clsx from 'clsx';
 import notificationService from '../services/notificationService';
 import { useAuthStore } from '@/store/authStore';
@@ -45,11 +45,11 @@ export const BottomNav: React.FC = () => {
     const navItems: NavItem[] = [
         { path: '/feed', icon: Home, label: 'Home' },
         { path: '/search', icon: Search, label: 'Search' },
-        { path: '/events', icon: Calendar, label: 'Events' },
         { path: '/create-post', icon: PlusSquare, label: 'Create' },
+        { path: '/huddles', icon: Users, label: 'Huddles' }, // New Huddle Button
         { path: '/notifications', icon: Bell, label: 'Notifs', badge: unreadCount },
         { path: '/messages', icon: MessageCircle, label: 'Chat' },
-        { path: '/profile', icon: Users, label: 'Profile' },
+        { path: '/profile', icon: User, label: 'Profile' }, // Switch to Singular User
     ];
 
     return (

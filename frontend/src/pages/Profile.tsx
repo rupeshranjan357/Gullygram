@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { Settings, Lock, Edit2, Camera, Calendar, Bookmark, ArrowLeft, X, Save, Users } from 'lucide-react';
+import { Settings, Lock, Edit2, Camera, Bookmark, ArrowLeft, X, Save } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
 import { InterestPill } from '@/components/ui/InterestPill';
@@ -16,7 +16,7 @@ export const Profile: React.FC = () => {
     const navigate = useNavigate();
     const queryClient = useQueryClient();
     const { isAuthenticated, alias } = useAuthStore();
-    const [activeTab, setActiveTab] = useState<'posts' | 'events' | 'saved'>('posts');
+    const [activeTab, setActiveTab] = useState<'posts' | 'saved'>('posts');
     const [isEditing, setIsEditing] = useState(false);
     const [editForm, setEditForm] = useState({
         alias: '',
@@ -42,13 +42,13 @@ export const Profile: React.FC = () => {
     });
 
     // Initialize radius from profile data
-    const [radius, setRadius] = useState(10);
-    const [originalRadius, setOriginalRadius] = useState(10);
+    const [radius, setRadius] = useState(5);
+    const [originalRadius, setOriginalRadius] = useState(5);
 
     useEffect(() => {
         if (profileData) {
-            setRadius(profileData.defaultRadiusKm || 10);
-            setOriginalRadius(profileData.defaultRadiusKm || 10);
+            setRadius(profileData.defaultRadiusKm || 5);
+            setOriginalRadius(profileData.defaultRadiusKm || 5);
             setEditForm({
                 alias: profileData.alias || '',
                 realName: profileData.realName || '',
@@ -231,30 +231,31 @@ export const Profile: React.FC = () => {
                     </p>
 
                     {/* Stats */}
+                    {/* Stats */}
                     <div className="grid grid-cols-3 gap-4 mb-6">
-                        <div className="text-center">
-                            <div className="text-2xl font-bold text-gray-900">
+                        <button
+                            onClick={() => setActiveTab('posts')}
+                            className="flex flex-col items-center justify-center py-2 hover:bg-gray-50 rounded-lg transition-colors animate-scale-in delay-75"
+                        >
+                            <div className="text-2xl font-bold text-gray-900 leading-none mb-1">
                                 {profileData?.postCount || 0}
                             </div>
                             <div className="text-xs text-primary-purple font-semibold">Posts</div>
-                        </div>
-                        <button
-                            onClick={() => navigate('/discover')}
-                            className="text-center hover:bg-gray-50 rounded-lg py-2 transition-colors"
-                        >
-                            <div className="text-2xl font-bold text-gray-900">
-                                {relationshipCounts?.friends || 0}
-                            </div>
-                            <div className="text-xs text-primary-purple font-semibold flex items-center justify-center gap-1">
-                                <Users size={12} />
-                                Friends
-                            </div>
                         </button>
                         <button
-                            onClick={() => navigate('/discover')}
-                            className="text-center hover:bg-gray-50 rounded-lg py-2 transition-colors"
+                            onClick={() => navigate('/discover', { state: { tab: 'friends' } })}
+                            className="flex flex-col items-center justify-center py-2 hover:bg-gray-50 rounded-lg transition-colors animate-scale-in delay-100"
                         >
-                            <div className="text-2xl font-bold text-gray-900">
+                            <div className="text-2xl font-bold text-gray-900 leading-none mb-1">
+                                {relationshipCounts?.friends || 0}
+                            </div>
+                            <div className="text-xs text-primary-purple font-semibold">Friends</div>
+                        </button>
+                        <button
+                            onClick={() => navigate('/discover', { state: { tab: 'requests' } })}
+                            className="flex flex-col items-center justify-center py-2 hover:bg-gray-50 rounded-lg transition-colors animate-scale-in delay-150"
+                        >
+                            <div className="text-2xl font-bold text-gray-900 leading-none mb-1">
                                 {relationshipCounts?.pendingRequests || 0}
                             </div>
                             <div className="text-xs text-primary-purple font-semibold">Requests</div>
@@ -338,16 +339,6 @@ export const Profile: React.FC = () => {
                             Posts
                         </button>
                         <button
-                            onClick={() => setActiveTab('events')}
-                            className={`flex-1 py-4 text-center font-semibold transition-colors ${activeTab === 'events'
-                                ? 'text-primary-purple border-b-2 border-primary-purple'
-                                : 'text-gray-600'
-                                }`}
-                        >
-                            <Calendar className="w-5 h-5 mx-auto mb-1" />
-                            Events
-                        </button>
-                        <button
                             onClick={() => setActiveTab('saved')}
                             className={`flex-1 py-4 text-center font-semibold transition-colors ${activeTab === 'saved'
                                 ? 'text-primary-purple border-b-2 border-primary-purple'
@@ -360,14 +351,95 @@ export const Profile: React.FC = () => {
                     </div>
 
                     {/* Tab Content */}
-                    <div className="p-6 text-center text-gray-500">
-                        {activeTab === 'posts' && 'No posts yet'}
-                        {activeTab === 'events' && 'No events yet'}
-                        {activeTab === 'saved' && 'No saved content yet'}
+                    <div className="p-0 min-h-[200px]">
+                        {activeTab === 'posts' && (
+                            <MyPostsGrid />
+                        )}
+                        {activeTab === 'saved' && (
+                            <div className="p-12 text-center">
+                                <Bookmark className="w-12 h-12 mx-auto text-gray-300 mb-2" />
+                                <p className="text-gray-500">Saved posts coming soon</p>
+                            </div>
+                        )}
                     </div>
                 </div>
             </div>
 
+        </div>
+    );
+};
+
+// Sub-component for clean code
+const MyPostsGrid = () => {
+    const navigate = useNavigate();
+    const { data: posts, isLoading } = useQuery({
+        queryKey: ['my-posts'],
+        queryFn: () => profileService.getMyPosts(0, 20),
+    });
+
+    if (isLoading) return <div className="p-8 text-center text-gray-500">Loading posts...</div>;
+
+    if (!posts || posts.length === 0) {
+        return (
+            <div className="p-8 text-center text-gray-500 flex flex-col items-center">
+                <Camera className="w-12 h-12 text-gray-300 mb-2" />
+                <p>No photos uploaded yet</p>
+                <button
+                    onClick={() => navigate('/create-post')}
+                    className="mt-4 text-primary-purple font-semibold text-sm hover:underline"
+                >
+                    Create your first post
+                </button>
+            </div>
+        );
+    }
+
+    const getImageUrl = (url: string) => {
+        if (!url) return '';
+        if (url.startsWith('http')) return url;
+        // Assume relative paths are from backend
+        return `http://localhost:8080${url}`;
+    };
+
+    return (
+        <div className="grid grid-cols-3 gap-0.5">
+            {posts.map((post) => {
+                // Determine thumbnail - prefer first image, then generic
+                const thumbnail = post.mediaUrls && post.mediaUrls.length > 0
+                    ? post.mediaUrls[0]
+                    : null;
+
+                return (
+                    <Link
+                        key={post.id}
+                        to={`/post/${post.id}`}
+                        className="relative block bg-gray-100 overflow-hidden group"
+                        style={{ aspectRatio: '1/1' }}
+                    >
+                        {thumbnail ? (
+                            <img
+                                src={getImageUrl(thumbnail)}
+                                alt="Post"
+                                className="w-full h-full object-cover hover:opacity-90 transition-opacity"
+                                onError={(e) => {
+                                    // Fallback to placeholder if image fails
+                                    e.currentTarget.style.display = 'none';
+                                    e.currentTarget.parentElement?.classList.add('flex', 'items-center', 'justify-center');
+                                    const span = document.createElement('span');
+                                    span.innerText = 'Error';
+                                    span.className = 'text-xs text-red-500';
+                                    e.currentTarget.parentElement?.appendChild(span);
+                                }}
+                            />
+                        ) : (
+                            // Text-only post fallback
+                            <div className="w-full h-full flex items-center justify-center bg-gray-50 p-2 text-xs text-gray-400 text-center">
+                                <span className="line-clamp-3">{post.text}</span>
+                            </div>
+                        )}
+                    </Link>
+                );
+            })}
         </div>
     );
 };
