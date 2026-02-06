@@ -64,7 +64,7 @@ export const Feed: React.FC = () => {
                     (error) => {
                         console.error('Location error:', error);
                         // Default fallback if GPS fails
-                        setLocation({ lat: 12.9716, lon: 77.5946 }, 'Bangalore Default', 'MANUAL');
+                        setLocation({ lat: 12.9698, lon: 77.7499 }, 'Whitefield, Bangalore', 'MANUAL');
                     },
                     {
                         timeout: 5000,

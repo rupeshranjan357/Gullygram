@@ -8,7 +8,20 @@ describe('Huddle Feature Smoke Test', () => {
 
     it('should allow a user to signup and create a huddle', () => {
         // 1. Signup
-        cy.visit('/signup');
+        cy.visit('/signup', {
+            onBeforeLoad(win) {
+                // Mock Geolocation to Whitefield
+                cy.stub(win.navigator.geolocation, 'getCurrentPosition').callsFake((cb) => {
+                    return cb({
+                        coords: {
+                            latitude: 12.9698,
+                            longitude: 77.7499,
+                            accuracy: 100,
+                        },
+                    });
+                });
+            },
+        });
         cy.get('input[type="email"]').type(testUser.email);
         cy.get('input[type="password"]').type(testUser.password);
         cy.get('input[name="alias"]').type(`smoke_user_${timestamp}`);
