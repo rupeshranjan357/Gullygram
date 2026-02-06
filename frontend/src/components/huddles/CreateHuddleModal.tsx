@@ -58,14 +58,20 @@ export const CreateHuddleModal: React.FC<CreateHuddleModalProps> = ({ isOpen, on
                     break;
             }
 
+            // Helper to get Local ISO String (handles timezone offset)
+            const toLocalISOString = (date: Date) => {
+                const offset = date.getTimezoneOffset() * 60000; // offset in milliseconds
+                return new Date(date.getTime() - offset).toISOString().slice(0, -1);
+            };
+
             return huddleService.createHuddle({
                 title,
                 description: `Huddle created via Quick Start`,
                 lat: coords.lat,
                 lon: coords.lon,
                 locationName: addressLabel || 'Current Location',
-                startTime: startTime.toISOString(),
-                endTime: endTime.toISOString(),
+                startTime: toLocalISOString(startTime),
+                endTime: toLocalISOString(endTime),
                 maxParticipants: squadSize,
                 genderFilter: womenOnly ? 'WOMEN_ONLY' : 'EVERYONE'
                 // Note: friendsOfFriends is UI-only for now until backend support
@@ -77,8 +83,9 @@ export const CreateHuddleModal: React.FC<CreateHuddleModalProps> = ({ isOpen, on
             // Optional: reset form
             setTitle('');
         },
-        onError: (err) => {
-            alert('Failed to create Huddle. Please try again.');
+        onError: (err: any) => {
+            const msg = err?.message || 'Failed to create Huddle. Please try again.';
+            alert(`Error: ${msg}`);
             console.error(err);
         }
     });
