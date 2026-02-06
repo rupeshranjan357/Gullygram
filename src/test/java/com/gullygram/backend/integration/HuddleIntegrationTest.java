@@ -62,13 +62,13 @@ public class HuddleIntegrationTest {
 
         // Create Users
         creator = userRepository.save(User.builder()
-                .email("creator@test.com").passwordHash("hash").phone("1234567890").alias("creator").status(User.UserStatus.ACTIVE).build());
+                .email("creator@test.com").passwordHash("hash").phone("1234567890").status(User.UserStatus.ACTIVE).build());
         
         joiner = userRepository.save(User.builder()
-                .email("joiner@test.com").passwordHash("hash").phone("0987654321").alias("joiner").status(User.UserStatus.ACTIVE).build());
+                .email("joiner@test.com").passwordHash("hash").phone("0987654321").status(User.UserStatus.ACTIVE).build());
 
         outsider = userRepository.save(User.builder()
-                .email("outsider@test.com").passwordHash("hash").phone("1122334455").alias("outsider").status(User.UserStatus.ACTIVE).build());
+                .email("outsider@test.com").passwordHash("hash").phone("1122334455").status(User.UserStatus.ACTIVE).build());
     }
 
     private void mockUser(User user) {
@@ -99,7 +99,7 @@ public class HuddleIntegrationTest {
                 .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.title", is("Badminton Match")))
-                .andExpect(jsonPath("$.creator.alias", is("creator")))
+                .andExpect(jsonPath("$.creator.email", is("creator@test.com")))
                 .andExpect(jsonPath("$.isJoined", is(true))) // Creator should auto-join
                 .andExpect(jsonPath("$.currentParticipants", is(1)));
         

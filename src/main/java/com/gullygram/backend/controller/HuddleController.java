@@ -1,11 +1,11 @@
 package com.gullygram.backend.controller;
 
-import com.gullygram.backend.security.CurrentUser;
 import com.gullygram.backend.dto.request.CreateHuddleRequest;
 import com.gullygram.backend.dto.response.HuddleResponse;
 import com.gullygram.backend.service.HuddleService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -20,14 +20,14 @@ public class HuddleController {
 
     @PostMapping
     public ResponseEntity<HuddleResponse> createHuddle(
-            @CurrentUser UUID userId,
+            @AuthenticationPrincipal UUID userId,
             @RequestBody CreateHuddleRequest request) {
         return ResponseEntity.ok(huddleService.createHuddle(userId, request));
     }
 
     @GetMapping
     public ResponseEntity<List<HuddleResponse>> getNearbyHuddles(
-            @CurrentUser UUID userId,
+            @AuthenticationPrincipal UUID userId,
             @RequestParam double lat,
             @RequestParam double lon,
             @RequestParam(defaultValue = "10") double radius) {
@@ -36,7 +36,7 @@ public class HuddleController {
 
     @PostMapping("/{id}/join")
     public ResponseEntity<Void> joinHuddle(
-            @CurrentUser UUID userId,
+            @AuthenticationPrincipal UUID userId,
             @PathVariable UUID id) {
         huddleService.joinHuddle(id, userId);
         return ResponseEntity.ok().build();
@@ -44,7 +44,7 @@ public class HuddleController {
     
     @PostMapping("/{id}/leave")
     public ResponseEntity<Void> leaveHuddle(
-            @CurrentUser UUID userId,
+            @AuthenticationPrincipal UUID userId,
             @PathVariable UUID id) {
         huddleService.leaveHuddle(id, userId);
         return ResponseEntity.ok().build();
