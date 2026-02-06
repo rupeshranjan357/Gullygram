@@ -1,72 +1,71 @@
 describe('Huddle Feature Smoke Test', () => {
-    beforeEach(() => {
-        // 1. Mock Authentication
-        const authState = {
-            state: {
-                userId: 'test-user-id',
-                alias: 'Tester',
-                token: 'fake-jwt-token',
-                isAuthenticated: true,
-                profileComplete: true,
-                _hasHydrated: true
-            },
-            version: 0
-        };
-        window.localStorage.setItem('gullygram-auth', JSON.stringify(authState));
+    const timestamp = new Date().getTime();
+    const testUser = {
+        email: `smoke_test_${timestamp}@gullygram.com`,
+        password: 'password123',
+        phone: `9${timestamp.toString().substring(4)}` // Pseudo-random phone
+    };
 
-        // 2. Mock Geolocation (Indiranagar - Supported Zone)
-        cy.visit('http://localhost:5173/huddles', {
-            onBeforeLoad(win) {
-                cy.stub(win.navigator.geolocation, 'getCurrentPosition').callsFake((cb) => {
-                    return cb({
-                        coords: {
-                            latitude: 12.9716,
-                            longitude: 77.6412, // Indiranagar Center
-                            accuracy: 10,
-                        },
-                    });
-                });
-            },
-        });
-    });
+    it('should allow a user to signup and create a huddle', () => {
+        // 1. Signup
+        cy.visit('/signup');
+        cy.get('input[type="email"]').type(testUser.email);
+        cy.get('input[type="password"]').type(testUser.password);
+        cy.get('input[name="alias"]').type(`smoke_user_${timestamp}`);
 
-    it('should load the Huddle Map and display markers', () => {
-        // 3. Intercept Huddle API
-        cy.intercept('GET', '**/api/huddles*', {
-            statusCode: 200,
-            body: [
-                {
-                    id: 'huddle-1',
-                    title: 'Cypress Test Match',
-                    description: 'Automated test huddle',
-                    lat: 12.9716,
-                    lon: 77.6412,
-                    locationName: 'Indiranagar Park',
-                    startTime: new Date(Date.now() + 3600000).toISOString(),
-                    maxParticipants: 10,
-                    currentParticipants: 2,
-                    isJoined: false,
-                    status: 'OPEN'
-                }
-            ]
-        }).as('getHuddles');
+        cy.contains('Continue').click();
 
-        // 4. Verify we are on Huddles Tab
-        // The URL should be /huddles and "Nearby Huddles" should appear
-        cy.contains('Nearby Huddles').should('be.visible');
+        // 2. Onboarding Flow
+        // Interest Selection
+        cy.url().should('include', '/onboarding/interests');
+        cy.contains('Technology').click(); // Select an interest
+        cy.contains('Next').click();
 
-        // 5. Verify API Call
-        cy.wait('@getHuddles', { timeout: 10000 });
+        // Radius Selection (Assuming it's next, checking AppRoutes: /onboarding/radius)
+        cy.url().should('include', '/onboarding/radius');
+        cy.contains('Get Started').click();
 
-        // 6. Verify Map Elements
-        cy.get('.leaflet-container', { timeout: 10000 }).should('be.visible');
+        // Wait for redirect to Profile
+        cy.url().should('include', '/profile', { timeout: 10000 });
 
-        // 7. Verify Marker exists
-        cy.get('.custom-huddle-marker', { timeout: 10000 }).should('exist');
+        // 2. Navigate to Huddles Tab from Profile
+        cy.contains('button', 'Huddles').click(); // This clicks the BottomNav button
 
-        // 8. Click Marker and Check Popup
-        cy.get('.custom-huddle-marker').click();
-        cy.contains('Cypress Test Match').should('be.visible');
-        cy.contains('Join').should('be.visible');
+        // Confirm URL update
+        cy.url().should('include', '/huddles');
+
+        // Wait for Huddles header (handling loading state)
+        cy.contains('Nearby Huddles', { timeout: 15000 }).should('be.visible');
+
+        // 3. Open Create Huddle Modal
+        cy.contains('button', '+ Create').click();
+        cy.contains('Start a Huddle').should('be.visible');
+
+        // 4. Fill Form
+        cy.contains('label', 'What are we doing?').next('input').type('Cypress Smoke Huddle');
+
+        // Select Time (Tonight)
+        cy.contains('button', 'Tonight').click();
+
+        // Select Squad Size (Change slider)
+        // Range input handling in Cypress can be tricky, typically invoke val() and trigger input
+        cy.get('input[type="range"]')
+            .invoke('val', 8)
+            .trigger('change')
+            .trigger('input');
+
+        // Toggle Women Only (optional, just testing interaction)
+        cy.contains('Women Only').click();
+        // Wait, if I click the container it toggles.
+
+        // 5. Submit
+        cy.contains('Light the Signal').click();
+
+        // 6. Verify Success
+        // Should close modal
+        cy.contains('Start a Huddle').should('not.exist');
+
+        // Should see the new huddle in the list (assuming it refreshes)
+        cy.contains('Cypress Smoke Huddle').should('be.visible');
     });
 });

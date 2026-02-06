@@ -13,10 +13,13 @@ import { useLocationStore } from '@/store/locationStore';
 import { ComingSoonView } from '@/components/ComingSoonView';
 import { LocationSettings } from '@/components/LocationSettings';
 
+import { CreateHuddleModal } from '@/components/huddles/CreateHuddleModal';
+
 export const Feed: React.FC = () => {
     const navigate = useNavigate();
     const { isAuthenticated } = useAuthStore();
     const queryClient = useQueryClient();
+    const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
 
     // Global Location State
     const {
@@ -319,7 +322,7 @@ export const Feed: React.FC = () => {
                     <div className="space-y-4 animate-in fade-in">
                         <div className="flex justify-between items-center px-2">
                             <h3 className="text-xl font-bold text-gray-900">Nearby Huddles</h3>
-                            <Button onClick={() => alert("Create Huddle Screen Coming Next!")} size="sm" className="bg-primary-purple text-white">
+                            <Button onClick={() => setIsCreateModalOpen(true)} size="sm" className="bg-primary-purple text-white">
                                 + Create
                             </Button>
                         </div>
@@ -368,6 +371,11 @@ export const Feed: React.FC = () => {
                     </div>
                 </div>
             )}
+
+            <CreateHuddleModal
+                isOpen={isCreateModalOpen}
+                onClose={() => setIsCreateModalOpen(false)}
+            />
         </div>
     );
 };
