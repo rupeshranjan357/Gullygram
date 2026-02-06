@@ -1,10 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { useInfiniteQuery } from '@tanstack/react-query';
+import { useInfiniteQuery, useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { Plus, RefreshCw, Loader, Sliders } from 'lucide-react';
 import { feedService, FeedResponse } from '@/services/feedService';
+import { huddleService } from '@/services/huddleService';
 import { PostCard } from '@/components/PostCard';
 import { Button } from '@/components/ui/Button';
+import { HuddleMap } from '@/components/huddles/HuddleMap';
 
 import { useAuthStore } from '@/store/authStore';
 import { useLocationStore } from '@/store/locationStore';
@@ -14,6 +16,7 @@ import { LocationSettings } from '@/components/LocationSettings';
 export const Feed: React.FC = () => {
     const navigate = useNavigate();
     const { isAuthenticated } = useAuthStore();
+    const queryClient = useQueryClient();
 
     // Global Location State
     const {
@@ -61,20 +64,21 @@ export const Feed: React.FC = () => {
                         setLocation({ lat: 12.9716, lon: 77.5946 }, 'Bangalore Default', 'MANUAL');
                     },
                     {
-                        timeout: 5000, // 5 seconds timeout
-                        maximumAge: 1000 * 60 * 5, // Cache for 5 minutes
-                        enableHighAccuracy: false // Fast > Precise
+                        timeout: 5000,
+                        maximumAge: 1000 * 60 * 5,
+                        enableHighAccuracy: false
                     }
                 );
             }
         }
     }, [isAuthenticated, navigate, coords, setLocation]);
 
+    // --- Feed Query ---
     const {
         data: feedData,
-        isLoading,
-        isError,
-        refetch,
+        isLoading: isLoadingFeed,
+        isError: isErrorFeed,
+        refetch: refetchFeed,
         fetchNextPage,
         hasNextPage,
         isFetchingNextPage
@@ -92,12 +96,44 @@ export const Feed: React.FC = () => {
             return lastPage.hasNext ? lastPage.currentPage + 1 : undefined;
         },
         initialPageParam: 0,
-        enabled: !!coords && isSupportedZone, // Only fetch if allowed
+        enabled: !!coords && isSupportedZone && feedTab === 'feed',
         refetchOnWindowFocus: false
     });
 
+    // --- Huddle Query ---
+    const {
+        data: huddlesData,
+        isLoading: isLoadingHuddles
+    } = useQuery({
+        queryKey: ['huddles', coords, radius],
+        queryFn: () => huddleService.getNearbyHuddles(coords!.lat, coords!.lon, radius),
+        enabled: !!coords && feedTab === 'huddle',
+    });
+
+    // Join Huddle Mutation
+    const joinHuddleMutation = useMutation({
+        mutationFn: (huddleId: string) => huddleService.joinHuddle(huddleId),
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['huddles'] });
+            alert("Joined Huddle successfully!");
+        },
+        onError: (error) => {
+            console.error("Failed to join huddle:", error);
+            alert("Failed to join huddle.");
+        }
+    });
+
+    const handleJoinHuddle = (huddleId: string) => {
+        if (!isAuthenticated) {
+            navigate('/login');
+            return;
+        }
+        joinHuddleMutation.mutate(huddleId);
+    };
+
     const handleRefresh = () => {
-        refetch();
+        if (feedTab === 'feed') refetchFeed();
+        if (feedTab === 'huddle') queryClient.invalidateQueries({ queryKey: ['huddles'] });
     };
 
     if (!coords) {
@@ -115,16 +151,13 @@ export const Feed: React.FC = () => {
     if (!isSupportedZone) {
         return (
             <div className="min-h-screen bg-gray-50 pb-20">
-                {/* Header (Simplified) */}
                 <div className="bg-white border-b border-gray-200 sticky top-0 z-10 px-4 py-4 flex justify-between items-center">
                     <h1 className="text-xl font-bold text-gray-900">GullyGram Beta</h1>
                     <button onClick={() => setShowSettings(true)} className="text-primary-purple text-sm font-semibold">
                         {addressLabel}
                     </button>
                 </div>
-
                 <ComingSoonView onChangeLocation={() => setShowSettings(true)} />
-
                 {showSettings && (
                     <div className="fixed inset-0 bg-black/50 z-50 flex items-end sm:items-center justify-center p-4">
                         <div className="w-full max-w-md">
@@ -132,7 +165,6 @@ export const Feed: React.FC = () => {
                         </div>
                     </div>
                 )}
-
             </div>
         );
     }
@@ -144,7 +176,9 @@ export const Feed: React.FC = () => {
                 <div className="max-w-2xl mx-auto px-4 py-4">
                     <div className="flex items-center justify-between mb-4">
                         <div className="flex flex-col">
-                            <h1 className="text-2xl font-bold text-gray-900">Feed</h1>
+                            <h1 className="text-2xl font-bold text-gray-900">
+                                {feedTab === 'feed' ? 'Feed' : feedTab === 'huddle' ? 'Huddles' : 'Bazaar'}
+                            </h1>
                             <button
                                 onClick={() => setShowSettings(true)}
                                 className="text-xs font-semibold text-primary-purple flex items-center gap-1"
@@ -156,18 +190,20 @@ export const Feed: React.FC = () => {
                         <div className="flex items-center gap-2">
                             <button
                                 onClick={handleRefresh}
-                                disabled={isLoading}
+                                disabled={isLoadingFeed || isLoadingHuddles}
                                 className="p-2 text-gray-600 hover:bg-gray-100 rounded-full transition-colors"
                             >
-                                <RefreshCw className={`w-5 h-5 ${isLoading ? 'animate-spin' : ''}`} />
+                                <RefreshCw className={`w-5 h-5 ${(isLoadingFeed || isLoadingHuddles) ? 'animate-spin' : ''}`} />
                             </button>
-                            <button
-                                onClick={() => navigate('/create-post')}
-                                className="flex items-center gap-2 bg-primary-purple text-white px-4 py-2 rounded-full hover:bg-purple-700 transition-colors"
-                            >
-                                <Plus className="w-5 h-5" />
-                                <span className="font-semibold">Post</span>
-                            </button>
+                            {feedTab === 'feed' && (
+                                <button
+                                    onClick={() => navigate('/create-post')}
+                                    className="flex items-center gap-2 bg-primary-purple text-white px-4 py-2 rounded-full hover:bg-purple-700 transition-colors"
+                                >
+                                    <Plus className="w-5 h-5" />
+                                    <span className="font-semibold">Post</span>
+                                </button>
+                            )}
                         </div>
                     </div>
 
@@ -180,16 +216,18 @@ export const Feed: React.FC = () => {
                             <Sliders className="w-3 h-3" />
                             Radius: {radius}km
                         </button>
-                        {/* Interest Boost Toggle */}
-                        <button
-                            onClick={() => setInterestBoost(!interestBoost)}
-                            className={`px-3 py-1.5 rounded-full text-xs font-medium border transition-colors whitespace-nowrap ${interestBoost
-                                ? 'bg-purple-50 border-purple-200 text-primary-purple'
-                                : 'bg-white border-gray-200 text-gray-600'
-                                }`}
-                        >
-                            ⚡ Interest Boost: {interestBoost ? 'ON' : 'OFF'}
-                        </button>
+
+                        {feedTab === 'feed' && (
+                            <button
+                                onClick={() => setInterestBoost(!interestBoost)}
+                                className={`px-3 py-1.5 rounded-full text-xs font-medium border transition-colors whitespace-nowrap ${interestBoost
+                                    ? 'bg-purple-50 border-purple-200 text-primary-purple'
+                                    : 'bg-white border-gray-200 text-gray-600'
+                                    }`}
+                            >
+                                ⚡ Interest Boost: {interestBoost ? 'ON' : 'OFF'}
+                            </button>
+                        )}
                     </div>
 
                     {/* Main Tab Navigation */}
@@ -228,7 +266,7 @@ export const Feed: React.FC = () => {
             {/* Feed Content */}
             <div className="max-w-2xl mx-auto px-4 py-6">
                 {feedTab === 'feed' ? (
-                    isLoading ? (
+                    isLoadingFeed ? (
                         <div className="space-y-4">
                             {[1, 2, 3].map((i) => (
                                 <div key={i} className="bg-white rounded-xl shadow-md p-4 animate-pulse">
@@ -240,7 +278,7 @@ export const Feed: React.FC = () => {
                                 </div>
                             ))}
                         </div>
-                    ) : isError ? (
+                    ) : isErrorFeed ? (
                         <div className="text-center py-10">
                             <p className="text-red-500 mb-2">Something went wrong</p>
                             <Button variant="secondary" onClick={handleRefresh}>Retry</Button>
@@ -278,15 +316,35 @@ export const Feed: React.FC = () => {
                         </div>
                     )
                 ) : feedTab === 'huddle' ? (
-                    <div className="bg-white rounded-xl shadow-md p-8 text-center animate-in fade-in">
-                        <div className="text-6xl mb-4">🤝</div>
-                        <h3 className="text-2xl font-bold text-gray-900 mb-2">Huddles Nearby</h3>
-                        <p className="text-gray-600 mb-6">
-                            Join offline meetups, sports, and casual hangouts in {addressLabel}.
-                        </p>
-                        <span className="inline-block bg-primary-purple/10 text-primary-purple px-4 py-2 rounded-full text-sm font-semibold">
-                            Coming Soon
-                        </span>
+                    <div className="space-y-4 animate-in fade-in">
+                        <div className="flex justify-between items-center px-2">
+                            <h3 className="text-xl font-bold text-gray-900">Nearby Huddles</h3>
+                            <Button onClick={() => alert("Create Huddle Screen Coming Next!")} size="sm" className="bg-primary-purple text-white">
+                                + Create
+                            </Button>
+                        </div>
+
+                        {isLoadingHuddles ? (
+                            <div className="h-[60vh] bg-gray-200 rounded-xl animate-pulse flex items-center justify-center text-gray-400">
+                                Loading Map...
+                            </div>
+                        ) : (
+                            <HuddleMap
+                                huddles={huddlesData || []}
+                                userLat={coords!.lat}
+                                userLon={coords!.lon}
+                                radiusKm={radius}
+                                onJoin={handleJoinHuddle}
+                            />
+                        )}
+
+                        <div className="bg-blue-50 p-4 rounded-lg flex gap-3 text-sm text-blue-700">
+                            <span className="text-xl">ℹ️</span>
+                            <p>
+                                Huddles are spontaneous, short-term meetups.
+                                Pins disappear automatically after the event ends.
+                            </p>
+                        </div>
                     </div>
                 ) : (
                     <div className="bg-white rounded-xl shadow-md p-8 text-center animate-in fade-in">
@@ -310,9 +368,6 @@ export const Feed: React.FC = () => {
                     </div>
                 </div>
             )}
-
-
         </div>
     );
 };
-
