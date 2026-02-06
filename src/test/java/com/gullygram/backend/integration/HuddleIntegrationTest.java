@@ -216,4 +216,393 @@ public class HuddleIntegrationTest {
         mockMvc.perform(post("/api/huddles/" + huddle.getId() + "/join"))
                 .andExpect(status().isBadRequest());
     }
+
+    // ============================================================
+    // INTENSIVE TEST CASES - Edge Cases & Validation
+    // ============================================================
+
+    @Test
+    public void testJoinCancelledHuddle_ShouldFail() throws Exception {
+        // Create a CANCELLED huddle
+        Huddle huddle = huddleRepository.save(Huddle.builder()
+                .creator(creator).title("Cancelled Event")
+                .lat(12.9716).lon(77.5946)
+                .startTime(LocalDateTime.now().plusHours(1)).endTime(LocalDateTime.now().plusHours(2))
+                .status(Huddle.HuddleStatus.CANCELLED).maxParticipants(10).genderFilter(Huddle.GenderFilter.EVERYONE)
+                .build());
+
+        mockUser(joiner);
+
+        mockMvc.perform(post("/api/huddles/" + huddle.getId() + "/join"))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    public void testJoinCompletedHuddle_ShouldFail() throws Exception {
+        // Create a COMPLETED huddle
+        Huddle huddle = huddleRepository.save(Huddle.builder()
+                .creator(creator).title("Finished Event")
+                .lat(12.9716).lon(77.5946)
+                .startTime(LocalDateTime.now().minusHours(3)).endTime(LocalDateTime.now().minusHours(1))
+                .status(Huddle.HuddleStatus.COMPLETED).maxParticipants(10).genderFilter(Huddle.GenderFilter.EVERYONE)
+                .build());
+
+        mockUser(joiner);
+
+        mockMvc.perform(post("/api/huddles/" + huddle.getId() + "/join"))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    public void testJoinFullHuddle_ShouldFail() throws Exception {
+        // Create a FULL huddle
+        Huddle huddle = huddleRepository.save(Huddle.builder()
+                .creator(creator).title("Full House")
+                .lat(12.9716).lon(77.5946)
+                .startTime(LocalDateTime.now().plusHours(1)).endTime(LocalDateTime.now().plusHours(2))
+                .status(Huddle.HuddleStatus.FULL).maxParticipants(2).genderFilter(Huddle.GenderFilter.EVERYONE)
+                .build());
+        huddleParticipantRepository.save(HuddleParticipant.builder().huddle(huddle).user(creator).status(HuddleParticipant.ParticipantStatus.JOINED).build());
+        huddleParticipantRepository.save(HuddleParticipant.builder().huddle(huddle).user(outsider).status(HuddleParticipant.ParticipantStatus.JOINED).build());
+
+        mockUser(joiner);
+
+        mockMvc.perform(post("/api/huddles/" + huddle.getId() + "/join"))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    public void testRejoinAfterLeaving() throws Exception {
+        // Create Huddle
+        Huddle huddle = huddleRepository.save(Huddle.builder()
+                .creator(creator).title("Rejoin Test")
+                .lat(12.9716).lon(77.5946)
+                .startTime(LocalDateTime.now().plusHours(1)).endTime(LocalDateTime.now().plusHours(2))
+                .status(Huddle.HuddleStatus.OPEN).maxParticipants(5).genderFilter(Huddle.GenderFilter.EVERYONE)
+                .build());
+        huddleParticipantRepository.save(HuddleParticipant.builder().huddle(huddle).user(creator).status(HuddleParticipant.ParticipantStatus.JOINED).build());
+
+        mockUser(joiner);
+
+        // 1. Join
+        mockMvc.perform(post("/api/huddles/" + huddle.getId() + "/join"))
+                .andExpect(status().isOk());
+        assertEquals(2, huddleParticipantRepository.countByHuddleIdAndStatus(huddle.getId(), HuddleParticipant.ParticipantStatus.JOINED));
+
+        // 2. Leave
+        mockMvc.perform(post("/api/huddles/" + huddle.getId() + "/leave"))
+                .andExpect(status().isOk());
+        assertEquals(1, huddleParticipantRepository.countByHuddleIdAndStatus(huddle.getId(), HuddleParticipant.ParticipantStatus.JOINED));
+
+        // 3. Rejoin
+        mockMvc.perform(post("/api/huddles/" + huddle.getId() + "/join"))
+                .andExpect(status().isOk());
+        assertEquals(2, huddleParticipantRepository.countByHuddleIdAndStatus(huddle.getId(), HuddleParticipant.ParticipantStatus.JOINED));
+
+        // Verify status changed back to JOINED
+        assertEquals(HuddleParticipant.ParticipantStatus.JOINED, 
+                huddleParticipantRepository.findByHuddleIdAndUserId(huddle.getId(), joiner.getId()).get().getStatus());
+    }
+
+    @Test
+    public void testCreatorCannotLeaveOwnHuddle() throws Exception {
+        // Create Huddle
+        Huddle huddle = huddleRepository.save(Huddle.builder()
+                .creator(creator).title("Creator Leave Test")
+                .lat(12.9716).lon(77.5946)
+                .startTime(LocalDateTime.now().plusHours(1)).endTime(LocalDateTime.now().plusHours(2))
+                .status(Huddle.HuddleStatus.OPEN).maxParticipants(5).genderFilter(Huddle.GenderFilter.EVERYONE)
+                .build());
+        huddleParticipantRepository.save(HuddleParticipant.builder().huddle(huddle).user(creator).status(HuddleParticipant.ParticipantStatus.JOINED).build());
+
+        mockUser(creator);
+
+        // Creator tries to leave -> Should fail or be handled gracefully
+        mockMvc.perform(post("/api/huddles/" + huddle.getId() + "/leave"))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    public void testCreateHuddle_EndTimeBeforeStartTime_ShouldFail() throws Exception {
+        mockUser(creator);
+
+        CreateHuddleRequest request = new CreateHuddleRequest();
+        request.setTitle("Invalid Time Range");
+        request.setLat(12.9716);
+        request.setLon(77.5946);
+        request.setStartTime(LocalDateTime.now().plusHours(5));
+        request.setEndTime(LocalDateTime.now().plusHours(2)); // End before start!
+
+        mockMvc.perform(post("/api/huddles")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    public void testCreateHuddle_InvalidCoordinates_ShouldFail() throws Exception {
+        mockUser(creator);
+
+        CreateHuddleRequest request = new CreateHuddleRequest();
+        request.setTitle("Invalid Location");
+        request.setLat(999.0); // Invalid latitude
+        request.setLon(77.5946);
+        request.setStartTime(LocalDateTime.now().plusHours(1));
+        request.setEndTime(LocalDateTime.now().plusHours(2));
+
+        mockMvc.perform(post("/api/huddles")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    public void testGeospatialFiltering_MultipleDistances() throws Exception {
+        // Create huddles at different distances from Bangalore center (12.9716, 77.5946)
+        
+        // Very close (1km) - Electronic City approx
+        huddleRepository.save(Huddle.builder()
+                .creator(creator).title("1km Away")
+                .lat(12.9786).lon(77.5946)
+                .startTime(LocalDateTime.now().plusHours(1)).endTime(LocalDateTime.now().plusHours(2))
+                .status(Huddle.HuddleStatus.OPEN).maxParticipants(10).genderFilter(Huddle.GenderFilter.EVERYONE)
+                .build());
+
+        // Medium distance (~5km) - Whitefield approx
+        huddleRepository.save(Huddle.builder()
+                .creator(creator).title("5km Away")
+                .lat(12.9716).lon(77.6446)
+                .startTime(LocalDateTime.now().plusHours(1)).endTime(LocalDateTime.now().plusHours(2))
+                .status(Huddle.HuddleStatus.OPEN).maxParticipants(10).genderFilter(Huddle.GenderFilter.EVERYONE)
+                .build());
+
+        // Far (~15km)
+        huddleRepository.save(Huddle.builder()
+                .creator(creator).title("15km Away")
+                .lat(12.8716).lon(77.7446)
+                .startTime(LocalDateTime.now().plusHours(1)).endTime(LocalDateTime.now().plusHours(2))
+                .status(Huddle.HuddleStatus.OPEN).maxParticipants(10).genderFilter(Huddle.GenderFilter.EVERYONE)
+                .build());
+
+        mockUser(joiner);
+
+        // Search with 2km radius - should find 1
+        mockMvc.perform(get("/api/huddles")
+                .param("lat", "12.9716")
+                .param("lon", "77.5946")
+                .param("radius", "2"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$", hasSize(1)))
+                .andExpect(jsonPath("$[0].title", is("1km Away")));
+
+        // Search with 10km radius - should find 2
+        mockMvc.perform(get("/api/huddles")
+                .param("lat", "12.9716")
+                .param("lon", "77.5946")
+                .param("radius", "10"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$", hasSize(2)));
+
+        // Search with 20km radius - should find all 3
+        mockMvc.perform(get("/api/huddles")
+                .param("lat", "12.9716")
+                .param("lon", "77.5946")
+                .param("radius", "20"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$", hasSize(3)));
+    }
+
+    @Test
+    public void testHuddleResponseContainsAllFields() throws Exception {
+        mockUser(creator);
+
+        CreateHuddleRequest request = new CreateHuddleRequest();
+        request.setTitle("Full Response Test");
+        request.setDescription("Testing all response fields");
+        request.setLat(12.9716);
+        request.setLon(77.5946);
+        request.setLocationName("Test Location");
+        request.setStartTime(LocalDateTime.now().plusHours(2));
+        request.setEndTime(LocalDateTime.now().plusHours(4));
+        request.setMaxParticipants(10);
+        request.setGenderFilter(Huddle.GenderFilter.EVERYONE);
+
+        mockMvc.perform(post("/api/huddles")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").exists())
+                .andExpect(jsonPath("$.title", is("Full Response Test")))
+                .andExpect(jsonPath("$.description", is("Testing all response fields")))
+                .andExpect(jsonPath("$.lat", is(12.9716)))
+                .andExpect(jsonPath("$.lon", is(77.5946)))
+                .andExpect(jsonPath("$.locationName", is("Test Location")))
+                .andExpect(jsonPath("$.startTime").exists())
+                .andExpect(jsonPath("$.endTime").exists())
+                .andExpect(jsonPath("$.maxParticipants", is(10)))
+                .andExpect(jsonPath("$.genderFilter", is("EVERYONE")))
+                .andExpect(jsonPath("$.status", is("OPEN")))
+                .andExpect(jsonPath("$.creator").exists())
+                .andExpect(jsonPath("$.currentParticipants", is(1)))
+                .andExpect(jsonPath("$.isJoined", is(true)));
+    }
+
+    @Test
+    public void testJoinNonExistentHuddle_ShouldFail() throws Exception {
+        mockUser(joiner);
+
+        UUID fakeId = UUID.randomUUID();
+        mockMvc.perform(post("/api/huddles/" + fakeId + "/join"))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    public void testLeaveNonExistentHuddle_ShouldFail() throws Exception {
+        mockUser(joiner);
+
+        UUID fakeId = UUID.randomUUID();
+        mockMvc.perform(post("/api/huddles/" + fakeId + "/leave"))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    public void testLeaveHuddleNotJoined_ShouldHandleGracefully() throws Exception {
+        // Create Huddle that joiner hasn't joined
+        Huddle huddle = huddleRepository.save(Huddle.builder()
+                .creator(creator).title("Not Joined")
+                .lat(12.9716).lon(77.5946)
+                .startTime(LocalDateTime.now().plusHours(1)).endTime(LocalDateTime.now().plusHours(2))
+                .status(Huddle.HuddleStatus.OPEN).maxParticipants(5).genderFilter(Huddle.GenderFilter.EVERYONE)
+                .build());
+        huddleParticipantRepository.save(HuddleParticipant.builder().huddle(huddle).user(creator).status(HuddleParticipant.ParticipantStatus.JOINED).build());
+
+        mockUser(joiner);
+
+        // Try to leave without joining first
+        mockMvc.perform(post("/api/huddles/" + huddle.getId() + "/leave"))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    public void testFilterExpiredHuddles() throws Exception {
+        // Create an expired huddle (end time in the past)
+        huddleRepository.save(Huddle.builder()
+                .creator(creator).title("Expired Huddle")
+                .lat(12.9716).lon(77.5946)
+                .startTime(LocalDateTime.now().minusHours(3)).endTime(LocalDateTime.now().minusHours(1))
+                .status(Huddle.HuddleStatus.OPEN).maxParticipants(10).genderFilter(Huddle.GenderFilter.EVERYONE)
+                .build());
+
+        // Create a current huddle
+        huddleRepository.save(Huddle.builder()
+                .creator(creator).title("Current Huddle")
+                .lat(12.9716).lon(77.5946)
+                .startTime(LocalDateTime.now().plusHours(1)).endTime(LocalDateTime.now().plusHours(2))
+                .status(Huddle.HuddleStatus.OPEN).maxParticipants(10).genderFilter(Huddle.GenderFilter.EVERYONE)
+                .build());
+
+        mockUser(joiner);
+
+        // Should only return the current huddle, not the expired one
+        mockMvc.perform(get("/api/huddles")
+                .param("lat", "12.9716")
+                .param("lon", "77.5946")
+                .param("radius", "10"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$", hasSize(1)))
+                .andExpect(jsonPath("$[0].title", is("Current Huddle")));
+    }
+
+    @Test
+    public void testCreateHuddle_EmptyTitle_ShouldFail() throws Exception {
+        mockUser(creator);
+
+        CreateHuddleRequest request = new CreateHuddleRequest();
+        request.setTitle(""); // Empty title
+        request.setLat(12.9716);
+        request.setLon(77.5946);
+        request.setStartTime(LocalDateTime.now().plusHours(1));
+        request.setEndTime(LocalDateTime.now().plusHours(2));
+
+        mockMvc.perform(post("/api/huddles")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    public void testCreateHuddle_ZeroMaxParticipants_ShouldFail() throws Exception {
+        mockUser(creator);
+
+        CreateHuddleRequest request = new CreateHuddleRequest();
+        request.setTitle("Zero Participants");
+        request.setLat(12.9716);
+        request.setLon(77.5946);
+        request.setStartTime(LocalDateTime.now().plusHours(1));
+        request.setEndTime(LocalDateTime.now().plusHours(2));
+        request.setMaxParticipants(0); // Invalid
+
+        mockMvc.perform(post("/api/huddles")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    public void testMultipleUsersJoinSequentially() throws Exception {
+        // Create Huddle with capacity for 5
+        Huddle huddle = huddleRepository.save(Huddle.builder()
+                .creator(creator).title("Group Activity")
+                .lat(12.9716).lon(77.5946)
+                .startTime(LocalDateTime.now().plusHours(1)).endTime(LocalDateTime.now().plusHours(2))
+                .status(Huddle.HuddleStatus.OPEN).maxParticipants(5).genderFilter(Huddle.GenderFilter.EVERYONE)
+                .build());
+        huddleParticipantRepository.save(HuddleParticipant.builder().huddle(huddle).user(creator).status(HuddleParticipant.ParticipantStatus.JOINED).build());
+
+        // User 1 joins
+        mockUser(joiner);
+        mockMvc.perform(post("/api/huddles/" + huddle.getId() + "/join"))
+                .andExpect(status().isOk());
+
+        // User 2 joins
+        mockUser(outsider);
+        mockMvc.perform(post("/api/huddles/" + huddle.getId() + "/join"))
+                .andExpect(status().isOk());
+
+        // Verify 3 total participants
+        assertEquals(3, huddleParticipantRepository.countByHuddleIdAndStatus(huddle.getId(), HuddleParticipant.ParticipantStatus.JOINED));
+    }
+
+    @Test
+    public void testSoftDeletedHuddlesAreNotReturned() throws Exception {
+        // Create a soft-deleted huddle
+        Huddle deletedHuddle = Huddle.builder()
+                .creator(creator).title("Deleted Huddle")
+                .lat(12.9716).lon(77.5946)
+                .startTime(LocalDateTime.now().plusHours(1)).endTime(LocalDateTime.now().plusHours(2))
+                .status(Huddle.HuddleStatus.OPEN).maxParticipants(10).genderFilter(Huddle.GenderFilter.EVERYONE)
+                .build();
+        deletedHuddle.softDelete();
+        huddleRepository.save(deletedHuddle);
+
+        // Create a normal huddle
+        huddleRepository.save(Huddle.builder()
+                .creator(creator).title("Active Huddle")
+                .lat(12.9716).lon(77.5946)
+                .startTime(LocalDateTime.now().plusHours(1)).endTime(LocalDateTime.now().plusHours(2))
+                .status(Huddle.HuddleStatus.OPEN).maxParticipants(10).genderFilter(Huddle.GenderFilter.EVERYONE)
+                .build());
+
+        mockUser(joiner);
+
+        // Should only return the active huddle
+        mockMvc.perform(get("/api/huddles")
+                .param("lat", "12.9716")
+                .param("lon", "77.5946")
+                .param("radius", "10"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$", hasSize(1)))
+                .andExpect(jsonPath("$[0].title", is("Active Huddle")));
+    }
 }
+
