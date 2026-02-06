@@ -59,6 +59,11 @@ export const Feed: React.FC = () => {
                         console.error('Location error:', error);
                         // Default fallback if GPS fails
                         setLocation({ lat: 12.9716, lon: 77.5946 }, 'Bangalore Default', 'MANUAL');
+                    },
+                    {
+                        timeout: 5000, // 5 seconds timeout
+                        maximumAge: 1000 * 60 * 5, // Cache for 5 minutes
+                        enableHighAccuracy: false // Fast > Precise
                     }
                 );
             }

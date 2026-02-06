@@ -124,7 +124,7 @@ const Search: React.FC = () => {
                                 <div
                                     key={u.userId}
                                     className="flex items-center p-3 bg-white rounded-lg shadow-sm hover:shadow cursor-pointer"
-                                    onClick={() => navigate(`/profile/${u.userId}`)}
+                                    onClick={() => navigate(`/user/${u.userId}`)}
                                 >
                                     <img
                                         src={u.avatarUrl || `https://ui-avatars.com/api/?name=${u.alias}&background=random`}
