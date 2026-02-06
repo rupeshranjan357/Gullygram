@@ -74,4 +74,20 @@ public class Relationship {
     public boolean isBlock() {
         return status == RelationshipStatus.BLOCKED;
     }
+
+    public User getRequester() {
+        return requester;
+    }
+
+    public void setRequester(User requester) {
+        this.requester = requester;
+    }
+
+    public User getReceiver() {
+        return receiver;
+    }
+
+    public void setReceiver(User receiver) {
+        this.receiver = receiver;
+    }
 }

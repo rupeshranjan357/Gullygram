@@ -47,4 +47,48 @@ public class CreatePostRequest {
     private String eventDate; // ISO format
     private String eventLocationName;
     private String eventCity;
+
+    public Integer getVisibilityRadiusKm() {
+        return visibilityRadiusKm;
+    }
+
+    public boolean isFriendsOnly() {
+        return friendsOnly;
+    }
+
+    public String getEventDate() {
+        return eventDate;
+    }
+
+    public String getEventLocationName() {
+        return eventLocationName;
+    }
+
+    public String getEventCity() {
+        return eventCity;
+    }
+
+    public String getText() {
+        return text;
+    }
+
+    public Post.PostType getType() {
+        return type;
+    }
+
+    public java.util.List<String> getMediaUrls() {
+        return mediaUrls;
+    }
+
+    public Double getLatitude() {
+        return latitude;
+    }
+
+    public Double getLongitude() {
+        return longitude;
+    }
+
+    public java.util.Set<Integer> getInterestIds() {
+        return interestIds;
+    }
 }
