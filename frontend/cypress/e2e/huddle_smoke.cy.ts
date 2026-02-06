@@ -57,6 +57,12 @@ describe('Huddle Feature Smoke Test', () => {
         // 4. Fill Form
         cy.contains('label', 'What are we doing?').next('input').type('Cypress Smoke Huddle');
 
+        // Verify Location Change Open
+        cy.contains('button', 'Change').click();
+        cy.contains('Discovery Settings').should('be.visible');
+        cy.contains('button', 'Done').click(); // Close without changing for smoke test speed
+        cy.contains('Discovery Settings').should('not.exist');
+
         // Select Time (Tonight)
         cy.contains('button', 'Tonight').click();
 
