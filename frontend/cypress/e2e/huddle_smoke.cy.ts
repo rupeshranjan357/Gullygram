@@ -78,7 +78,14 @@ describe('Huddle Feature Smoke Test', () => {
         // Should close modal
         cy.contains('Start a Huddle').should('not.exist');
 
-        // Should see the new huddle in the list (assuming it refreshes)
-        cy.contains('Cypress Smoke Huddle').should('be.visible');
+        // Should see the new huddle marker on the map
+        cy.get('.custom-huddle-marker', { timeout: 15000 }).should('exist');
+
+        // Click the marker to reveal the popup (assuming it's the last one added or just picking one)
+        // We force click because map markers sometimes have overlay issues in Leaflet
+        cy.get('.custom-huddle-marker').last().click({ force: true });
+
+        // Now check for the title in the popup
+        cy.contains('Cypress Smoke Huddle', { timeout: 5000 }).should('be.visible');
     });
 });
