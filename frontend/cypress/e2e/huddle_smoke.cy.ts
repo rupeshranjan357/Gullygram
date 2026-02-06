@@ -68,7 +68,7 @@ describe('Huddle Feature Smoke Test', () => {
             .trigger('input');
 
         // Toggle Women Only (optional, just testing interaction)
-        cy.contains('Women Only').click();
+        cy.contains('Women').click();
         // Wait, if I click the container it toggles.
 
         // 5. Submit

@@ -191,18 +191,19 @@ export const CreateHuddleModal: React.FC<CreateHuddleModalProps> = ({ isOpen, on
                     {/* Trust & Safety Toggles */}
                     <div className="flex gap-4">
                         {/* Women Only */}
-                        <div className={`flex-1 rounded-[1.5rem] p-3 border transition-all ${womenOnly
-                            ? 'bg-pink-50 border-pink-200 shadow-[0_0_20px_rgba(236,72,153,0.15)]'
-                            : 'bg-white/60 border-white'
-                            }`}>
+                        <div
+                            onClick={() => setWomenOnly(!womenOnly)}
+                            className={`flex-1 rounded-[1.5rem] p-3 border transition-all cursor-pointer ${womenOnly
+                                ? 'bg-pink-50 border-pink-200 shadow-[0_0_20px_rgba(236,72,153,0.15)]'
+                                : 'bg-white/60 border-white'
+                                }`}>
                             <div className="flex justify-between items-center mb-2">
                                 <div className="flex items-center gap-1 text-pink-500">
                                     <span className="text-lg">♀</span>
                                     <span className="text-xs font-bold leading-tight">Women<br />Only</span>
                                 </div>
                                 <div
-                                    onClick={() => setWomenOnly(!womenOnly)}
-                                    className={`w-10 h-6 rounded-full p-1 cursor-pointer transition-colors ${womenOnly ? 'bg-pink-500' : 'bg-gray-300'
+                                    className={`w-10 h-6 rounded-full p-1 transition-colors ${womenOnly ? 'bg-pink-500' : 'bg-gray-300'
                                         }`}
                                 >
                                     <div className={`w-4 h-4 rounded-full bg-white shadow-sm transition-transform ${womenOnly ? 'translate-x-4' : ''
@@ -212,18 +213,19 @@ export const CreateHuddleModal: React.FC<CreateHuddleModalProps> = ({ isOpen, on
                         </div>
 
                         {/* Friends of Friends */}
-                        <div className={`flex-1 rounded-[1.5rem] p-3 border transition-all ${friendsOfFriends
-                            ? 'bg-indigo-50 border-indigo-200 shadow-[0_0_20px_rgba(99,102,241,0.15)]'
-                            : 'bg-white/60 border-white'
-                            }`}>
+                        <div
+                            onClick={() => setFriendsOfFriends(!friendsOfFriends)}
+                            className={`flex-1 rounded-[1.5rem] p-3 border transition-all cursor-pointer ${friendsOfFriends
+                                ? 'bg-indigo-50 border-indigo-200 shadow-[0_0_20px_rgba(99,102,241,0.15)]'
+                                : 'bg-white/60 border-white'
+                                }`}>
                             <div className="flex justify-between items-center mb-2">
                                 <div className="flex items-center gap-1 text-indigo-500">
                                     <Users className="w-4 h-4" />
                                     <span className="text-xs font-bold leading-tight">Friends of<br />Friends</span>
                                 </div>
                                 <div
-                                    onClick={() => setFriendsOfFriends(!friendsOfFriends)}
-                                    className={`w-10 h-6 rounded-full p-1 cursor-pointer transition-colors ${friendsOfFriends ? 'bg-indigo-500' : 'bg-gray-300'
+                                    className={`w-10 h-6 rounded-full p-1 transition-colors ${friendsOfFriends ? 'bg-indigo-500' : 'bg-gray-300'
                                         }`}
                                 >
                                     <div className={`w-4 h-4 rounded-full bg-white shadow-sm transition-transform ${friendsOfFriends ? 'translate-x-4' : ''
