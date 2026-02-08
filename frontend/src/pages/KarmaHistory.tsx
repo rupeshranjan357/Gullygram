@@ -3,13 +3,12 @@ import { useQuery } from '@tanstack/react-query';
 import { ArrowLeft, TrendingUp, User, Users, LogIn, Star } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { karmaService } from '@/services/karmaService';
-import { useAuthStore } from '@/store/authStore';
 import { KarmaTransaction } from '@/types/karma.types';
 import '@/styles/karma.css';
 
 export const KarmaHistory: React.FC = () => {
     const navigate = useNavigate();
-    // const { user } = useAuthStore();
+
 
     const { data: history, isLoading } = useQuery({
         queryKey: ['karma-history'],

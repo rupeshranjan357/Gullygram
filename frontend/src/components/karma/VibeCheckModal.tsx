@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Star, X } from 'lucide-react';
+import { X } from 'lucide-react';
 import { SubmitVibeCheckRequest } from '../../types/karma.types';
 import { karmaService } from '../../services/karmaService';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
@@ -76,7 +76,7 @@ export const VibeCheckModal: React.FC<VibeCheckModalProps> = ({
                     onClick={onClose}
                     className="absolute top-4 right-4 text-gray-400 hover:text-white transition-colors"
                 >
-                    <x size={24} />
+                    <X size={24} />
                 </button>
 
                 <div className="text-center mb-8">
