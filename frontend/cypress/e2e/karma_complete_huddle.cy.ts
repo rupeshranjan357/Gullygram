@@ -7,6 +7,13 @@ describe('Karma System - Huddle Completion', () => {
     const initialKarma = 100;
     const huddleTitle = `Karma Test Huddle ${Date.now()}`;
 
+    // Ignore benign Leaflet error during page transitions
+    Cypress.on('uncaught:exception', (err, runnable) => {
+        if (err.message.includes("Cannot read properties of null (reading 'document')")) {
+            return false;
+        }
+    });
+
     beforeEach(() => {
         // Setup aliases for network requests
         cy.intercept('POST', '/api/huddles').as('createHuddle');
@@ -297,7 +304,7 @@ describe('Karma System - Huddle Completion', () => {
         // Verify Modal Opens using test-id
         cy.get('[data-testid="huddle-modal-title"]', { timeout: 10000 })
             .should('exist')
-            .and('contains.text', 'Karma Test Huddle');
+            .and('contain.text', 'Karma Test Huddle');
 
         // Verify 'Complete Huddle' button exists and is clickable
         cy.get('[data-testid="complete-huddle-button"]')
@@ -455,7 +462,7 @@ describe('Karma System - Huddle Completion', () => {
                     version: 0
                 }));
                 win.localStorage.setItem('gullygram-location-v2', JSON.stringify({
-                    state: { coords: { lat: 12.9698, lon: 77.7499 }, addressLabel: 'Whitefield', mode: 'MANUAL', radius: 5, isSupportedZone: true },
+                    state: { coords: { lat: 12.9720, lon: 77.7520 }, addressLabel: 'Whitefield Test', mode: 'MANUAL', radius: 5, isSupportedZone: true },
                     version: 0
                 }));
             });
@@ -481,14 +488,16 @@ describe('Karma System - Huddle Completion', () => {
         });
 
         // Verify huddle is still OPEN
-        cy.request({
-            method: 'GET',
-            url: `http://localhost:8080/api/huddles?lat=12.9698&lon=77.7499&radiusKm=5`,
-            headers: { 'Authorization': `Bearer ${hostToken2}` }
-        }).then((res) => {
-            const huddle = res.body.find((h: any) => h.id === huddleId2);
-            expect(huddle.status).to.eq('OPEN');
-            cy.log('✅ Huddle status remains OPEN after failed completion attempt');
+        cy.then(() => {
+            cy.request({
+                method: 'GET',
+                url: `http://localhost:8080/api/huddles?lat=12.9698&lon=77.7499&radiusKm=5`,
+                headers: { 'Authorization': `Bearer ${hostToken2}` }
+            }).then((res) => {
+                const huddle = res.body.find((h: any) => h.id === huddleId2);
+                expect(huddle.status).to.eq('OPEN');
+                cy.log('✅ Huddle status remains OPEN after failed completion attempt');
+            });
         });
     });
 });
