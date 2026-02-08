@@ -1,0 +1,76 @@
+
+DevTools listening on ws://127.0.0.1:55716/devtools/browser/6d610754-49f5-4c5f-90ab-c1c64e90be3d
+Warning: The allowCypressEnv configuration option is enabled. This allows any browser code to read values from Cypress.env(). This is insecure and will be removed in a future major version.
+
+1. Replace Cypress.env() calls with cy.env() (for sensitive values) or Cypress.expose() (for public configuration)
+2. Set allowCypressEnv: false in your Cypress configuration to disable Cypress.env()
+
+Learn more: https://on.cypress.io/cypress-env-migration
+
+
+===============================================================================
+
+  (Run Starting)
+
+  ┌────────────────────────────────────────────────────────────────────────────────────────────────┐
+  │ Cypress:        15.10.0                                                                        │
+  │ Browser:        Electron 138 (headless)                                                        │
+  │ Node Version:   v25.5.0 (/opt/homebrew/Cellar/node/25.5.0/bin/node)                            │
+  │ Specs:          1 found (karma_complete_huddle.cy.ts)                                          │
+  │ Searched:       cypress/e2e/karma_complete_huddle.cy.ts                                        │
+  └────────────────────────────────────────────────────────────────────────────────────────────────┘
+
+
+────────────────────────────────────────────────────────────────────────────────────────────────────
+                                                                                                    
+  Running:  karma_complete_huddle.cy.ts                                                     (1 of 1)
+
+
+  Karma System - Huddle Completion
+    1) should create users, host a huddle, join, rate, and verify karma after completion
+
+
+  0 passing (17s)
+  1 failing
+
+  1) Karma System - Huddle Completion
+       should create users, host a huddle, join, rate, and verify karma after completion:
+     AssertionError: Timed out retrying after 10000ms: Expected to find content: 'Joined ✅' but never did.
+      at Context.eval (webpack://gullygram-frontend/./cypress/e2e/karma_complete_huddle.cy.ts:202:11)
+
+
+
+
+  (Results)
+
+  ┌────────────────────────────────────────────────────────────────────────────────────────────────┐
+  │ Tests:        1                                                                                │
+  │ Passing:      0                                                                                │
+  │ Failing:      1                                                                                │
+  │ Pending:      0                                                                                │
+  │ Skipped:      0                                                                                │
+  │ Screenshots:  1                                                                                │
+  │ Video:        false                                                                            │
+  │ Duration:     16 seconds                                                                       │
+  │ Spec Ran:     karma_complete_huddle.cy.ts                                                      │
+  └────────────────────────────────────────────────────────────────────────────────────────────────┘
+
+
+  (Screenshots)
+
+  -  /Users/rupeshsingh/Gullygram/frontend/cypress/screenshots/karma_complete_huddle.    (2560x1440)
+     cy.ts/Karma System - Huddle Completion -- should create users, host a huddle, jo               
+     in, rate, and verify karma after completion (failed).png                                       
+
+
+===============================================================================
+
+  (Run Finished)
+
+
+       Spec                                              Tests  Passing  Failing  Pending  Skipped  
+  ┌────────────────────────────────────────────────────────────────────────────────────────────────┐
+  │ ✖  karma_complete_huddle.cy.ts              00:16        1        -        1        -        - │
+  └────────────────────────────────────────────────────────────────────────────────────────────────┘
+    ✖  1 of 1 failed (100%)                     00:16        1        -        1        -        -  
+

@@ -13,7 +13,7 @@ import java.util.UUID;
 @Repository
 public interface HuddleRepository extends JpaRepository<Huddle, UUID> {
 
-    @Query("SELECT h FROM Huddle h WHERE h.status = 'OPEN' AND h.startTime > CURRENT_TIMESTAMP AND " +
+    @Query("SELECT h FROM Huddle h WHERE h.status = 'OPEN' AND h.endTime > CURRENT_TIMESTAMP AND " +
            "(6371 * acos(cos(radians(:lat)) * cos(radians(h.lat)) * cos(radians(h.lon) - radians(:lon)) + sin(radians(:lat)) * sin(radians(h.lat)))) < :radius " +
            "ORDER BY h.startTime ASC")
     List<Huddle> findNearbyOpenHuddles(@Param("lat") double lat, @Param("lon") double lon, @Param("radius") double radius);

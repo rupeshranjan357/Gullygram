@@ -1,0 +1,82 @@
+
+DevTools listening on ws://127.0.0.1:62191/devtools/browser/2e4e7154-c5dd-4a18-b4f0-ed2a482f3f8e
+Warning: The allowCypressEnv configuration option is enabled. This allows any browser code to read values from Cypress.env(). This is insecure and will be removed in a future major version.
+
+1. Replace Cypress.env() calls with cy.env() (for sensitive values) or Cypress.expose() (for public configuration)
+2. Set allowCypressEnv: false in your Cypress configuration to disable Cypress.env()
+
+Learn more: https://on.cypress.io/cypress-env-migration
+
+
+==================================================================================
+
+  (Run Starting)
+
+  ┌────────────────────────────────────────────────────────────────────────────────────────────────┐
+  │ Cypress:        15.10.0                                                                        │
+  │ Browser:        Electron 138 (headless)                                                        │
+  │ Node Version:   v25.5.0 (/opt/homebrew/Cellar/node/25.5.0/bin/node)                            │
+  │ Specs:          1 found (karma_complete_huddle.cy.ts)                                          │
+  │ Searched:       cypress/e2e/karma_complete_huddle.cy.ts                                        │
+  └────────────────────────────────────────────────────────────────────────────────────────────────┘
+
+
+────────────────────────────────────────────────────────────────────────────────────────────────────
+                                                                                                    
+  Running:  karma_complete_huddle.cy.ts                                                     (1 of 1)
+
+
+  Karma System - Huddle Completion
+    1) should create users, host a huddle, join, rate, and verify karma after completion
+
+
+  0 passing (21s)
+  1 failing
+
+  1) Karma System - Huddle Completion
+       should create users, host a huddle, join, rate, and verify karma after completion:
+     AssertionError: Timed out retrying after 15000ms: Expected to find content: 'Joined ✅' within the selector: '.leaflet-popup-content' but never did.
+      at Context.eval (webpack://gullygram-frontend/./cypress/e2e/karma_complete_huddle.cy.ts:223:90)
+      at getRet (http://localhost:3000/__cypress/runner/cypress_runner.js:122807:20)
+      at tryCatcher (http://localhost:3000/__cypress/runner/cypress_runner.js:1777:23)
+      at Promise.attempt.Promise.try (http://localhost:3000/__cypress/runner/cypress_runner.js:4285:29)
+      at Context.thenFn (http://localhost:3000/__cypress/runner/cypress_runner.js:122818:66)
+      at Context.then (http://localhost:3000/__cypress/runner/cypress_runner.js:123069:21)
+      at wrapped (http://localhost:3000/__cypress/runner/cypress_runner.js:146327:19)
+
+
+
+
+  (Results)
+
+  ┌────────────────────────────────────────────────────────────────────────────────────────────────┐
+  │ Tests:        1                                                                                │
+  │ Passing:      0                                                                                │
+  │ Failing:      1                                                                                │
+  │ Pending:      0                                                                                │
+  │ Skipped:      0                                                                                │
+  │ Screenshots:  1                                                                                │
+  │ Video:        false                                                                            │
+  │ Duration:     21 seconds                                                                       │
+  │ Spec Ran:     karma_complete_huddle.cy.ts                                                      │
+  └────────────────────────────────────────────────────────────────────────────────────────────────┘
+
+
+  (Screenshots)
+
+  -  /Users/rupeshsingh/Gullygram/frontend/cypress/screenshots/karma_complete_huddle.    (2560x1440)
+     cy.ts/Karma System - Huddle Completion -- should create users, host a huddle, jo               
+     in, rate, and verify karma after completion (failed).png                                       
+
+
+==================================================================================
+
+  (Run Finished)
+
+
+       Spec                                              Tests  Passing  Failing  Pending  Skipped  
+  ┌────────────────────────────────────────────────────────────────────────────────────────────────┐
+  │ ✖  karma_complete_huddle.cy.ts              00:21        1        -        1        -        - │
+  └────────────────────────────────────────────────────────────────────────────────────────────────┘
+    ✖  1 of 1 failed (100%)                     00:21        1        -        1        -        -  
+

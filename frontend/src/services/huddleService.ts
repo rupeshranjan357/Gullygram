@@ -59,5 +59,16 @@ export const huddleService = {
     // Leave a huddle
     leaveHuddle: async (huddleId: string): Promise<void> => {
         await api.post(`/huddles/${huddleId}/leave`);
+    },
+
+    // Complete a huddle (Creator only)
+    completeHuddle: async (huddleId: string): Promise<void> => {
+        await api.post(`/huddles/${huddleId}/complete`);
+    },
+
+    // Get participants of a huddle
+    getParticipants: async (huddleId: string): Promise<{ userId: string, alias: string, avatarUrl?: string }[]> => {
+        const response = await api.get(`/huddles/${huddleId}/participants`);
+        return response.data;
     }
 };

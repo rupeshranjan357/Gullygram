@@ -11,6 +11,8 @@ import { profileService } from '@/services/profileService';
 import { interestService } from '@/services/interestService';
 import { relationshipService } from '@/services/relationshipService';
 import { useAuthStore } from '@/store/authStore';
+import { KarmaBadge } from '@/components/karma/KarmaBadge';
+import { karmaService } from '@/services/karmaService';
 
 export const Profile: React.FC = () => {
     const navigate = useNavigate();
@@ -39,6 +41,12 @@ export const Profile: React.FC = () => {
     const { data: relationshipCounts } = useQuery({
         queryKey: ['relationship-counts'],
         queryFn: relationshipService.getCounts,
+    });
+
+    const { data: karmaScore, isLoading: isKarmaLoading } = useQuery({
+        queryKey: ['karma-score'],
+        queryFn: karmaService.getKarmaScore,
+        enabled: isAuthenticated,
     });
 
     // Initialize radius from profile data
@@ -212,6 +220,11 @@ export const Profile: React.FC = () => {
                                 <Edit2 size={16} />
                             </button>
                         </div>
+                    </div>
+
+                    {/* Karma Badge Integration */}
+                    <div className="flex justify-center mb-6">
+                        <KarmaBadge score={karmaScore ?? 0} isLoading={isKarmaLoading} />
                     </div>
 
                     {/* Username and Real Name */}

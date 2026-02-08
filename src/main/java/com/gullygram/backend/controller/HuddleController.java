@@ -8,6 +8,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+import com.gullygram.backend.dto.response.HuddleParticipantResponse;
+
 import java.util.List;
 import java.util.UUID;
 
@@ -17,6 +19,11 @@ import java.util.UUID;
 public class HuddleController {
 
     private final HuddleService huddleService;
+    
+    @GetMapping("/{id}/participants")
+    public ResponseEntity<List<HuddleParticipantResponse>> getParticipants(@PathVariable UUID id) {
+        return ResponseEntity.ok(huddleService.getParticipants(id));
+    }
 
     @PostMapping
     public ResponseEntity<HuddleResponse> createHuddle(
@@ -47,6 +54,21 @@ public class HuddleController {
             @AuthenticationPrincipal UUID userId,
             @PathVariable UUID id) {
         huddleService.leaveHuddle(id, userId);
+        return ResponseEntity.ok().build();
+    }
+    @PostMapping("/{id}/complete")
+    public ResponseEntity<Void> completeHuddle(
+            @AuthenticationPrincipal UUID userId,
+            @PathVariable UUID id) {
+        huddleService.completeHuddle(id, userId);
+        return ResponseEntity.ok().build();
+    }
+
+    @PostMapping("/{id}/cancel")
+    public ResponseEntity<Void> cancelHuddle(
+            @AuthenticationPrincipal UUID userId,
+            @PathVariable UUID id) {
+        huddleService.cancelHuddle(id, userId);
         return ResponseEntity.ok().build();
     }
 }

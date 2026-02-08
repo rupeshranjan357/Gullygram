@@ -17,4 +17,8 @@ public interface UserRepository extends JpaRepository<User, UUID> {
     boolean existsByEmail(String email);
     
     boolean existsByPhone(String phone);
+
+    @org.springframework.data.jpa.repository.Modifying
+    @org.springframework.data.jpa.repository.Query("UPDATE User u SET u.karmaScore = :newScore WHERE u.id = :userId")
+    void updateKarmaScore(UUID userId, Integer newScore);
 }

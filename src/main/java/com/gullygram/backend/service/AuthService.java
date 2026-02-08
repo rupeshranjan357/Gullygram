@@ -69,6 +69,7 @@ public class AuthService {
             .phone(request.getPhone())
             .passwordHash(passwordEncoder.encode(request.getPassword()))
             .status(User.UserStatus.ACTIVE)
+            .karmaScore(100) // Explicitly set default karma score
             .accountType(
                 "COMPANY".equalsIgnoreCase(request.getAccountType()) 
                 ? User.AccountType.COMPANY 
@@ -198,6 +199,7 @@ public class AuthService {
             user = User.builder()
                 .phone(request.getPhone())
                 .status(User.UserStatus.ACTIVE)
+                .karmaScore(100) // Explicitly set default karma score
                 .build();
 
             user = userRepository.save(user);

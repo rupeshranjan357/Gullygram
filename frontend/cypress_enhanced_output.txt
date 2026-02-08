@@ -1,0 +1,188 @@
+
+DevTools listening on ws://127.0.0.1:60601/devtools/browser/a67b07b2-3da1-4b02-90b8-a93c68eac717
+Warning: The allowCypressEnv configuration option is enabled. This allows any browser code to read values from Cypress.env(). This is insecure and will be removed in a future major version.
+
+1. Replace Cypress.env() calls with cy.env() (for sensitive values) or Cypress.expose() (for public configuration)
+2. Set allowCypressEnv: false in your Cypress configuration to disable Cypress.env()
+
+Learn more: https://on.cypress.io/cypress-env-migration
+
+
+===============================================================================
+
+  (Run Starting)
+
+  ┌────────────────────────────────────────────────────────────────────────────────────────────────┐
+  │ Cypress:        15.10.0                                                                        │
+  │ Browser:        Electron 138 (headless)                                                        │
+  │ Node Version:   v25.5.0 (/opt/homebrew/Cellar/node/25.5.0/bin/node)                            │
+  │ Specs:          1 found (karma_enhanced.cy.ts)                                                 │
+  │ Searched:       cypress/e2e/karma_enhanced.cy.ts                                               │
+  └────────────────────────────────────────────────────────────────────────────────────────────────┘
+
+
+────────────────────────────────────────────────────────────────────────────────────────────────────
+                                                                                                    
+  Running:  karma_enhanced.cy.ts                                                            (1 of 1)
+
+
+  Enhanced Karma System - Full E2E Tests
+    1) should complete flow with rating submission and karma verification
+    2) should prevent non-creator from completing huddle
+    3) should prevent duplicate ratings for same user
+    4) should allow creator to cancel huddle
+
+
+  0 passing (22s)
+  4 failing
+
+  1) Enhanced Karma System - Full E2E Tests
+       should complete flow with rating submission and karma verification:
+     CypressError: `cy.request()` failed on:
+
+http://localhost:8080/api/karma/score
+
+The response we received from your web server was:
+
+  > 403: Forbidden
+
+This was considered a failure because the status code was not `2xx` or `3xx`.
+
+If you do not want status codes to cause failures pass the option: `failOnStatusCode: false`
+
+-----------------------------------------------------------
+
+The request we sent was:
+
+Method: GET
+URL: http://localhost:8080/api/karma/score
+Headers: {
+  "Connection": "keep-alive",
+  "Authorization": "Bearer undefined",
+  "user-agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Cypress/15.10.0 Chrome/138.0.7204.251 Electron/37.6.0 Safari/537.36",
+  "accept": "*/*",
+  "accept-encoding": "gzip, deflate"
+}
+
+-----------------------------------------------------------
+
+The response we got was:
+
+Status: 403 - Forbidden
+Headers: {
+  "vary": "Origin, Access-Control-Request-Method, Access-Control-Request-Headers",
+  "x-content-type-options": "nosniff",
+  "x-xss-protection": "0",
+  "cache-control": "no-cache, no-store, max-age=0, must-revalidate",
+  "pragma": "no-cache",
+  "expires": "0",
+  "x-frame-options": "DENY",
+  "content-length": "0",
+  "date": "Sun, 08 Feb 2026 09:38:24 GMT",
+  "keep-alive": "timeout=60",
+  "connection": "keep-alive"
+}
+Body: 
+
+
+https://on.cypress.io/request
+      at <unknown> (http://localhost:3000/__cypress/runner/cypress_runner.js:136431:72)
+      at tryCatcher (http://localhost:3000/__cypress/runner/cypress_runner.js:1777:23)
+      at Promise._settlePromiseFromHandler (http://localhost:3000/__cypress/runner/cypress_runner.js:1489:31)
+      at Promise._settlePromise (http://localhost:3000/__cypress/runner/cypress_runner.js:1546:18)
+      at Promise._settlePromise0 (http://localhost:3000/__cypress/runner/cypress_runner.js:1591:10)
+      at Promise._settlePromises (http://localhost:3000/__cypress/runner/cypress_runner.js:1671:18)
+      at _drainQueueStep (http://localhost:3000/__cypress/runner/cypress_runner.js:2377:12)
+      at _drainQueue (http://localhost:3000/__cypress/runner/cypress_runner.js:2370:9)
+      at Async._drainQueues (http://localhost:3000/__cypress/runner/cypress_runner.js:2386:5)
+      at Async.drainQueues (http://localhost:3000/__cypress/runner/cypress_runner.js:2256:14)
+  From Your Spec Code:
+      at Context.eval (webpack://gullygram-frontend/./cypress/e2e/karma_enhanced.cy.ts:66:12)
+      at getRet (http://localhost:3000/__cypress/runner/cypress_runner.js:122807:20)
+      at tryCatcher (http://localhost:3000/__cypress/runner/cypress_runner.js:1777:23)
+      at Promise.attempt.Promise.try (http://localhost:3000/__cypress/runner/cypress_runner.js:4285:29)
+      at Context.thenFn (http://localhost:3000/__cypress/runner/cypress_runner.js:122818:66)
+      at Context.then (http://localhost:3000/__cypress/runner/cypress_runner.js:123069:21)
+      at wrapped (http://localhost:3000/__cypress/runner/cypress_runner.js:146327:19)
+
+  2) Enhanced Karma System - Full E2E Tests
+       should prevent non-creator from completing huddle:
+     AssertionError: Timed out retrying after 4000ms: Expected to find element: `input[placeholder="Enter your email"]`, but never found it.
+      at createUser (webpack://gullygram-frontend/./cypress/e2e/karma_enhanced.cy.ts:52:11)
+      at Context.eval (webpack://gullygram-frontend/./cypress/e2e/karma_enhanced.cy.ts:268:12)
+      at getRet (http://localhost:3000/__cypress/runner/cypress_runner.js:122807:20)
+      at tryCatcher (http://localhost:3000/__cypress/runner/cypress_runner.js:1777:23)
+      at Promise.attempt.Promise.try (http://localhost:3000/__cypress/runner/cypress_runner.js:4285:29)
+      at Context.thenFn (http://localhost:3000/__cypress/runner/cypress_runner.js:122818:66)
+      at Context.then (http://localhost:3000/__cypress/runner/cypress_runner.js:123069:21)
+      at wrapped (http://localhost:3000/__cypress/runner/cypress_runner.js:146327:19)
+
+  3) Enhanced Karma System - Full E2E Tests
+       should prevent duplicate ratings for same user:
+     AssertionError: Timed out retrying after 4000ms: Expected to find element: `input[placeholder="Enter your email"]`, but never found it.
+      at createUser (webpack://gullygram-frontend/./cypress/e2e/karma_enhanced.cy.ts:52:11)
+      at Context.eval (webpack://gullygram-frontend/./cypress/e2e/karma_enhanced.cy.ts:323:12)
+      at getRet (http://localhost:3000/__cypress/runner/cypress_runner.js:122807:20)
+      at tryCatcher (http://localhost:3000/__cypress/runner/cypress_runner.js:1777:23)
+      at Promise.attempt.Promise.try (http://localhost:3000/__cypress/runner/cypress_runner.js:4285:29)
+      at Context.thenFn (http://localhost:3000/__cypress/runner/cypress_runner.js:122818:66)
+      at Context.then (http://localhost:3000/__cypress/runner/cypress_runner.js:123069:21)
+      at wrapped (http://localhost:3000/__cypress/runner/cypress_runner.js:146327:19)
+
+  4) Enhanced Karma System - Full E2E Tests
+       should allow creator to cancel huddle:
+     AssertionError: Timed out retrying after 4000ms: Expected to find element: `input[placeholder="Enter your email"]`, but never found it.
+      at createUser (webpack://gullygram-frontend/./cypress/e2e/karma_enhanced.cy.ts:52:11)
+      at Context.eval (webpack://gullygram-frontend/./cypress/e2e/karma_enhanced.cy.ts:412:12)
+      at getRet (http://localhost:3000/__cypress/runner/cypress_runner.js:122807:20)
+      at tryCatcher (http://localhost:3000/__cypress/runner/cypress_runner.js:1777:23)
+      at Promise.attempt.Promise.try (http://localhost:3000/__cypress/runner/cypress_runner.js:4285:29)
+      at Context.thenFn (http://localhost:3000/__cypress/runner/cypress_runner.js:122818:66)
+      at Context.then (http://localhost:3000/__cypress/runner/cypress_runner.js:123069:21)
+      at wrapped (http://localhost:3000/__cypress/runner/cypress_runner.js:146327:19)
+
+
+
+
+  (Results)
+
+  ┌────────────────────────────────────────────────────────────────────────────────────────────────┐
+  │ Tests:        4                                                                                │
+  │ Passing:      0                                                                                │
+  │ Failing:      4                                                                                │
+  │ Pending:      0                                                                                │
+  │ Skipped:      0                                                                                │
+  │ Screenshots:  4                                                                                │
+  │ Video:        false                                                                            │
+  │ Duration:     22 seconds                                                                       │
+  │ Spec Ran:     karma_enhanced.cy.ts                                                             │
+  └────────────────────────────────────────────────────────────────────────────────────────────────┘
+
+
+  (Screenshots)
+
+  -  /Users/rupeshsingh/Gullygram/frontend/cypress/screenshots/karma_enhanced.cy.ts/E    (2560x1440)
+     nhanced Karma System - Full E2E Tests -- should complete flow with rating submis               
+     sion and karma verification (failed).png                                                       
+  -  /Users/rupeshsingh/Gullygram/frontend/cypress/screenshots/karma_enhanced.cy.ts/E    (2560x1440)
+     nhanced Karma System - Full E2E Tests -- should prevent non-creator from complet               
+     ing huddle (failed).png                                                                        
+  -  /Users/rupeshsingh/Gullygram/frontend/cypress/screenshots/karma_enhanced.cy.ts/E    (2560x1440)
+     nhanced Karma System - Full E2E Tests -- should prevent duplicate ratings for sa               
+     me user (failed).png                                                                           
+  -  /Users/rupeshsingh/Gullygram/frontend/cypress/screenshots/karma_enhanced.cy.ts/E    (2560x1440)
+     nhanced Karma System - Full E2E Tests -- should allow creator to cancel huddle (               
+     failed).png                                                                                    
+
+
+===============================================================================
+
+  (Run Finished)
+
+
+       Spec                                              Tests  Passing  Failing  Pending  Skipped  
+  ┌────────────────────────────────────────────────────────────────────────────────────────────────┐
+  │ ✖  karma_enhanced.cy.ts                     00:22        4        -        4        -        - │
+  └────────────────────────────────────────────────────────────────────────────────────────────────┘
+    ✖  1 of 1 failed (100%)                     00:22        4        -        4        -        -  
+

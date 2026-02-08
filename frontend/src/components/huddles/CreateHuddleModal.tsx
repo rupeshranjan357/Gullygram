@@ -20,7 +20,7 @@ export const CreateHuddleModal: React.FC<CreateHuddleModalProps> = ({ isOpen, on
     // Form State
     const [title, setTitle] = useState('');
     const [selectedTime, setSelectedTime] = useState<TimeOption>('NOW');
-    const [squadSize, setSquadSize] = useState(4);
+    const [squadSize, setSquadSize] = useState(5);
     const [womenOnly, setWomenOnly] = useState(false);
     const [friendsOfFriends, setFriendsOfFriends] = useState(true);
     const [isLocationSettingsOpen, setIsLocationSettingsOpen] = useState(false);
@@ -37,7 +37,7 @@ export const CreateHuddleModal: React.FC<CreateHuddleModalProps> = ({ isOpen, on
 
             switch (selectedTime) {
                 case 'NOW':
-                    startTime = now;
+                    startTime = new Date(now.getTime() + 2 * 60000); // Add 2 min buffer for network latency/validation
                     endTime.setHours(startTime.getHours() + 2); // Default 2h duration
                     break;
                 case '1H':
@@ -61,7 +61,7 @@ export const CreateHuddleModal: React.FC<CreateHuddleModalProps> = ({ isOpen, on
             // Helper to get Local ISO String (handles timezone offset)
             const toLocalISOString = (date: Date) => {
                 const offset = date.getTimezoneOffset() * 60000; // offset in milliseconds
-                return new Date(date.getTime() - offset).toISOString().slice(0, -1);
+                return new Date(date.getTime() - offset).toISOString().split('.')[0];
             };
 
             return huddleService.createHuddle({

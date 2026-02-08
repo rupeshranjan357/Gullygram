@@ -1,0 +1,125 @@
+
+DevTools listening on ws://127.0.0.1:49272/devtools/browser/3b5b8bf7-86fa-4cd2-bcc9-8170c20e4c99
+Warning: The allowCypressEnv configuration option is enabled. This allows any browser code to read values from Cypress.env(). This is insecure and will be removed in a future major version.
+
+1. Replace Cypress.env() calls with cy.env() (for sensitive values) or Cypress.expose() (for public configuration)
+2. Set allowCypressEnv: false in your Cypress configuration to disable Cypress.env()
+
+Learn more: https://on.cypress.io/cypress-env-migration
+
+
+===============================================================================
+
+  (Run Starting)
+
+  ┌────────────────────────────────────────────────────────────────────────────────────────────────┐
+  │ Cypress:        15.10.0                                                                        │
+  │ Browser:        Electron 138 (headless)                                                        │
+  │ Node Version:   v25.5.0 (/opt/homebrew/Cellar/node/25.5.0/bin/node)                            │
+  │ Specs:          2 found (huddle_smoke.cy.ts, karma_smoke.cy.ts)                                │
+  │ Searched:       cypress/e2e/*.cy.ts                                                            │
+  └────────────────────────────────────────────────────────────────────────────────────────────────┘
+
+
+────────────────────────────────────────────────────────────────────────────────────────────────────
+                                                                                                    
+  Running:  huddle_smoke.cy.ts                                                              (1 of 2)
+
+
+  Huddle Feature Smoke Test
+    ✓ should allow a user to signup and create a huddle (3362ms)
+
+
+  1 passing (3s)
+
+
+  (Results)
+
+  ┌────────────────────────────────────────────────────────────────────────────────────────────────┐
+  │ Tests:        1                                                                                │
+  │ Passing:      1                                                                                │
+  │ Failing:      0                                                                                │
+  │ Pending:      0                                                                                │
+  │ Skipped:      0                                                                                │
+  │ Screenshots:  0                                                                                │
+  │ Video:        false                                                                            │
+  │ Duration:     3 seconds                                                                        │
+  │ Spec Ran:     huddle_smoke.cy.ts                                                               │
+  └────────────────────────────────────────────────────────────────────────────────────────────────┘
+
+
+────────────────────────────────────────────────────────────────────────────────────────────────────
+                                                                                                    
+  Running:  karma_smoke.cy.ts                                                               (2 of 2)
+
+
+  Karma System Smoke Tests
+    1) should display initial karma score on profile
+    2) should display karma history content
+
+
+  0 passing (8s)
+  2 failing
+
+  1) Karma System Smoke Tests
+       should display initial karma score on profile:
+
+      AssertionError: expected 500 to equal 200
+      + expected - actual
+
+      -500
+      +200
+      
+      at Context.eval (webpack://gullygram-frontend/./cypress/e2e/karma_smoke.cy.ts:49:12)
+      at getRet (http://localhost:3000/__cypress/runner/cypress_runner.js:122807:20)
+      at tryCatcher (http://localhost:3000/__cypress/runner/cypress_runner.js:1777:23)
+      at Promise.attempt.Promise.try (http://localhost:3000/__cypress/runner/cypress_runner.js:4285:29)
+      at Context.thenFn (http://localhost:3000/__cypress/runner/cypress_runner.js:122818:66)
+      at Context.then (http://localhost:3000/__cypress/runner/cypress_runner.js:123069:21)
+      at wrapped (http://localhost:3000/__cypress/runner/cypress_runner.js:146327:19)
+
+  2) Karma System Smoke Tests
+       should display karma history content:
+     AssertionError: Timed out retrying after 4000ms: expected 'http://localhost:3000/feed' to include '/karma/history'
+      at Context.eval (webpack://gullygram-frontend/./cypress/e2e/karma_smoke.cy.ts:73:17)
+
+
+
+
+  (Results)
+
+  ┌────────────────────────────────────────────────────────────────────────────────────────────────┐
+  │ Tests:        2                                                                                │
+  │ Passing:      0                                                                                │
+  │ Failing:      2                                                                                │
+  │ Pending:      0                                                                                │
+  │ Skipped:      0                                                                                │
+  │ Screenshots:  2                                                                                │
+  │ Video:        false                                                                            │
+  │ Duration:     8 seconds                                                                        │
+  │ Spec Ran:     karma_smoke.cy.ts                                                                │
+  └────────────────────────────────────────────────────────────────────────────────────────────────┘
+
+
+  (Screenshots)
+
+  -  /Users/rupeshsingh/Gullygram/frontend/cypress/screenshots/karma_smoke.cy.ts/Karm    (2560x1440)
+     a System Smoke Tests -- should display initial karma score on profile (failed).p               
+     ng                                                                                             
+  -  /Users/rupeshsingh/Gullygram/frontend/cypress/screenshots/karma_smoke.cy.ts/Karm    (2560x1440)
+     a System Smoke Tests -- should display karma history content (failed).png                      
+
+
+===============================================================================
+
+  (Run Finished)
+
+
+       Spec                                              Tests  Passing  Failing  Pending  Skipped  
+  ┌────────────────────────────────────────────────────────────────────────────────────────────────┐
+  │ ✔  huddle_smoke.cy.ts                       00:03        1        1        -        -        - │
+  ├────────────────────────────────────────────────────────────────────────────────────────────────┤
+  │ ✖  karma_smoke.cy.ts                        00:08        2        -        2        -        - │
+  └────────────────────────────────────────────────────────────────────────────────────────────────┘
+    ✖  1 of 2 failed (50%)                      00:11        3        1        2        -        -  
+

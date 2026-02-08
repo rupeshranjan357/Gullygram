@@ -118,11 +118,10 @@ export const Feed: React.FC = () => {
         mutationFn: (huddleId: string) => huddleService.joinHuddle(huddleId),
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['huddles'] });
-            alert("Joined Huddle successfully!");
+            console.log("Joined Huddle successfully!");
         },
         onError: (error) => {
             console.error("Failed to join huddle:", error);
-            alert("Failed to join huddle.");
         }
     });
 

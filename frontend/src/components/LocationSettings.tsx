@@ -47,9 +47,17 @@ export const LocationSettings: React.FC<{ onClose: () => void }> = ({ onClose })
         setIsSearching(false);
 
         if (result) {
+            // Extract better name
+            let label = result.display_name.split(',')[0];
+            if (result.address) {
+                if (result.address.suburb) label = result.address.suburb;
+                else if (result.address.neighbourhood) label = result.address.neighbourhood;
+                else if (result.address.town) label = result.address.town;
+            }
+
             setLocation(
                 { lat: result.lat, lon: result.lon },
-                result.display_name.split(',')[0], // Short name
+                label,
                 'MANUAL'
             );
             onClose();

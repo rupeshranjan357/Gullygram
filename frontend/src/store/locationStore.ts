@@ -19,25 +19,25 @@ const BETA_ZONES: BetaZone[] = [
         name: 'Whitefield',
         lat: 12.9698,
         lon: 77.7499,
-        radius: 6000 // 6km
+        radius: 15000 // 15km
     },
     {
         name: 'Marathahalli',
         lat: 12.9591,
         lon: 77.6974,
-        radius: 4000 // 4km
+        radius: 10000 // 10km
     },
     {
         name: 'Indiranagar',
         lat: 12.9716,
         lon: 77.6412,
-        radius: 5000 // 5km
+        radius: 10000 // 10km
     },
     {
         name: 'Koramangala',
         lat: 12.9352,
         lon: 77.6245,
-        radius: 5000 // 5km
+        radius: 10000 // 10km
     }
 ];
 

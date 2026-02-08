@@ -3,6 +3,7 @@ package com.gullygram.backend.service;
 import com.gullygram.backend.dto.request.CreateHuddleRequest;
 import com.gullygram.backend.dto.response.AuthorView;
 import com.gullygram.backend.dto.response.HuddleResponse;
+import com.gullygram.backend.dto.response.HuddleParticipantResponse;
 import com.gullygram.backend.entity.Huddle;
 import com.gullygram.backend.entity.HuddleParticipant;
 import com.gullygram.backend.entity.User;
@@ -30,6 +31,7 @@ public class HuddleService {
     private final HuddleParticipantRepository huddleParticipantRepository;
     private final UserRepository userRepository;
     private final AuthorViewService authorViewService;
+    private final KarmaService karmaService;
 
     @Transactional
     public HuddleResponse createHuddle(UUID userId, CreateHuddleRequest request) {
@@ -86,25 +88,29 @@ public class HuddleService {
         
         // TODO: Gender check logic here (requires User gender field)
 
+        log.info("EXTREME_DEBUG: Joining huddle {} for user {}", huddleId, userId);
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found"));
 
-        // Check if exists (idempotent)
         huddleParticipantRepository.findByHuddleIdAndUserId(huddleId, userId)
                 .ifPresentOrElse(
                         participant -> {
+                            log.info("EXTREME_DEBUG: User {} already has a participant record with status {}", userId, participant.getStatus());
                             if (participant.getStatus() != HuddleParticipant.ParticipantStatus.JOINED) {
                                 participant.setStatus(HuddleParticipant.ParticipantStatus.JOINED);
                                 huddleParticipantRepository.save(participant);
+                                log.info("EXTREME_DEBUG: Updated participant status to JOINED for user {}", userId);
                             }
                         },
                         () -> {
+                            log.info("EXTREME_DEBUG: Creating new JOINED participant for user {}", userId);
                             HuddleParticipant newParticipant = HuddleParticipant.builder()
                                     .huddle(huddle)
                                     .user(user)
                                     .status(HuddleParticipant.ParticipantStatus.JOINED)
                                     .build();
                             huddleParticipantRepository.save(newParticipant);
+                            log.info("EXTREME_DEBUG: New participant saved for user {}", userId);
                         }
                 );
     }
@@ -132,6 +138,47 @@ public class HuddleService {
          }
     }
 
+    @Transactional
+    public void completeHuddle(UUID huddleId, UUID userId) {
+        Huddle huddle = huddleRepository.findById(huddleId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Huddle not found"));
+
+        if (!huddle.getCreator().getId().equals(userId)) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Only the creator can complete the huddle");
+        }
+
+        if (huddle.getStatus() == Huddle.HuddleStatus.COMPLETED || huddle.getStatus() == Huddle.HuddleStatus.CANCELLED) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Huddle is already closed");
+        }
+
+        huddle.setStatus(Huddle.HuddleStatus.COMPLETED);
+        huddleRepository.save(huddle);
+        
+        // Trigger Karma Calculation
+        karmaService.processHuddleCompletion(huddleId);
+    }
+
+    @Transactional
+    public void cancelHuddle(UUID huddleId, UUID userId) {
+        Huddle huddle = huddleRepository.findById(huddleId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Huddle not found"));
+
+        // Only creator can cancel
+        if (!huddle.getCreator().getId().equals(userId)) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Only the creator can cancel this huddle");
+        }
+
+        // Can only cancel OPEN huddles
+        if (huddle.getStatus() != Huddle.HuddleStatus.OPEN) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, 
+                "Cannot cancel a huddle that is not in OPEN status. Current status: " + huddle.getStatus());
+        }
+
+        huddle.setStatus(Huddle.HuddleStatus.CANCELLED);
+        huddleRepository.save(huddle);
+        log.info("Huddle {} cancelled by creator {}", huddleId, userId);
+    }
+
     @Transactional(readOnly = true)
     public List<HuddleResponse> getNearbyHuddles(UUID userId, double lat, double lon, double radiusKm) {
         List<Huddle> huddles = huddleRepository.findNearbyOpenHuddles(lat, lon, radiusKm);
@@ -144,6 +191,9 @@ public class HuddleService {
         AuthorView creatorView = authorViewService.buildAuthorView(currentUserId, huddle.getCreator());
         long currentParticipants = huddleParticipantRepository.countByHuddleIdAndStatus(huddle.getId(), HuddleParticipant.ParticipantStatus.JOINED);
         boolean isJoined = huddleParticipantRepository.existsByHuddleIdAndUserIdAndStatus(huddle.getId(), currentUserId, HuddleParticipant.ParticipantStatus.JOINED);
+        
+        log.info("Converting Huddle {} for user {}: participants={}, isJoined={}", 
+                huddle.getId(), currentUserId, currentParticipants, isJoined);
         
         // Calculate distance
         // Simplified Haversine for display
@@ -173,6 +223,17 @@ public class HuddleService {
                 .build();
     }
     
+    public List<HuddleParticipantResponse> getParticipants(UUID huddleId) {
+        return huddleParticipantRepository.findByHuddleId(huddleId).stream()
+                .filter(p -> p.getStatus() == HuddleParticipant.ParticipantStatus.JOINED)
+                .map(p -> HuddleParticipantResponse.builder()
+                        .userId(p.getUser().getId())
+                        .alias(p.getUser().getProfile() != null ? p.getUser().getProfile().getAlias() : "Unknown")
+                        .avatarUrl(p.getUser().getProfile() != null ? p.getUser().getProfile().getAvatarUrlAlias() : null)
+                        .build())
+                .collect(java.util.stream.Collectors.toList());
+    }
+
     private double calculateDistanceInternal(double lat1, double lon1, double lat2, double lon2) {
         // Quick Haversine
         if ((lat1 == lat2) && (lon1 == lon2)) return 0;

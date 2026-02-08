@@ -1,0 +1,215 @@
+
+DevTools listening on ws://127.0.0.1:60989/devtools/browser/237ba7b3-e32b-4d58-be3d-2143d57bc493
+Warning: The allowCypressEnv configuration option is enabled. This allows any browser code to read values from Cypress.env(). This is insecure and will be removed in a future major version.
+
+1. Replace Cypress.env() calls with cy.env() (for sensitive values) or Cypress.expose() (for public configuration)
+2. Set allowCypressEnv: false in your Cypress configuration to disable Cypress.env()
+
+Learn more: https://on.cypress.io/cypress-env-migration
+
+
+===============================================================================
+
+  (Run Starting)
+
+  ┌────────────────────────────────────────────────────────────────────────────────────────────────┐
+  │ Cypress:        15.10.0                                                                        │
+  │ Browser:        Electron 138 (headless)                                                        │
+  │ Node Version:   v25.5.0 (/opt/homebrew/Cellar/node/25.5.0/bin/node)                            │
+  │ Specs:          1 found (karma_complete_huddle.cy.ts)                                          │
+  │ Searched:       cypress/e2e/karma_complete_huddle.cy.ts                                        │
+  └────────────────────────────────────────────────────────────────────────────────────────────────┘
+
+
+────────────────────────────────────────────────────────────────────────────────────────────────────
+                                                                                                    
+  Running:  karma_complete_huddle.cy.ts                                                     (1 of 1)
+
+
+  Karma System - Huddle Completion
+    1) should create users, host a huddle, join, rate, and verify karma after completion
+    2) should prevent non-creator from completing huddle
+
+
+  0 passing (18s)
+  2 failing
+
+  1) Karma System - Huddle Completion
+       should create users, host a huddle, join, rate, and verify karma after completion:
+     CypressError: `cy.request()` failed on:
+
+http://localhost:8080/api/karma/vibe-check
+
+The response we received from your web server was:
+
+  > 403: Forbidden
+
+This was considered a failure because the status code was not `2xx` or `3xx`.
+
+If you do not want status codes to cause failures pass the option: `failOnStatusCode: false`
+
+-----------------------------------------------------------
+
+The request we sent was:
+
+Method: POST
+URL: http://localhost:8080/api/karma/vibe-check
+Headers: {
+  "Connection": "keep-alive",
+  "Authorization": "Bearer undefined",
+  "user-agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Cypress/15.10.0 Chrome/138.0.7204.251 Electron/37.6.0 Safari/537.36",
+  "accept": "*/*",
+  "accept-encoding": "gzip, deflate",
+  "content-type": "application/json",
+  "content-length": 12
+}
+Body: {"rating":5}
+
+-----------------------------------------------------------
+
+The response we got was:
+
+Status: 403 - Forbidden
+Headers: {
+  "vary": "Origin, Access-Control-Request-Method, Access-Control-Request-Headers",
+  "x-content-type-options": "nosniff",
+  "x-xss-protection": "0",
+  "cache-control": "no-cache, no-store, max-age=0, must-revalidate",
+  "pragma": "no-cache",
+  "expires": "0",
+  "x-frame-options": "DENY",
+  "content-length": "0",
+  "date": "Sun, 08 Feb 2026 09:40:11 GMT",
+  "keep-alive": "timeout=60",
+  "connection": "keep-alive"
+}
+
+
+https://on.cypress.io/request
+      at <unknown> (http://localhost:3000/__cypress/runner/cypress_runner.js:136431:72)
+      at tryCatcher (http://localhost:3000/__cypress/runner/cypress_runner.js:1777:23)
+      at Promise._settlePromiseFromHandler (http://localhost:3000/__cypress/runner/cypress_runner.js:1489:31)
+      at Promise._settlePromise (http://localhost:3000/__cypress/runner/cypress_runner.js:1546:18)
+      at Promise._settlePromise0 (http://localhost:3000/__cypress/runner/cypress_runner.js:1591:10)
+      at Promise._settlePromises (http://localhost:3000/__cypress/runner/cypress_runner.js:1671:18)
+      at _drainQueueStep (http://localhost:3000/__cypress/runner/cypress_runner.js:2377:12)
+      at _drainQueue (http://localhost:3000/__cypress/runner/cypress_runner.js:2370:9)
+      at Async._drainQueues (http://localhost:3000/__cypress/runner/cypress_runner.js:2386:5)
+      at Async.drainQueues (http://localhost:3000/__cypress/runner/cypress_runner.js:2256:14)
+  From Your Spec Code:
+      at Context.eval (webpack://gullygram-frontend/./cypress/e2e/karma_complete_huddle.cy.ts:312:12)
+      at getRet (http://localhost:3000/__cypress/runner/cypress_runner.js:122807:20)
+      at tryCatcher (http://localhost:3000/__cypress/runner/cypress_runner.js:1777:23)
+      at Promise.attempt.Promise.try (http://localhost:3000/__cypress/runner/cypress_runner.js:4285:29)
+      at Context.thenFn (http://localhost:3000/__cypress/runner/cypress_runner.js:122818:66)
+      at Context.then (http://localhost:3000/__cypress/runner/cypress_runner.js:123069:21)
+      at wrapped (http://localhost:3000/__cypress/runner/cypress_runner.js:146327:19)
+
+  2) Karma System - Huddle Completion
+       should prevent non-creator from completing huddle:
+     CypressError: `cy.request()` failed on:
+
+http://localhost:8080/api/huddles?lat=12.9698&lon=77.7499&radiusKm=5
+
+The response we received from your web server was:
+
+  > 403: Forbidden
+
+This was considered a failure because the status code was not `2xx` or `3xx`.
+
+If you do not want status codes to cause failures pass the option: `failOnStatusCode: false`
+
+-----------------------------------------------------------
+
+The request we sent was:
+
+Method: GET
+URL: http://localhost:8080/api/huddles?lat=12.9698&lon=77.7499&radiusKm=5
+Headers: {
+  "Connection": "keep-alive",
+  "Authorization": "Bearer undefined",
+  "user-agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Cypress/15.10.0 Chrome/138.0.7204.251 Electron/37.6.0 Safari/537.36",
+  "accept": "*/*",
+  "accept-encoding": "gzip, deflate"
+}
+
+-----------------------------------------------------------
+
+The response we got was:
+
+Status: 403 - Forbidden
+Headers: {
+  "vary": "Origin, Access-Control-Request-Method, Access-Control-Request-Headers",
+  "x-content-type-options": "nosniff",
+  "x-xss-protection": "0",
+  "cache-control": "no-cache, no-store, max-age=0, must-revalidate",
+  "pragma": "no-cache",
+  "expires": "0",
+  "x-frame-options": "DENY",
+  "content-length": "0",
+  "date": "Sun, 08 Feb 2026 09:40:16 GMT",
+  "keep-alive": "timeout=60",
+  "connection": "keep-alive"
+}
+Body: 
+
+
+https://on.cypress.io/request
+      at <unknown> (http://localhost:3000/__cypress/runner/cypress_runner.js:136431:72)
+      at tryCatcher (http://localhost:3000/__cypress/runner/cypress_runner.js:1777:23)
+      at Promise._settlePromiseFromHandler (http://localhost:3000/__cypress/runner/cypress_runner.js:1489:31)
+      at Promise._settlePromise (http://localhost:3000/__cypress/runner/cypress_runner.js:1546:18)
+      at Promise._settlePromise0 (http://localhost:3000/__cypress/runner/cypress_runner.js:1591:10)
+      at Promise._settlePromises (http://localhost:3000/__cypress/runner/cypress_runner.js:1671:18)
+      at _drainQueueStep (http://localhost:3000/__cypress/runner/cypress_runner.js:2377:12)
+      at _drainQueue (http://localhost:3000/__cypress/runner/cypress_runner.js:2370:9)
+      at Async._drainQueues (http://localhost:3000/__cypress/runner/cypress_runner.js:2386:5)
+      at Async.drainQueues (http://localhost:3000/__cypress/runner/cypress_runner.js:2256:14)
+  From Your Spec Code:
+      at Context.eval (webpack://gullygram-frontend/./cypress/e2e/karma_complete_huddle.cy.ts:478:16)
+      at getRet (http://localhost:3000/__cypress/runner/cypress_runner.js:122807:20)
+      at tryCatcher (http://localhost:3000/__cypress/runner/cypress_runner.js:1777:23)
+      at Promise.attempt.Promise.try (http://localhost:3000/__cypress/runner/cypress_runner.js:4285:29)
+      at Context.thenFn (http://localhost:3000/__cypress/runner/cypress_runner.js:122818:66)
+      at Context.then (http://localhost:3000/__cypress/runner/cypress_runner.js:123069:21)
+      at wrapped (http://localhost:3000/__cypress/runner/cypress_runner.js:146327:19)
+
+
+
+
+  (Results)
+
+  ┌────────────────────────────────────────────────────────────────────────────────────────────────┐
+  │ Tests:        2                                                                                │
+  │ Passing:      0                                                                                │
+  │ Failing:      2                                                                                │
+  │ Pending:      0                                                                                │
+  │ Skipped:      0                                                                                │
+  │ Screenshots:  2                                                                                │
+  │ Video:        false                                                                            │
+  │ Duration:     17 seconds                                                                       │
+  │ Spec Ran:     karma_complete_huddle.cy.ts                                                      │
+  └────────────────────────────────────────────────────────────────────────────────────────────────┘
+
+
+  (Screenshots)
+
+  -  /Users/rupeshsingh/Gullygram/frontend/cypress/screenshots/karma_complete_huddle.    (2560x1440)
+     cy.ts/Karma System - Huddle Completion -- should create users, host a huddle, jo               
+     in, rate, and verify karma after completion (failed).png                                       
+  -  /Users/rupeshsingh/Gullygram/frontend/cypress/screenshots/karma_complete_huddle.    (2560x1440)
+     cy.ts/Karma System - Huddle Completion -- should prevent non-creator from comple               
+     ting huddle (failed).png                                                                       
+
+
+===============================================================================
+
+  (Run Finished)
+
+
+       Spec                                              Tests  Passing  Failing  Pending  Skipped  
+  ┌────────────────────────────────────────────────────────────────────────────────────────────────┐
+  │ ✖  karma_complete_huddle.cy.ts              00:17        2        -        2        -        - │
+  └────────────────────────────────────────────────────────────────────────────────────────────────┘
+    ✖  1 of 1 failed (100%)                     00:17        2        -        2        -        -  
+

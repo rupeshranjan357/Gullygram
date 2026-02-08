@@ -1,0 +1,80 @@
+
+DevTools listening on ws://127.0.0.1:57842/devtools/browser/d0e46611-4f3d-461d-9ffa-7d5fdd96a5cc
+Warning: The allowCypressEnv configuration option is enabled. This allows any browser code to read values from Cypress.env(). This is insecure and will be removed in a future major version.
+
+1. Replace Cypress.env() calls with cy.env() (for sensitive values) or Cypress.expose() (for public configuration)
+2. Set allowCypressEnv: false in your Cypress configuration to disable Cypress.env()
+
+Learn more: https://on.cypress.io/cypress-env-migration
+
+
+===============================================================================
+
+  (Run Starting)
+
+  ┌────────────────────────────────────────────────────────────────────────────────────────────────┐
+  │ Cypress:        15.10.0                                                                        │
+  │ Browser:        Electron 138 (headless)                                                        │
+  │ Node Version:   v25.5.0 (/opt/homebrew/Cellar/node/25.5.0/bin/node)                            │
+  │ Specs:          1 found (karma_complete_huddle.cy.ts)                                          │
+  │ Searched:       cypress/e2e/karma_complete_huddle.cy.ts                                        │
+  └────────────────────────────────────────────────────────────────────────────────────────────────┘
+
+
+────────────────────────────────────────────────────────────────────────────────────────────────────
+                                                                                                    
+  Running:  karma_complete_huddle.cy.ts                                                     (1 of 1)
+
+
+  Karma System - Huddle Completion
+    1) should create users, host a huddle, join, rate, and verify karma after completion
+
+
+  0 passing (14s)
+  1 failing
+
+  1) Karma System - Huddle Completion
+       should create users, host a huddle, join, rate, and verify karma after completion:
+     AssertionError: Timed out retrying after 4000ms: expected '<button.font-semibold.rounded-md.transition-all.button-press.disabled:opacity-50.disabled:cursor-not-allowed.flex.items-center.justify-center.gap-2.gradient-primary.text-white.shadow-md.hover:shadow-lg.px-6.py-3.text-base.w-full.bg-green-600.hover:bg-green-700.text-white>' to be 'visible'
+
+This element `<button.font-semibold.rounded-md.transition-all.button-press.disabled:opacity-50.disabled:cursor-not-allowed.flex.items-center.justify-center.gap-2.gradient-primary.text-white.shadow-md.hover:shadow-lg.px-6.py-3.text-base.w-full.bg-green-600.hover:bg-green-700.text-white>` is not visible because it has CSS property: `position: fixed` and it's being covered by another element:
+
+`<div class="min-w-[200px]">...</div>`
+      at Context.eval (webpack://gullygram-frontend/./cypress/e2e/karma_complete_huddle.cy.ts:299:57)
+
+
+
+
+  (Results)
+
+  ┌────────────────────────────────────────────────────────────────────────────────────────────────┐
+  │ Tests:        1                                                                                │
+  │ Passing:      0                                                                                │
+  │ Failing:      1                                                                                │
+  │ Pending:      0                                                                                │
+  │ Skipped:      0                                                                                │
+  │ Screenshots:  1                                                                                │
+  │ Video:        false                                                                            │
+  │ Duration:     13 seconds                                                                       │
+  │ Spec Ran:     karma_complete_huddle.cy.ts                                                      │
+  └────────────────────────────────────────────────────────────────────────────────────────────────┘
+
+
+  (Screenshots)
+
+  -  /Users/rupeshsingh/Gullygram/frontend/cypress/screenshots/karma_complete_huddle.    (2560x1440)
+     cy.ts/Karma System - Huddle Completion -- should create users, host a huddle, jo               
+     in, rate, and verify karma after completion (failed).png                                       
+
+
+===============================================================================
+
+  (Run Finished)
+
+
+       Spec                                              Tests  Passing  Failing  Pending  Skipped  
+  ┌────────────────────────────────────────────────────────────────────────────────────────────────┐
+  │ ✖  karma_complete_huddle.cy.ts              00:13        1        -        1        -        - │
+  └────────────────────────────────────────────────────────────────────────────────────────────────┘
+    ✖  1 of 1 failed (100%)                     00:13        1        -        1        -        -  
+

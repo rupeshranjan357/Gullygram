@@ -1,0 +1,176 @@
+
+DevTools listening on ws://127.0.0.1:51981/devtools/browser/1bfda650-6a7b-447f-a3e5-3f7cc6a55149
+Warning: The allowCypressEnv configuration option is enabled. This allows any browser code to read values from Cypress.env(). This is insecure and will be removed in a future major version.
+
+1. Replace Cypress.env() calls with cy.env() (for sensitive values) or Cypress.expose() (for public configuration)
+2. Set allowCypressEnv: false in your Cypress configuration to disable Cypress.env()
+
+Learn more: https://on.cypress.io/cypress-env-migration
+
+
+===============================================================================
+
+  (Run Starting)
+
+  ┌────────────────────────────────────────────────────────────────────────────────────────────────┐
+  │ Cypress:        15.10.0                                                                        │
+  │ Browser:        Electron 138 (headless)                                                        │
+  │ Node Version:   v25.5.0 (/opt/homebrew/Cellar/node/25.5.0/bin/node)                            │
+  │ Specs:          2 found (huddle_smoke.cy.ts, karma_smoke.cy.ts)                                │
+  │ Searched:       cypress/e2e/*.cy.ts                                                            │
+  └────────────────────────────────────────────────────────────────────────────────────────────────┘
+
+
+────────────────────────────────────────────────────────────────────────────────────────────────────
+                                                                                                    
+  Running:  huddle_smoke.cy.ts                                                              (1 of 2)
+
+
+  Huddle Feature Smoke Test
+    1) should allow a user to signup and create a huddle
+
+
+  0 passing (6s)
+  1 failing
+
+  1) Huddle Feature Smoke Test
+       should allow a user to signup and create a huddle:
+     AssertionError: Timed out retrying after 4000ms: expected 'http://localhost:3000/signup' to include '/onboarding/interests'
+      at Context.eval (webpack://gullygram-frontend/./cypress/e2e/huddle_smoke.cy.ts:33:17)
+
+
+
+
+  (Results)
+
+  ┌────────────────────────────────────────────────────────────────────────────────────────────────┐
+  │ Tests:        1                                                                                │
+  │ Passing:      0                                                                                │
+  │ Failing:      1                                                                                │
+  │ Pending:      0                                                                                │
+  │ Skipped:      0                                                                                │
+  │ Screenshots:  1                                                                                │
+  │ Video:        false                                                                            │
+  │ Duration:     6 seconds                                                                        │
+  │ Spec Ran:     huddle_smoke.cy.ts                                                               │
+  └────────────────────────────────────────────────────────────────────────────────────────────────┘
+
+
+  (Screenshots)
+
+  -  /Users/rupeshsingh/Gullygram/frontend/cypress/screenshots/huddle_smoke.cy.ts/Hud    (2560x1440)
+     dle Feature Smoke Test -- should allow a user to signup and create a huddle (fai               
+     led).png                                                                                       
+
+
+────────────────────────────────────────────────────────────────────────────────────────────────────
+                                                                                                    
+  Running:  karma_smoke.cy.ts                                                               (2 of 2)
+
+
+  Karma System Smoke Tests
+    1) "before all" hook for "should display initial karma score on profile"
+
+
+  0 passing (778ms)
+  1 failing
+
+  1) Karma System Smoke Tests
+       "before all" hook for "should display initial karma score on profile":
+     CypressError: `cy.request()` failed trying to load:
+
+http://localhost:8080/api/auth/signup
+
+We attempted to make an http request to this URL but the request failed without a response.
+
+We received this error at the network level:
+
+  > AggregateError
+
+-----------------------------------------------------------
+
+The request we sent was:
+
+Method: POST
+URL: http://localhost:8080/api/auth/signup
+
+-----------------------------------------------------------
+
+Common situations why this would fail:
+  - you don't have internet access
+  - you forgot to run / boot your web server
+  - your web server isn't accessible
+  - you have weird network configuration settings on your computer
+
+https://on.cypress.io/request
+
+Because this error occurred during a `before all` hook we are skipping the remaining tests in the current suite: `Karma System Smoke Tests`
+      at <unknown> (http://localhost:3000/__cypress/runner/cypress_runner.js:136459:70)
+      at tryCatcher (http://localhost:3000/__cypress/runner/cypress_runner.js:1777:23)
+      at <unknown> (http://localhost:3000/__cypress/runner/cypress_runner.js:4173:37)
+      at tryCatcher (http://localhost:3000/__cypress/runner/cypress_runner.js:1777:23)
+      at Promise._settlePromiseFromHandler (http://localhost:3000/__cypress/runner/cypress_runner.js:1489:31)
+      at Promise._settlePromise (http://localhost:3000/__cypress/runner/cypress_runner.js:1546:18)
+      at Promise._settlePromise0 (http://localhost:3000/__cypress/runner/cypress_runner.js:1591:10)
+      at Promise._settlePromises (http://localhost:3000/__cypress/runner/cypress_runner.js:1667:18)
+      at _drainQueueStep (http://localhost:3000/__cypress/runner/cypress_runner.js:2377:12)
+      at _drainQueue (http://localhost:3000/__cypress/runner/cypress_runner.js:2370:9)
+      at Async._drainQueues (http://localhost:3000/__cypress/runner/cypress_runner.js:2386:5)
+      at Async.drainQueues (http://localhost:3000/__cypress/runner/cypress_runner.js:2256:14)
+  From Your Spec Code:
+      at Context.eval (webpack://gullygram-frontend/./cypress/e2e/karma_smoke.cy.ts:17:11)
+  
+  From Node.js Internals:
+    RequestError: AggregateError
+        at new r (<embedded>:251:160358)
+        at ee.callback (<embedded>:251:166359)
+        at e.callback.s.callback [as _callback] (<embedded>:251:165805)
+        at s._callback.s.callback.s.callback (<embedded>:314:108154)
+        at ee.emit (node:events:519:28)
+        at ee.onRequestError (<embedded>:314:117096)
+        at ClientRequest.emit (node:events:531:35)
+        at emitErrorEvent (node:_http_client:105:11)
+        at Socket.socketErrorListener (node:_http_client:518:5)
+        at Socket.emit (node:events:519:28)
+        at emitErrorNT (node:internal/streams/destroy:170:8)
+        at emitErrorCloseNT (node:internal/streams/destroy:129:3)
+        at process.processTicksAndRejections (node:internal/process/task_queues:90:21)
+
+
+
+
+  (Results)
+
+  ┌────────────────────────────────────────────────────────────────────────────────────────────────┐
+  │ Tests:        2                                                                                │
+  │ Passing:      0                                                                                │
+  │ Failing:      1                                                                                │
+  │ Pending:      0                                                                                │
+  │ Skipped:      1                                                                                │
+  │ Screenshots:  1                                                                                │
+  │ Video:        false                                                                            │
+  │ Duration:     0 seconds                                                                        │
+  │ Spec Ran:     karma_smoke.cy.ts                                                                │
+  └────────────────────────────────────────────────────────────────────────────────────────────────┘
+
+
+  (Screenshots)
+
+  -  /Users/rupeshsingh/Gullygram/frontend/cypress/screenshots/karma_smoke.cy.ts/Karm    (2560x1440)
+     a System Smoke Tests -- should display initial karma score on profile -- before                
+     all hook (failed).png                                                                          
+
+
+===============================================================================
+
+  (Run Finished)
+
+
+       Spec                                              Tests  Passing  Failing  Pending  Skipped  
+  ┌────────────────────────────────────────────────────────────────────────────────────────────────┐
+  │ ✖  huddle_smoke.cy.ts                       00:06        1        -        1        -        - │
+  ├────────────────────────────────────────────────────────────────────────────────────────────────┤
+  │ ✖  karma_smoke.cy.ts                        780ms        2        -        1        -        1 │
+  └────────────────────────────────────────────────────────────────────────────────────────────────┘
+    ✖  2 of 2 failed (100%)                     00:07        3        -        2        -        1  
+

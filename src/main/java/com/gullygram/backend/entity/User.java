@@ -4,7 +4,9 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
@@ -17,6 +19,8 @@ import java.util.UUID;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@ToString(exclude = "profile")
+@EqualsAndHashCode(exclude = "profile")
 public class User {
 
     @Id
@@ -58,6 +62,10 @@ public class User {
 
     @Column(name = "last_marketing_post_at")
     private LocalDateTime lastMarketingPostAt;
+
+    @Column(name = "karma_score")
+    @Builder.Default
+    private Integer karmaScore = 100;
 
     public enum UserStatus {
         ACTIVE, SUSPENDED, DELETED

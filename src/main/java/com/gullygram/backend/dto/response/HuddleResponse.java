@@ -1,5 +1,6 @@
 package com.gullygram.backend.dto.response;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.gullygram.backend.entity.Huddle;
 import lombok.Builder;
 import lombok.Data;
@@ -24,6 +25,9 @@ public class HuddleResponse {
     private Integer maxParticipants;
     private Integer currentParticipants;
     private Huddle.GenderFilter genderFilter;
+    
+    @JsonProperty("isJoined")
     private boolean isJoined;
+    
     private LocalDateTime createdAt;
 }
